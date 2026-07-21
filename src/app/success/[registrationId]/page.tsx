@@ -188,7 +188,7 @@ export default function SuccessPage() {
   const verifyUrl = typeof window !== 'undefined' ? `${window.location.origin}/verify/${data.registrationId}` : "";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 flex flex-col items-center print:bg-white print:py-0">
+    <div className="h-[100dvh] overflow-y-auto bg-slate-50 dark:bg-slate-950 py-8 px-4 flex flex-col items-center print:bg-white print:py-0 print:h-auto print:overflow-visible">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}

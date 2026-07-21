@@ -20,7 +20,7 @@ export default async function VerifyPage({ params }: { params: { registrationId:
 
   if (!registration) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="h-[100dvh] overflow-y-auto bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
         <Card className="w-full max-w-md text-center border-red-200 dark:border-red-900 shadow-xl shadow-red-500/10">
           <CardContent className="pt-8 pb-8 space-y-4">
             <div className="mx-auto w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
@@ -39,7 +39,7 @@ export default async function VerifyPage({ params }: { params: { registrationId:
   const isValid = registration.status === "Verified";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4 py-12">
+    <div className="h-[100dvh] overflow-y-auto bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4 py-12">
       <div className="w-full max-w-md space-y-6">
         
         {/* Verification Status Badge */}
