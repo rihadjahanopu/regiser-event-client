@@ -92,20 +92,20 @@ export default function SuccessPage() {
 			}
 
 			// ── Organization header ──────────────────────────────────────
+			// ১ম লাইন: সংগঠনের নাম
 			doc.setFont("helvetica", "bold");
 			doc.setFontSize(14);
 			doc.setTextColor(15, 23, 42);
-			doc.text(
-				"Bangladesh Anjumane Talamije Islamia Chhatak Uttar Upazila",
-				34,
-				20
-			);
+			doc.text("Bangladesh Anjumane Talamije Islamia", 34, 20);
 
+			// ২য় লাইন: উপজেলার নাম (y-axis বাড়িয়ে নিচে নামানো হলো)
+			doc.text("Chhatak Uttar Upazila", 34, 26); // y-axis 20 থেকে বাড়িয়ে 26 করা হয়েছে
+
+			// ৩য় লাইন: Participant Ticket (আগের চেয়ে নিচে নামানো হলো যাতে একটার ওপর আরেকটা না ওঠে)
 			doc.setFont("helvetica", "normal");
 			doc.setFontSize(9);
 			doc.setTextColor(100, 116, 139);
-			doc.text("Participant Ticket", 34, 25);
-
+			doc.text("Participant Ticket", 34, 32); // y-axis 25 থেকে বাড়িয়ে 32 করা হয়েছে
 			// ── Participant name ─────────────────────────────────────────
 			const fullNameText =
 				String(data.fullName || "")
