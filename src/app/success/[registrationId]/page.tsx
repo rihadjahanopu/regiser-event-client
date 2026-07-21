@@ -40,7 +40,7 @@ export default function SuccessPage() {
   const handleDownloadPDF = async () => {
     setPdfLoading(true);
     try {
-      const jsPDF = (await import("jspdf")).jsPDF;
+      const { jsPDF, GState } = await import("jspdf");
       const QRCode = (await import("qrcode")).default;
 
       // Create PDF with custom ticket size (landscape 200x80 mm)
@@ -62,11 +62,11 @@ export default function SuccessPage() {
       try {
         const logoImg = await loadImage("/bangladesh-anjumane-talamije-islamia-seeklogo.png");
         // Using GState for opacity
-        doc.setGState(new doc.GState({ opacity: 0.05 }));
+        doc.setGState(new GState({ opacity: 0.05 }));
         // Center the watermark
         doc.addImage(logoImg, "PNG", 75, 15, 50, 50);
         // Reset opacity
-        doc.setGState(new doc.GState({ opacity: 1.0 }));
+        doc.setGState(new GState({ opacity: 1.0 }));
       } catch (e) {
         console.error("Failed to load watermark", e);
       }
