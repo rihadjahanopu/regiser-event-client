@@ -146,9 +146,6 @@ export default function RegistrationPage() {
           {/* Main copy */}
           <div className="space-y-6">
             <div className="space-y-3">
-              <Badge className="bg-white/10 text-white border-0 text-xs uppercase tracking-widest px-3 py-1">
-                Registration 2025
-              </Badge>
               <h1 className="text-4xl xl:text-5xl font-bold text-white leading-tight">
                 Register &<br />Get Your<br />
                 <span className="text-blue-200">Digital Ticket</span>
