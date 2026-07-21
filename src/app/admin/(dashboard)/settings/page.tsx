@@ -5,12 +5,13 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageIcon, Upload, Trash2, Loader2, CheckCircle2 } from "lucide-react";
+import { ImageIcon, Upload, Trash2, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export default function SettingsPage() {
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -95,6 +96,34 @@ export default function SettingsPage() {
       toast.error(err.response?.data?.error || "Failed to delete image");
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleClearAllData = async () => {
+    const isConfirmed = window.confirm(
+      "WARNING: Are you absolutely sure you want to delete ALL registrations? This action cannot be undone and will erase all data permanently!"
+    );
+    
+    if (!isConfirmed) return;
+    
+    const doubleCheck = window.prompt("Type 'DELETE ALL' to confirm:");
+    if (doubleCheck !== "DELETE ALL") {
+      toast.error("Confirmation failed. Data was not deleted.");
+      return;
+    }
+
+    setClearing(true);
+    try {
+      const res = await axios.delete("/api/admin/registrations");
+      if (res.data.success) {
+        toast.success("All registrations have been permanently deleted.");
+      } else {
+        toast.error(res.data.error);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to clear data");
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -217,6 +246,42 @@ export default function SettingsPage() {
             className="hidden"
             onChange={handleUpload}
           />
+        </CardContent>
+      </Card>
+
+      <Card className="border border-red-200 dark:border-red-900 shadow-sm mt-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-500">
+            <AlertTriangle className="w-5 h-5" />
+            Danger Zone
+          </CardTitle>
+          <CardDescription>
+            Destructive actions that cannot be undone. Please proceed with caution.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-red-100 dark:border-red-900/50 rounded-lg bg-red-50/50 dark:bg-red-950/20">
+            <div>
+              <h4 className="font-semibold text-slate-900 dark:text-white">Clear All Registrations</h4>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Permanently delete all registered users from the database.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={handleClearAllData}
+              disabled={clearing}
+            >
+              {clearing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Clearing...
+                </>
+              ) : (
+                "Clear All Data"
+              )}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
