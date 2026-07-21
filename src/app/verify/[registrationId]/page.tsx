@@ -9,13 +9,15 @@ async function getRegistration(id: string) {
   try {
     const res = await axios.get(`${API_URL}/api/registration/verify/${id}`);
     return res.data;
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Verification error:", error?.message || error);
     return null;
   }
 }
 
-export default async function VerifyPage({ params }: { params: { registrationId: string } }) {
-  const result = await getRegistration(params.registrationId);
+export default async function VerifyPage({ params }: { params: Promise<{ registrationId: string }> }) {
+  const resolvedParams = await params;
+  const result = await getRegistration(resolvedParams.registrationId);
   const registration = result?.success ? result.registration : null;
 
   if (!registration) {
