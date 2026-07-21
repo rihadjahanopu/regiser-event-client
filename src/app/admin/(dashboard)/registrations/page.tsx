@@ -244,7 +244,7 @@ export default function RegistrationsPage() {
           />
         </div>
         <div className="w-full sm:w-48">
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status} onValueChange={(val) => setStatus(val ?? "All")}>
             <SelectTrigger>
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
