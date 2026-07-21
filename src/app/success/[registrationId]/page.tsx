@@ -105,20 +105,36 @@ export default function SuccessPage() {
       doc.setFontSize(16);
       doc.text((data.fullName || "").toUpperCase(), 16, 45);
 
-      // Details
-      const drawLabelValue = (label: string, value: string, x: number, y: number) => {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(7);
-        doc.setTextColor(100, 116, 139); // slate-500
-        doc.text(label, x, y);
-        
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9);
-        doc.setTextColor(15, 23, 42); // slate-900
-        doc.text(value || "-", x, y + 5);
+      // Details — only draw if value is non-empty
+      const drawLabelValue = (label: string, value: string | undefined | null, x: number, y: number, maxWidth?: number) => {
+        const safeValue = (value || "").trim();
+        if (!safeValue) return; // skip entirely if empty
+        try {
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(7);
+          doc.setTextColor(100, 116, 139);
+          doc.text(label, x, y);
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9);
+          doc.setTextColor(15, 23, 42);
+          // Truncate text if maxWidth provided to prevent overlap
+          const displayValue = maxWidth
+            ? doc.splitTextToSize(safeValue, maxWidth)[0]
+            : safeValue;
+          doc.text(displayValue, x, y + 5);
+        } catch (e) {
+          console.error(`Failed to draw field ${label}:`, e);
+        }
       };
 
-      drawLabelValue("INSTITUTION", data.schoolName, 16, 55);
+      // Determine how wide the institution name can be (shrink if optional fields exist)
+      const hasOptionalAcademic = !!(data.passingYear?.trim() || data.gradeGpa?.trim());
+      const institutionMaxWidth = hasOptionalAcademic ? 58 : 115;
+
+      drawLabelValue("INSTITUTION", data.schoolName, 16, 55, institutionMaxWidth);
+      drawLabelValue("PASSING YR", data.passingYear, 80, 55);
+      drawLabelValue("GPA/GRADE", data.gradeGpa, 115, 55);
       drawLabelValue("MOBILE", data.mobile, 16, 68);
       drawLabelValue("GROUP", data.subjectGroup, 70, 68);
       drawLabelValue("DISTRICT", data.district, 105, 68);
