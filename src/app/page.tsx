@@ -59,13 +59,17 @@ export default function RegistrationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [direction, setDirection] = useState(1);
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
   useEffect(() => {
     axios.get("/api/settings").then((res) => {
-      if (res.data.success && res.data.data?.eventCoverUrl) {
-        setCoverUrl(res.data.data.eventCoverUrl);
+      if (res.data.success && res.data.data) {
+        setCoverUrl(res.data.data.eventCoverUrl || null);
+        setIsRegistrationOpen(res.data.data.isRegistrationOpen ?? true);
       }
-    }).catch(() => {/* silent */});
+    }).catch(() => {/* silent */})
+      .finally(() => setIsLoadingSettings(false));
   }, []);
 
   const form = useForm<RegistrationFormValues>({
@@ -243,7 +247,21 @@ export default function RegistrationPage() {
               </div>
             )}
 
-            <Form {...form}>
+            {isLoadingSettings ? (
+              <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
+                <p>Loading form...</p>
+              </div>
+            ) : !isRegistrationOpen ? (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center shadow-sm">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-8 h-8" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Registration Closed</h2>
+                <p className="text-slate-500">There are currently no events running. Please check back later or contact the organizers for more information.</p>
+              </div>
+            ) : (
+              <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
 
                 <AnimatePresence mode="wait" custom={direction}>
@@ -513,6 +531,7 @@ export default function RegistrationPage() {
 
               </form>
             </Form>
+            )}
           </div>
         </div>
 

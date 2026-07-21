@@ -12,6 +12,8 @@ export default function SettingsPage() {
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchSettings = async () => {
@@ -20,6 +22,7 @@ export default function SettingsPage() {
       const res = await axios.get("/api/settings");
       if (res.data.success) {
         setCoverUrl(res.data.data?.eventCoverUrl || null);
+        setIsRegistrationOpen(res.data.data?.isRegistrationOpen ?? true);
       }
     } catch {
       toast.error("Failed to fetch settings");
@@ -31,6 +34,25 @@ export default function SettingsPage() {
   useEffect(() => {
     fetchSettings();
   }, []);
+
+  const toggleRegistrationStatus = async () => {
+    setUpdatingStatus(true);
+    try {
+      const res = await axios.put("/api/admin/settings/status", {
+        isOpen: !isRegistrationOpen
+      });
+      if (res.data.success) {
+        setIsRegistrationOpen(res.data.data.isRegistrationOpen);
+        toast.success(`Registration is now ${res.data.data.isRegistrationOpen ? 'Open' : 'Closed'}`);
+      } else {
+        toast.error(res.data.error);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to update registration status");
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -84,6 +106,30 @@ export default function SettingsPage() {
       </div>
 
       <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+          <div className="space-y-1">
+            <CardTitle className="text-lg">Registration Status</CardTitle>
+            <CardDescription>
+              Turn event registration on or off. When off, users cannot submit new registrations.
+            </CardDescription>
+          </div>
+          <div>
+            <button
+              onClick={toggleRegistrationStatus}
+              disabled={updatingStatus || loading}
+              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
+                isRegistrationOpen ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                  isRegistrationOpen ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </CardHeader>
+        
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
             <ImageIcon className="w-5 h-5 text-blue-600" />
