@@ -85,6 +85,13 @@ export default async function VerifyPage({ params }: { params: Promise<{ registr
                 <p className="text-sm text-slate-500">Institution</p>
                 <p className="font-medium">{registration.schoolName}</p>
                 <p className="text-sm">{registration.class} • {registration.subjectGroup}</p>
+                {(registration.passingYear || registration.gradeGpa) && (
+                  <p className="text-sm text-slate-500 mt-0.5">
+                    {registration.passingYear && <span>Passing Year: <span className="text-slate-700 dark:text-slate-300 font-medium">{registration.passingYear}</span></span>}
+                    {registration.passingYear && registration.gradeGpa && <span className="mx-1">•</span>}
+                    {registration.gradeGpa && <span>GPA/Grade: <span className="text-slate-700 dark:text-slate-300 font-medium">{registration.gradeGpa}</span></span>}
+                  </p>
+                )}
               </div>
             </div>
 
