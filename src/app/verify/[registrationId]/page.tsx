@@ -3,7 +3,7 @@ import { CheckCircle2, XCircle, Phone, GraduationCap, Calendar, User } from "luc
 import axios from "axios";
 
 // Using the internal URL or external if deployed
-const API_URL = process.env.API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:5000";
 
 async function getRegistration(id: string) {
   try {

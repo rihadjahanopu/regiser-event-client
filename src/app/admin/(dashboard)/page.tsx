@@ -2,7 +2,7 @@ import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, User, School, CalendarClock, TrendingUp } from "lucide-react";
 
-const API_URL = process.env.API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:5000";
 
 async function getDashboardStats() {
   try {
