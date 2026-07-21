@@ -259,7 +259,9 @@ export default function SuccessPage() {
 							</div>
 							<div>
 								<h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight leading-tight">
-									Bangladesh Anjumane Talamije Islamia Chhatak Uttar Upazila
+									Bangladesh Anjumane Talamije Islamia
+									<br />
+									Chhatak Uttar Upazila
 								</h2>
 								<p className="text-blue-100 text-sm opacity-90">
 									Participant Ticket
