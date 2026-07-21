@@ -40,75 +40,62 @@ export default function SuccessPage() {
   const handleDownloadPDF = async () => {
     setPdfLoading(true);
     try {
-      const { jsPDF, GState } = await import("jspdf");
+      const { jsPDF } = await import("jspdf");
       const QRCode = (await import("qrcode")).default;
 
-      // Create PDF with custom ticket size (landscape 200x80 mm)
+      // Ticket size: landscape 200×80 mm
       const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: [200, 80] });
 
-      // Background - White theme
-      doc.setFillColor(255, 255, 255); // white
+      // ── Background ──────────────────────────────────────────────
+      doc.setFillColor(255, 255, 255);
       doc.rect(0, 0, 200, 80, "F");
 
-      const loadImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = url;
-      });
-
-      // Watermark / Hallmark
-      try {
-        const logoImg = await loadImage("/bangladesh-anjumane-talamije-islamia-seeklogo.png");
-        // Using GState for opacity
-        doc.setGState(new GState({ opacity: 0.05 }));
-        // Center the watermark
-        doc.addImage(logoImg, "PNG", 75, 15, 50, 50);
-        // Reset opacity
-        doc.setGState(new GState({ opacity: 1.0 }));
-      } catch (e) {
-        console.error("Failed to load watermark", e);
-      }
-
-      // Left accent bar
-      doc.setFillColor(37, 99, 235); // blue-600
+      // ── Left accent bar ──────────────────────────────────────────
+      doc.setFillColor(37, 99, 235);
       doc.rect(0, 0, 8, 80, "F");
 
-      // Dashed cut line between info and QR code
-      doc.setDrawColor(203, 213, 225); // slate-200
+      // ── Dashed divider ───────────────────────────────────────────
+      doc.setDrawColor(203, 213, 225);
       doc.setLineDashPattern([2, 2], 0);
       doc.line(140, 5, 140, 75);
       doc.setLineDashPattern([], 0);
 
-      // Organization
+      // ── Logo (optional — skip silently if fails) ─────────────────
       try {
-        const logoImg = await loadImage("/bangladesh-anjumane-talamije-islamia-seeklogo.png");
+        const logoImg = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = "Anonymous";
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = "/bangladesh-anjumane-talamije-islamia-seeklogo.png";
+        });
         doc.addImage(logoImg, "PNG", 16, 12, 14, 14);
-      } catch (e) {
-        console.error("Failed to load logo", e);
+      } catch {
+        console.warn("Logo load failed — skipping");
       }
 
-      doc.setTextColor(15, 23, 42); // slate-900
+      // ── Organization header ──────────────────────────────────────
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
+      doc.setTextColor(15, 23, 42);
       doc.text("Bangladesh Anjumane Talamije Islamia", 34, 20);
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139); // slate-500
+      doc.setTextColor(100, 116, 139);
       doc.text("Participant Ticket", 34, 25);
 
-      // Participant Name
-      doc.setTextColor(15, 23, 42); // slate-900
+      // ── Participant name ─────────────────────────────────────────
+      const fullNameText = String(data.fullName || "").toUpperCase().trim() || "PARTICIPANT";
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
-      doc.text((data.fullName || "").toUpperCase(), 16, 45);
+      doc.setTextColor(15, 23, 42);
+      doc.text(fullNameText, 16, 45);
 
-      // Details — only draw if value is non-empty; skip label+value entirely if empty
-      const drawLabelValue = (label: string, value: string | undefined | null, x: number, y: number) => {
-        const safeValue = String(value ?? "").trim();
-        if (!safeValue) return; // empty → skip entirely (no "-", no label)
+      // ── Detail helper — skips if value is empty ──────────────────
+      const field = (label: string, value: string | undefined | null, x: number, y: number) => {
+        const v = String(value ?? "").trim();
+        if (!v) return;
         doc.setFont("helvetica", "bold");
         doc.setFontSize(7);
         doc.setTextColor(100, 116, 139);
@@ -116,52 +103,53 @@ export default function SuccessPage() {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(9);
         doc.setTextColor(15, 23, 42);
-        doc.text(safeValue, x, y + 5);
+        doc.text(v, x, y + 5);
       };
 
-      // Truncate institution name manually to avoid overlap when optional fields exist
-      const hasOptionalAcademic = !!(String(data.passingYear ?? "").trim() || String(data.gradeGpa ?? "").trim());
-      const institutionName = hasOptionalAcademic
-        ? (data.schoolName || "").slice(0, 20) + ((data.schoolName || "").length > 20 ? "…" : "")
-        : (data.schoolName || "");
+      // Row 1 — institution (truncated if optional fields exist) + passing yr + gpa
+      const hasExtra = !!(String(data.passingYear ?? "").trim() || String(data.gradeGpa ?? "").trim());
+      const schoolDisplay = hasExtra
+        ? String(data.schoolName || "").slice(0, 20) + (String(data.schoolName || "").length > 20 ? "…" : "")
+        : String(data.schoolName || "");
 
-      drawLabelValue("INSTITUTION", institutionName, 16, 55);
-      drawLabelValue("PASSING YR", data.passingYear, 80, 55);
-      drawLabelValue("GPA/GRADE", data.gradeGpa, 115, 55);
-      drawLabelValue("MOBILE", data.mobile, 16, 68);
-      drawLabelValue("GROUP", data.subjectGroup, 70, 68);
-      drawLabelValue("DISTRICT", data.district, 105, 68);
+      field("INSTITUTION", schoolDisplay, 16, 55);
+      field("PASSING YR",  data.passingYear, 80, 55);
+      field("GPA/GRADE",   data.gradeGpa,    115, 55);
 
-      // Right Side (Tear-off / QR)
-      doc.setTextColor(15, 23, 42); // slate-900
+      // Row 2 — mobile / group / district
+      field("MOBILE",   data.mobile,       16,  68);
+      field("GROUP",    data.subjectGroup,  70,  68);
+      field("DISTRICT", data.district,      105, 68);
+
+      // ── Right side — QR ─────────────────────────────────────────
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
+      doc.setTextColor(15, 23, 42);
       doc.text("ADMIT ONE", 170, 18, { align: "center" });
 
-      // QR Code
       const verifyUrl = `${window.location.origin}/verify/${data.registrationId}`;
-      const qrDataUrl = await QRCode.toDataURL(verifyUrl, { 
-        width: 120, 
-        margin: 0, 
-        color: { dark: '#000000', light: '#ffffff' } 
+      const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
+        width: 120,
+        margin: 0,
+        color: { dark: "#000000", light: "#ffffff" },
       });
       doc.addImage(qrDataUrl, "PNG", 152.5, 25, 35, 35);
 
-      // Ticket Number
+      // Ticket number
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
-      doc.setTextColor(59, 130, 246); // blue-500
+      doc.setTextColor(59, 130, 246);
       doc.text(`NO. ${data.ticketNumber}`, 170, 68, { align: "center" });
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(7);
-      doc.setTextColor(148, 163, 184); // slate-400
+      doc.setTextColor(148, 163, 184);
       doc.text("Scan to verify", 170, 73, { align: "center" });
 
       doc.save(`ticket-${data.registrationId}.pdf`);
       toast.success("Ticket downloaded as PDF!");
     } catch (err) {
-      console.error(err);
+      console.error("PDF generation error:", err);
       toast.error("Failed to generate PDF.");
     } finally {
       setPdfLoading(false);
