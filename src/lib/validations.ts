@@ -4,7 +4,7 @@ export const registrationSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters."),
   mobile: z.string().regex(/^(\+88)?01[3-9]\d{8}$/, "Invalid Bangladeshi mobile number."),
   email: z.string().email("Invalid email format").optional().or(z.literal("")),
-  gender: z.enum(["Male", "Female", "Other"], { required_error: "Please select a gender" }),
+  gender: z.enum(["Male", "Female", "Other"], { message: "Please select a gender" }),
   dob: z.string().optional().or(z.literal("")),
   fatherName: z.string().optional().or(z.literal("")),
   address: z.string().min(5, "Address is required."),
