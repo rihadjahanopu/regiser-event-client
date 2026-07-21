@@ -71,7 +71,7 @@ export default function RegistrationPage() {
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
-      fullName: "", mobile: "", email: "", gender: "",
+      fullName: "", mobile: "", email: "", gender: undefined,
       dob: "", fatherName: "", address: "", district: "",
       schoolName: "", class: "", subjectGroup: "", rollNumber: "",
       bloodGroup: "", emergencyContact: "", passingYear: "", gradeGpa: "",
