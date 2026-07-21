@@ -53,10 +53,13 @@ export default function RegistrationsPage() {
   const [total, setTotal] = useState(0);
   const [exportLoading, setExportLoading] = useState<"excel" | "pdf" | null>(null);
 
-  // Edit State
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [saving, setSaving] = useState(false);
+
+  // View State
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [viewData, setViewData] = useState<any>(null);
 
   const fetchRegistrations = async () => {
     setLoading(true);
@@ -149,10 +152,18 @@ export default function RegistrationsPage() {
         "Mobile": r.mobile,
         "Email": r.email || "",
         "Gender": r.gender,
+        "DOB": r.dob || "",
+        "Blood Group": r.bloodGroup || "",
+        "Father's Name": r.fatherName || "",
         "School/College": r.schoolName,
         "Class": r.class,
         "Subject Group": r.subjectGroup,
+        "Roll No": r.rollNumber || "",
+        "Passing Year": r.passingYear || "",
+        "GPA/Grade": r.gradeGpa || "",
+        "Address": r.address || "",
         "District": r.district,
+        "Emergency Contact": r.emergencyContact || "",
         "Status": r.status,
         "Date": new Date(r.registrationDate).toLocaleDateString(),
       })));
@@ -318,6 +329,14 @@ export default function RegistrationsPage() {
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             
                             <DropdownMenuItem onClick={() => {
+                              setViewData(item);
+                              setViewModalOpen(true);
+                            }}>
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem onClick={() => {
                               setEditData(item);
                               setEditModalOpen(true);
                             }}>
@@ -432,6 +451,49 @@ export default function RegistrationsPage() {
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Save Changes
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Details Modal */}
+      <Dialog open={viewModalOpen} onOpenChange={setViewModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Registration Details</DialogTitle>
+            <DialogDescription>
+              Complete details for {viewData?.fullName} ({viewData?.registrationId})
+            </DialogDescription>
+          </DialogHeader>
+          {viewData && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 text-sm">
+              <div><span className="font-semibold text-slate-500">Full Name:</span> {viewData.fullName}</div>
+              <div><span className="font-semibold text-slate-500">Mobile:</span> {viewData.mobile}</div>
+              <div><span className="font-semibold text-slate-500">Email:</span> {viewData.email || 'N/A'}</div>
+              <div><span className="font-semibold text-slate-500">Gender:</span> {viewData.gender}</div>
+              <div><span className="font-semibold text-slate-500">Date of Birth:</span> {viewData.dob || 'N/A'}</div>
+              <div><span className="font-semibold text-slate-500">Blood Group:</span> {viewData.bloodGroup || 'N/A'}</div>
+              <div><span className="font-semibold text-slate-500">Father's Name:</span> {viewData.fatherName || 'N/A'}</div>
+              
+              <div className="sm:col-span-2 border-t pt-2 mt-2 font-semibold">Academic Info</div>
+              <div><span className="font-semibold text-slate-500">School/College:</span> {viewData.schoolName}</div>
+              <div><span className="font-semibold text-slate-500">Class:</span> {viewData.class}</div>
+              <div><span className="font-semibold text-slate-500">Subject Group:</span> {viewData.subjectGroup}</div>
+              <div><span className="font-semibold text-slate-500">Roll No:</span> {viewData.rollNumber || 'N/A'}</div>
+              <div><span className="font-semibold text-slate-500">Passing Year:</span> {viewData.passingYear || 'N/A'}</div>
+              <div><span className="font-semibold text-slate-500">GPA/Grade:</span> {viewData.gradeGpa || 'N/A'}</div>
+
+              <div className="sm:col-span-2 border-t pt-2 mt-2 font-semibold">Location & Extra</div>
+              <div className="sm:col-span-2"><span className="font-semibold text-slate-500">Address:</span> {viewData.address || 'N/A'}</div>
+              <div><span className="font-semibold text-slate-500">District:</span> {viewData.district}</div>
+              <div><span className="font-semibold text-slate-500">Emergency Contact:</span> {viewData.emergencyContact || 'N/A'}</div>
+              
+              <div className="sm:col-span-2 border-t pt-2 mt-2 font-semibold">System Info</div>
+              <div><span className="font-semibold text-slate-500">Status:</span> {viewData.status}</div>
+              <div><span className="font-semibold text-slate-500">Date:</span> {new Date(viewData.registrationDate).toLocaleString()}</div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setViewModalOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,23 +1,52 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, User, School, CalendarClock, TrendingUp } from "lucide-react";
+import { Users, User, School, CalendarClock, TrendingUp, Loader2 } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:5000";
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-async function getDashboardStats() {
-  try {
-    const res = await axios.get(`${API_URL}/api/admin/dashboard`);
-    return res.data;
-  } catch (error) {
-    return { success: false, stats: null };
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get("/api/admin/dashboard");
+        if (res.data.success) {
+          setStats(res.data.stats);
+          setError(false);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Fetch immediately on mount
+    fetchStats();
+
+    // Poll every 5 seconds for real-time updates
+    const interval = setInterval(fetchStats, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading && !stats) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
+        <p>Loading dashboard...</p>
+      </div>
+    );
   }
-}
 
-export default async function AdminDashboard() {
-  const { stats, success } = await getDashboardStats();
-
-  if (!success || !stats) {
-    return <div className="p-4 text-red-500">Failed to load dashboard.</div>;
+  if (error || !stats) {
+    return <div className="p-4 text-red-500 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg">Failed to load dashboard. Please try again.</div>;
   }
 
   const cards = [
@@ -26,35 +55,35 @@ export default async function AdminDashboard() {
       value: stats.totalRegistrations,
       icon: Users,
       color: "text-blue-600",
-      bg: "bg-blue-100",
+      bg: "bg-blue-100 dark:bg-blue-900/30",
     },
     {
       title: "Today's Registrations",
       value: stats.todayRegistrations,
       icon: CalendarClock,
       color: "text-emerald-600",
-      bg: "bg-emerald-100",
+      bg: "bg-emerald-100 dark:bg-emerald-900/30",
     },
     {
       title: "Total Schools",
       value: stats.totalSchools,
       icon: School,
       color: "text-purple-600",
-      bg: "bg-purple-100",
+      bg: "bg-purple-100 dark:bg-purple-900/30",
     },
     {
       title: "Male Participants",
       value: stats.maleCount,
       icon: User,
       color: "text-orange-600",
-      bg: "bg-orange-100",
+      bg: "bg-orange-100 dark:bg-orange-900/30",
     },
     {
       title: "Female Participants",
       value: stats.femaleCount,
       icon: User,
       color: "text-pink-600",
-      bg: "bg-pink-100",
+      bg: "bg-pink-100 dark:bg-pink-900/30",
     },
   ];
 
@@ -77,7 +106,7 @@ export default async function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                <div className="text-3xl font-bold text-slate-900 dark:text-white transition-all">
                   {card.value.toLocaleString()}
                 </div>
               </CardContent>
@@ -107,7 +136,7 @@ export default async function AdminDashboard() {
                         {day.count}
                       </div>
                       <div 
-                        className="w-full bg-blue-100 hover:bg-blue-600 rounded-t-md transition-colors"
+                        className="w-full bg-blue-100 dark:bg-blue-900/50 hover:bg-blue-600 dark:hover:bg-blue-500 rounded-t-md transition-all duration-500"
                         style={{ height }}
                       />
                       <div className="text-xs text-slate-500 mt-2 truncate w-full text-center">
