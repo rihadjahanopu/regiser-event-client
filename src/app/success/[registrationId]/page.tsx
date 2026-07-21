@@ -188,7 +188,7 @@ export default function SuccessPage() {
   const verifyUrl = typeof window !== 'undefined' ? `${window.location.origin}/verify/${data.registrationId}` : "";
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 flex flex-col items-center print:bg-white print:py-0">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8 px-4 flex flex-col items-center print:bg-white print:py-0">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -205,23 +205,23 @@ export default function SuccessPage() {
         {/* Ticket Card */}
         <div ref={ticketRef} className="rounded-xl overflow-hidden border-2 border-slate-200 shadow-2xl bg-white">
           {/* Header */}
-          <div className="bg-blue-600 p-6 text-white flex justify-between items-center">
+          <div className="bg-blue-600 p-4 sm:p-6 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div className="flex items-center space-x-4">
               <div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center p-1 shadow-sm shrink-0">
                 <img src="/bangladesh-anjumane-talamije-islamia-seeklogo.png" alt="Logo" className="w-full h-full object-contain" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight max-w-[200px] sm:max-w-full">Bangladesh Anjumane Talamije Islamia</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight leading-tight">Bangladesh Anjumane Talamije Islamia</h2>
                 <p className="text-blue-100 text-sm opacity-90">Participant Ticket</p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-sm font-medium uppercase tracking-wider text-blue-200">Ticket No.</p>
-              <p className="text-xl font-bold font-mono">{data.ticketNumber}</p>
+            <div className="text-right shrink-0">
+              <p className="text-xs sm:text-sm font-medium uppercase tracking-wider text-blue-200">Ticket No.</p>
+              <p className="text-lg sm:text-xl font-bold font-mono">{data.ticketNumber}</p>
             </div>
           </div>
           
-          <div className="p-8 relative overflow-hidden">
+          <div className="p-4 sm:p-8 relative overflow-hidden">
             {/* Watermark / Hallmark */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none">
               <img src="/bangladesh-anjumane-talamije-islamia-seeklogo.png" alt="Watermark" className="w-80 h-80 object-contain" />

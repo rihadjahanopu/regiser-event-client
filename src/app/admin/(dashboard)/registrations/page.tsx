@@ -221,7 +221,7 @@ export default function RegistrationsPage() {
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Registrations</h1>
           <p className="text-slate-500">Manage all event participants ({total} total)</p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={exportExcel} disabled={exportLoading === "excel"}>
             {exportLoading === "excel" ? <PdfLoader className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
             Excel
@@ -354,8 +354,8 @@ export default function RegistrationsPage() {
         
         {/* Pagination */}
         <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800">
-          <div className="text-sm text-slate-500">
-            Showing {Math.min((page - 1) * 10 + 1, total)} to {Math.min(page * 10, total)} of {total} entries
+          <div className="text-xs sm:text-sm text-slate-500">
+            Showing {Math.min((page - 1) * 10 + 1, total)}–{Math.min(page * 10, total)} of {total}
           </div>
           <div className="flex space-x-2">
             <Button 

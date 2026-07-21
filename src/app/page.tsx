@@ -120,10 +120,10 @@ export default function RegistrationPage() {
   };
 
   return (
-    <div className="h-screen w-full flex overflow-hidden bg-slate-950">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-slate-950">
 
       {/* ─── Left Panel ─── */}
-      <div className="hidden lg:flex lg:w-2/5 xl:w-1/3 flex-col relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-2/5 xl:w-1/3 flex-col relative">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900" />
         {/* Animated circles */}
@@ -206,7 +206,7 @@ export default function RegistrationPage() {
       </div>
 
       {/* ─── Right Panel ─── */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-slate-900">
+      <div className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-900">
 
         {/* Mobile header */}
         <div className="lg:hidden flex items-center justify-between px-6 py-4 border-b bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
@@ -229,8 +229,8 @@ export default function RegistrationPage() {
         </div>
 
         {/* Form area — scrollable */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="min-h-full flex flex-col justify-center p-6 md:p-10 max-w-xl mx-auto w-full">
+        <div className="flex-1">
+          <div className="flex flex-col justify-center p-5 sm:p-8 md:p-10 max-w-xl mx-auto w-full py-6">
 
             {/* Event Cover Image */}
             {coverUrl && (
