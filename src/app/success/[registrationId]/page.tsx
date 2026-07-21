@@ -105,34 +105,27 @@ export default function SuccessPage() {
       doc.setFontSize(16);
       doc.text((data.fullName || "").toUpperCase(), 16, 45);
 
-      // Details — only draw if value is non-empty
-      const drawLabelValue = (label: string, value: string | undefined | null, x: number, y: number, maxWidth?: number) => {
-        const safeValue = (value || "").trim();
-        if (!safeValue) return; // skip entirely if empty
-        try {
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(7);
-          doc.setTextColor(100, 116, 139);
-          doc.text(label, x, y);
-
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(9);
-          doc.setTextColor(15, 23, 42);
-          // Truncate text if maxWidth provided to prevent overlap
-          const displayValue = maxWidth
-            ? doc.splitTextToSize(safeValue, maxWidth)[0]
-            : safeValue;
-          doc.text(displayValue, x, y + 5);
-        } catch (e) {
-          console.error(`Failed to draw field ${label}:`, e);
-        }
+      // Details — only draw if value is non-empty; skip label+value entirely if empty
+      const drawLabelValue = (label: string, value: string | undefined | null, x: number, y: number) => {
+        const safeValue = String(value ?? "").trim();
+        if (!safeValue) return; // empty → skip entirely (no "-", no label)
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7);
+        doc.setTextColor(100, 116, 139);
+        doc.text(label, x, y);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(15, 23, 42);
+        doc.text(safeValue, x, y + 5);
       };
 
-      // Determine how wide the institution name can be (shrink if optional fields exist)
-      const hasOptionalAcademic = !!(data.passingYear?.trim() || data.gradeGpa?.trim());
-      const institutionMaxWidth = hasOptionalAcademic ? 58 : 115;
+      // Truncate institution name manually to avoid overlap when optional fields exist
+      const hasOptionalAcademic = !!(String(data.passingYear ?? "").trim() || String(data.gradeGpa ?? "").trim());
+      const institutionName = hasOptionalAcademic
+        ? (data.schoolName || "").slice(0, 20) + ((data.schoolName || "").length > 20 ? "…" : "")
+        : (data.schoolName || "");
 
-      drawLabelValue("INSTITUTION", data.schoolName, 16, 55, institutionMaxWidth);
+      drawLabelValue("INSTITUTION", institutionName, 16, 55);
       drawLabelValue("PASSING YR", data.passingYear, 80, 55);
       drawLabelValue("GPA/GRADE", data.gradeGpa, 115, 55);
       drawLabelValue("MOBILE", data.mobile, 16, 68);
