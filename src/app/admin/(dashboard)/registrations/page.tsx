@@ -224,11 +224,15 @@ export default function RegistrationsPage() {
 			const autoTable = (await import("jspdf-autotable")).default;
 
 			const doc = new jsPDF({ orientation: "landscape" });
-			doc.setFontSize(16);
-			doc.text("Registrations List", 14, 15);
+			doc.setFontSize(14); // ফন্ট সাইজ ছোট করা হলো
+			doc.text(
+				"Bangladesh Anjumane Talamije Islamia, Chhatak Uttar Upazila",
+				14,
+				15
+			);
 			doc.setFontSize(10);
 			doc.text(
-				`Generated: ${new Date().toLocaleString()} | Total: ${rows.length}`,
+				`Generated: ${new Date().toLocaleString()} | Total: ${rows.length} | Developed by Rihad`,
 				14,
 				22
 			);

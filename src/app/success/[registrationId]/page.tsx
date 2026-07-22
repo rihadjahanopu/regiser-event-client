@@ -258,7 +258,7 @@ export default function SuccessPage() {
 								/>
 							</div>
 							<div>
-								<h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight leading-tight">
+								<h2 className="text-sm sm:text-xl md:text-2xl font-bold tracking-tight leading-tight">
 									Bangladesh Anjumane Talamije Islamia
 									<br />
 									Chhatak Uttar Upazila
