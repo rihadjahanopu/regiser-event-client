@@ -22,6 +22,9 @@ import {
   RotateCcw,
   Eye,
   EyeOff,
+  Award,
+  PenLine,
+  X,
 } from "lucide-react";
 import { DEFAULT_FIELD_CONFIG, type FieldConfig } from "@/lib/fieldConfig";
 
@@ -49,6 +52,22 @@ export default function SettingsPage() {
   const [fieldConfig, setFieldConfig] = useState<FieldConfig>(DEFAULT_FIELD_CONFIG);
   const [savingFieldConfig, setSavingFieldConfig] = useState(false);
 
+  // Certificate Signature state
+  const [presidentName, setPresidentName] = useState("President");
+  const [presidentTitle, setPresidentTitle] = useState("President, Chhatak Uttar");
+  const [presidentSignatureUrl, setPresidentSignatureUrl] = useState("");
+  const [secretaryName, setSecretaryName] = useState("General Secretary");
+  const [secretaryTitle, setSecretaryTitle] = useState("General Secretary, Chhatak Uttar");
+  const [secretarySignatureUrl, setSecretarySignatureUrl] = useState("");
+
+  // Signature upload state
+  const [uploadingPresidentSig, setUploadingPresidentSig] = useState(false);
+  const [uploadingSecretarySig, setUploadingSecretarySig] = useState(false);
+  const [deletingPresidentSig, setDeletingPresidentSig] = useState(false);
+  const [deletingSecretarySig, setDeletingSecretarySig] = useState(false);
+  const presidentSigInputRef = useRef<HTMLInputElement>(null);
+  const secretarySigInputRef = useRef<HTMLInputElement>(null);
+
   const fetchSettings = async () => {
     setLoading(true);
     try {
@@ -63,6 +82,12 @@ export default function SettingsPage() {
         setEventStartTime(d.eventStartTime || "");
         setOrganiserContact(d.organiserContact || "");
         setShowCountdown(d.showCountdown ?? true);
+        setPresidentName(d.presidentName || "President");
+        setPresidentTitle(d.presidentTitle || "President, Chhatak Uttar");
+        setPresidentSignatureUrl(d.presidentSignatureUrl || "");
+        setSecretaryName(d.secretaryName || "General Secretary");
+        setSecretaryTitle(d.secretaryTitle || "General Secretary, Chhatak Uttar");
+        setSecretarySignatureUrl(d.secretarySignatureUrl || "");
         if (d.fieldConfig) {
           // Normalise legacy boolean format or new object format
           const raw = d.fieldConfig as Record<string, any>;
@@ -124,6 +149,12 @@ export default function SettingsPage() {
         eventStartTime,
         organiserContact,
         showCountdown,
+        presidentName,
+        presidentTitle,
+        presidentSignatureUrl,
+        secretaryName,
+        secretaryTitle,
+        secretarySignatureUrl,
       });
 
       if (res.data.success) {
@@ -192,6 +223,91 @@ export default function SettingsPage() {
       ...prev,
       [fieldName]: { ...prev[fieldName], enabled: !prev[fieldName].enabled },
     }));
+  };
+
+  // ── Signature Upload Handlers ────────────────────────────────────────────
+  const handlePresidentSignatureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPresidentSig(true);
+    const formData = new FormData();
+    formData.append("signature", file);
+    try {
+      const res = await axios.post("/api/admin/settings/signature/president", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.data.success) {
+        setPresidentSignatureUrl(res.data.data.presidentSignatureUrl);
+        toast.success("President signature uploaded!");
+      } else {
+        toast.error(res.data.error);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to upload signature");
+    } finally {
+      setUploadingPresidentSig(false);
+      if (presidentSigInputRef.current) presidentSigInputRef.current.value = "";
+    }
+  };
+
+  const handlePresidentSignatureDelete = async () => {
+    if (!window.confirm("Delete president signature?")) return;
+    setDeletingPresidentSig(true);
+    try {
+      const res = await axios.delete("/api/admin/settings/signature/president");
+      if (res.data.success) {
+        setPresidentSignatureUrl("");
+        toast.success("President signature removed");
+      } else {
+        toast.error(res.data.error);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to delete signature");
+    } finally {
+      setDeletingPresidentSig(false);
+    }
+  };
+
+  const handleSecretarySignatureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingSecretarySig(true);
+    const formData = new FormData();
+    formData.append("signature", file);
+    try {
+      const res = await axios.post("/api/admin/settings/signature/secretary", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.data.success) {
+        setSecretarySignatureUrl(res.data.data.secretarySignatureUrl);
+        toast.success("Secretary signature uploaded!");
+      } else {
+        toast.error(res.data.error);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to upload signature");
+    } finally {
+      setUploadingSecretarySig(false);
+      if (secretarySigInputRef.current) secretarySigInputRef.current.value = "";
+    }
+  };
+
+  const handleSecretarySignatureDelete = async () => {
+    if (!window.confirm("Delete secretary signature?")) return;
+    setDeletingSecretarySig(true);
+    try {
+      const res = await axios.delete("/api/admin/settings/signature/secretary");
+      if (res.data.success) {
+        setSecretarySignatureUrl("");
+        toast.success("Secretary signature removed");
+      } else {
+        toast.error(res.data.error);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to delete signature");
+    } finally {
+      setDeletingSecretarySig(false);
+    }
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -486,6 +602,186 @@ export default function SettingsPage() {
                   }`}
                 />
               </button>
+            </div>
+
+            {/* Signature & Authority Management */}
+            <div className="border-t border-slate-200 dark:border-slate-800 pt-5 space-y-4">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                <Award className="w-4 h-4 text-purple-600" />
+                Certificate Authorized Signatures
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-purple-50/40 dark:bg-purple-950/10 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30">
+                {/* President */}
+                <div className="space-y-3">
+                  <span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider block flex items-center gap-1.5">
+                    <PenLine className="w-3.5 h-3.5" /> President Signature
+                  </span>
+                  <div>
+                    <label className="text-xs text-slate-500 block mb-1">President Name</label>
+                    <Input
+                      placeholder="e.g. Professor Mohammad Farhadul Islam"
+                      value={presidentName}
+                      onChange={(e) => setPresidentName(e.target.value)}
+                      className="h-9 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500 block mb-1">President Title / Designation</label>
+                    <Input
+                      placeholder="e.g. President, Chhatak Uttar"
+                      value={presidentTitle}
+                      onChange={(e) => setPresidentTitle(e.target.value)}
+                      className="h-9 text-xs"
+                    />
+                  </div>
+                  {/* Signature Image Upload */}
+                  <div>
+                    <label className="text-xs text-slate-500 block mb-1.5">Signature Image Upload</label>
+                    {presidentSignatureUrl ? (
+                      <div className="relative group rounded-xl overflow-hidden border-2 border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 p-3 flex flex-col items-center gap-2">
+                        <img
+                          src={presidentSignatureUrl}
+                          alt="President signature"
+                          className="h-16 object-contain mix-blend-multiply dark:mix-blend-normal"
+                        />
+                        <div className="flex gap-2 w-full">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-xs h-7 border-purple-200 dark:border-purple-800"
+                            onClick={() => presidentSigInputRef.current?.click()}
+                            disabled={uploadingPresidentSig}
+                          >
+                            {uploadingPresidentSig ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Upload className="w-3 h-3 mr-1" />}
+                            Replace
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-7 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                            onClick={handlePresidentSignatureDelete}
+                            disabled={deletingPresidentSig}
+                          >
+                            {deletingPresidentSig ? <Loader2 className="w-3 h-3 animate-spin" /> : <X className="w-3 h-3" />}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => presidentSigInputRef.current?.click()}
+                        disabled={uploadingPresidentSig}
+                        className="w-full border-2 border-dashed border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 rounded-xl p-4 flex flex-col items-center gap-2 bg-purple-50/40 dark:bg-purple-950/10 hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-all group cursor-pointer"
+                      >
+                        {uploadingPresidentSig ? (
+                          <Loader2 className="w-6 h-6 text-purple-500 animate-spin" />
+                        ) : (
+                          <Upload className="w-6 h-6 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                        )}
+                        <span className="text-xs text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300">
+                          {uploadingPresidentSig ? "Uploading…" : "Click to upload signature image"}
+                        </span>
+                        <span className="text-[10px] text-slate-400">PNG, JPG, SVG • Transparent background recommended</span>
+                      </button>
+                    )}
+                    <input
+                      ref={presidentSigInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handlePresidentSignatureUpload}
+                    />
+                  </div>
+                </div>
+
+                {/* Secretary */}
+                <div className="space-y-3">
+                  <span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider block flex items-center gap-1.5">
+                    <PenLine className="w-3.5 h-3.5" /> Secretary Signature
+                  </span>
+                  <div>
+                    <label className="text-xs text-slate-500 block mb-1">Secretary Name</label>
+                    <Input
+                      placeholder="e.g. Shah Rezwan Hayat"
+                      value={secretaryName}
+                      onChange={(e) => setSecretaryName(e.target.value)}
+                      className="h-9 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500 block mb-1">Secretary Title / Designation</label>
+                    <Input
+                      placeholder="e.g. General Secretary, Chhatak Uttar"
+                      value={secretaryTitle}
+                      onChange={(e) => setSecretaryTitle(e.target.value)}
+                      className="h-9 text-xs"
+                    />
+                  </div>
+                  {/* Signature Image Upload */}
+                  <div>
+                    <label className="text-xs text-slate-500 block mb-1.5">Signature Image Upload</label>
+                    {secretarySignatureUrl ? (
+                      <div className="relative group rounded-xl overflow-hidden border-2 border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 p-3 flex flex-col items-center gap-2">
+                        <img
+                          src={secretarySignatureUrl}
+                          alt="Secretary signature"
+                          className="h-16 object-contain mix-blend-multiply dark:mix-blend-normal"
+                        />
+                        <div className="flex gap-2 w-full">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 text-xs h-7 border-purple-200 dark:border-purple-800"
+                            onClick={() => secretarySigInputRef.current?.click()}
+                            disabled={uploadingSecretarySig}
+                          >
+                            {uploadingSecretarySig ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Upload className="w-3 h-3 mr-1" />}
+                            Replace
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-7 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                            onClick={handleSecretarySignatureDelete}
+                            disabled={deletingSecretarySig}
+                          >
+                            {deletingSecretarySig ? <Loader2 className="w-3 h-3 animate-spin" /> : <X className="w-3 h-3" />}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => secretarySigInputRef.current?.click()}
+                        disabled={uploadingSecretarySig}
+                        className="w-full border-2 border-dashed border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 rounded-xl p-4 flex flex-col items-center gap-2 bg-purple-50/40 dark:bg-purple-950/10 hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-all group cursor-pointer"
+                      >
+                        {uploadingSecretarySig ? (
+                          <Loader2 className="w-6 h-6 text-purple-500 animate-spin" />
+                        ) : (
+                          <Upload className="w-6 h-6 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                        )}
+                        <span className="text-xs text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300">
+                          {uploadingSecretarySig ? "Uploading…" : "Click to upload signature image"}
+                        </span>
+                        <span className="text-[10px] text-slate-400">PNG, JPG, SVG • Transparent background recommended</span>
+                      </button>
+                    )}
+                    <input
+                      ref={secretarySigInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleSecretarySignatureUpload}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">

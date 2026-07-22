@@ -8,7 +8,8 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Award
 } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Registrations", href: "/admin/registrations", icon: Users },
+    { name: "Certificates", href: "/admin/certificates", icon: Award },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
