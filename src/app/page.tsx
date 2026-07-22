@@ -318,7 +318,7 @@ export default function RegistrationPage() {
 					<div className="min-h-full flex flex-col justify-center p-5 sm:p-8 md:p-10 max-w-xl mx-auto w-full py-6">
 						{/* Event Cover Image */}
 						{coverUrl && (
-							<div className="mb-6 rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-700">
+							<div className="mb-6 rounded-xl overflow-hidden  ">
 								<Image
 									src={coverUrl}
 									alt="Event Cover"
