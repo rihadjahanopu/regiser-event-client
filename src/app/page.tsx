@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/select";
 import { RegistrationFormValues, registrationSchema } from "@/lib/validations";
 import axios from "axios";
+import Image from "next/image";
 
 const STEPS = [
 	{
@@ -188,14 +189,18 @@ export default function RegistrationPage() {
 					{/* Logo / Brand */}
 					<div className="flex items-center space-x-3">
 						<div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-1 shadow-md">
-							<img
+							<Image
 								src="/bangladesh-anjumane-talamije-islamia-seeklogo.png"
 								alt="Logo"
+								width={48}
+								height={48}
 								className="w-full h-full object-contain"
 							/>
 						</div>
-						<span className="text-white font-bold text-xl tracking-tight leading-tight max-w-[200px]">
-							Bangladesh Anjumane Talamije Islamia Chhatak Uttar Upazila
+						<span className="text-white font-bold text-xl tracking-tight leading-tight max-w-[400px]">
+							Bangladesh Anjumane Talamije Islamia
+							<br />
+							Chhatak Uttar Upazila
 						</span>
 					</div>
 
@@ -282,9 +287,11 @@ export default function RegistrationPage() {
 				<div className="lg:hidden flex items-center justify-between px-6 py-4 border-b bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
 					<div className="flex items-center space-x-2">
 						<div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-0.5 border border-slate-200">
-							<img
+							<Image
 								src="/bangladesh-anjumane-talamije-islamia-seeklogo.png"
 								alt="Logo"
+								width={32}
+								height={32}
 								className="w-full h-full object-contain"
 							/>
 						</div>
@@ -312,10 +319,12 @@ export default function RegistrationPage() {
 						{/* Event Cover Image */}
 						{coverUrl && (
 							<div className="mb-6 rounded-xl overflow-hidden shadow-md border border-slate-200 dark:border-slate-700">
-								<img
+								<Image
 									src={coverUrl}
 									alt="Event Cover"
-									className="w-full h-40 object-cover"
+									width={800} // Next.js Image Component-এর জন্য width ও height প্রয়োজন
+									height={400}
+									className="w-full h-auto max-h-60 object-contain mx-auto"
 								/>
 							</div>
 						)}
