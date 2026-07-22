@@ -177,25 +177,31 @@ export default function SuccessPage() {
 			field("GROUP", data.subjectGroup, 65, 46);
 			field("DISTRICT", data.district, 100, 46);
 
-			// Row 3 — Event Schedule & Venue (if available)
+			// Row 3 — Event Schedule, Venue, Organiser Contact (side by side)
 			const eventTimeStr = [eventDetails.eventDate, eventDetails.eventStartTime]
 				.filter(Boolean)
 				.join(" @ ");
 			if (eventTimeStr) {
-				field("EVENT TIME", eventTimeStr, 14, 57);
+				field("EVENT DATE/TIME", eventTimeStr, 14, 57);
 			}
 			if (eventDetails.eventAddress) {
-				field("VENUE", eventDetails.eventAddress.slice(0, 25), 65, 57);
+				field("VENUE", eventDetails.eventAddress.slice(0, 22), 50, 57);
 			}
 			if (eventDetails.organiserContact) {
-				field("ORGANISER CONTACT", eventDetails.organiserContact.slice(0, 20), 105, 57);
+				field("HELPLINE", eventDetails.organiserContact.slice(0, 18), 108, 57);
 			}
+
+			// Divider line
+			doc.setDrawColor(226, 232, 240);
+			doc.setLineDashPattern([1, 1], 0);
+			doc.line(14, 65, 136, 65);
+			doc.setLineDashPattern([], 0);
 
 			// Footer note
 			doc.setFont("helvetica", "normal");
-			doc.setFontSize(6.5);
+			doc.setFontSize(6);
 			doc.setTextColor(148, 163, 184);
-			doc.text("Present this digital ticket at the event entry.", 14, 73);
+			doc.text("Present this ticket at the event entry. ID: " + data.registrationId, 14, 69);
 
 			// ── Right side — QR ─────────────────────────────────────────
 			doc.setFont("helvetica", "bold");
