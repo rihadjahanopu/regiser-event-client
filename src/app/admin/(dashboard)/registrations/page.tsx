@@ -223,7 +223,7 @@ export default function RegistrationsPage() {
 			const jsPDF = (await import("jspdf")).jsPDF;
 			const autoTable = (await import("jspdf-autotable")).default;
 
-			const doc = new jsPDF({ orientation: "landscape" });
+			const doc = new jsPDF({ orientation: "portrait" });
 			doc.setFontSize(14); // ফন্ট সাইজ ছোট করা হলো
 			doc.text(
 				"Bangladesh Anjumane Talamije Islamia, Chhatak Uttar Upazila",
