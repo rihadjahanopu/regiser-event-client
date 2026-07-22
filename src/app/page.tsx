@@ -43,7 +43,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { RegistrationFormValues } from "@/lib/validations";
-import { buildDynamicSchema, FieldConfig } from "@/lib/fieldConfig";
+import { buildDynamicSchema, normaliseFieldConfig, DEFAULT_FIELD_CONFIG, type FieldConfig } from "@/lib/fieldConfig";
 import axios from "axios";
 import Image from "next/image";
 
@@ -115,7 +115,7 @@ export default function RegistrationPage() {
 	const [isCutoffClosed, setIsCutoffClosed] = useState(false);
 
 	// Form Field config state
-	const [fieldConfig, setFieldConfig] = useState<Partial<FieldConfig>>({});
+	const [fieldConfig, setFieldConfig] = useState<FieldConfig>(DEFAULT_FIELD_CONFIG);
 
 	useEffect(() => {
 		axios
@@ -135,7 +135,7 @@ export default function RegistrationPage() {
 					});
 
 					if (data.fieldConfig) {
-						setFieldConfig(data.fieldConfig);
+						setFieldConfig(normaliseFieldConfig(data.fieldConfig));
 					}
 
 					if (data.eventDate) {
@@ -493,6 +493,7 @@ export default function RegistrationPage() {
 											{/* ── Step 1: Personal ── */}
 											{step === 0 && (
 												<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+													{fieldConfig.fullName?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="fullName"
@@ -500,7 +501,11 @@ export default function RegistrationPage() {
 															<FormItem className="sm:col-span-2">
 																<FormLabel>
 																	Full Name{" "}
-																	<span className="text-red-500">*</span>
+																	{fieldConfig.fullName?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -513,14 +518,21 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.mobile?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="mobile"
 														render={({ field }) => (
 															<FormItem>
 																<FormLabel>
-																	Mobile <span className="text-red-500">*</span>
+																	Mobile{" "}
+																	{fieldConfig.mobile?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<div className="relative">
@@ -536,7 +548,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.email?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="email"
@@ -544,12 +558,10 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Email{" "}
-																	{fieldConfig.email ? (
+																	{fieldConfig.email?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<FormControl>
@@ -567,14 +579,21 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.gender?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="gender"
 														render={({ field }) => (
 															<FormItem className="sm:col-span-2">
 																<FormLabel>
-																	Gender <span className="text-red-500">*</span>
+																	Gender{" "}
+																	{fieldConfig.gender?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<div className="grid grid-cols-3 gap-3">
 																	{["Male", "Female", "Other"].map((g) => (
@@ -595,12 +614,14 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 												</div>
 											)}
 
 											{/* ── Step 2: Academic ── */}
 											{step === 1 && (
 												<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+													{fieldConfig.schoolName?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="schoolName"
@@ -608,7 +629,11 @@ export default function RegistrationPage() {
 															<FormItem className="sm:col-span-2">
 																<FormLabel>
 																	School / College Name{" "}
-																	<span className="text-red-500">*</span>
+																	{fieldConfig.schoolName?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -621,14 +646,21 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.class?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="class"
 														render={({ field }) => (
 															<FormItem>
 																<FormLabel>
-																	Class <span className="text-red-500">*</span>
+																	Class{" "}
+																	{fieldConfig.class?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -641,7 +673,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.subjectGroup?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="subjectGroup"
@@ -649,7 +683,11 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Subject / Group{" "}
-																	<span className="text-red-500">*</span>
+																	{fieldConfig.subjectGroup?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<Select
 																	onValueChange={field.onChange}
@@ -678,7 +716,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.rollNumber?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="rollNumber"
@@ -686,12 +726,10 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Roll Number{" "}
-																	{fieldConfig.rollNumber ? (
+																	{fieldConfig.rollNumber?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<FormControl>
@@ -705,7 +743,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.regNumber?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="regNumber"
@@ -713,12 +753,10 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Registration Number{" "}
-																	{fieldConfig.regNumber ? (
+																	{fieldConfig.regNumber?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<FormControl>
@@ -732,7 +770,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.passingYear?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="passingYear"
@@ -740,12 +780,10 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Passing Year{" "}
-																	{fieldConfig.passingYear ? (
+																	{fieldConfig.passingYear?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<FormControl>
@@ -759,7 +797,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.gradeGpa?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="gradeGpa"
@@ -767,12 +807,10 @@ export default function RegistrationPage() {
 															<FormItem className="sm:col-span-2">
 																<FormLabel>
 																	Grade / GPA{" "}
-																	{fieldConfig.gradeGpa ? (
+																	{fieldConfig.gradeGpa?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<FormControl>
@@ -786,12 +824,14 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 												</div>
 											)}
 
 											{/* ── Step 3: Location ── */}
 											{step === 2 && (
 												<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+													{fieldConfig.address?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="address"
@@ -799,7 +839,11 @@ export default function RegistrationPage() {
 															<FormItem className="sm:col-span-2">
 																<FormLabel>
 																	Address{" "}
-																	<span className="text-red-500">*</span>
+																	{fieldConfig.address?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -812,7 +856,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.district?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="district"
@@ -820,7 +866,11 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	District{" "}
-																	<span className="text-red-500">*</span>
+																	{fieldConfig.district?.required ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">(Optional)</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -833,7 +883,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.bloodGroup?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="bloodGroup"
@@ -841,12 +893,10 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Blood Group{" "}
-																	{fieldConfig.bloodGroup ? (
+																	{fieldConfig.bloodGroup?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<Select
@@ -880,7 +930,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.fatherName?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="fatherName"
@@ -888,12 +940,10 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Father&apos;s Name{" "}
-																	{fieldConfig.fatherName ? (
+																	{fieldConfig.fatherName?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<FormControl>
@@ -907,7 +957,9 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 
+													{fieldConfig.emergencyContact?.enabled !== false && (
 													<FormField
 														control={form.control}
 														name="emergencyContact"
@@ -915,12 +967,10 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Emergency Contact{" "}
-																	{fieldConfig.emergencyContact ? (
+																	{fieldConfig.emergencyContact?.required ? (
 																		<span className="text-red-500">*</span>
 																	) : (
-																		<span className="text-slate-400 text-xs">
-																			(Optional)
-																		</span>
+																		<span className="text-slate-400 text-xs">(Optional)</span>
 																	)}
 																</FormLabel>
 																<FormControl>
@@ -937,6 +987,7 @@ export default function RegistrationPage() {
 															</FormItem>
 														)}
 													/>
+													)}
 												</div>
 											)}
 										</motion.div>
