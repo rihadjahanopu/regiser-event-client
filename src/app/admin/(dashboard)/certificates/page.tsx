@@ -304,64 +304,70 @@ export default function CertificatesPage() {
 		container.style.overflow = "hidden";
 
 		container.innerHTML = `
-			<div style="width: 1123px; height: 794px; background: #ffffff; padding: 25px 35px 35px 35px; box-sizing: border-box; font-family: 'Playfair Display', Georgia, serif; position: relative; border: 6px solid #16a34a; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; margin: 0; color: #0f172a;">
-				<!-- Inner Green Border -->
-				<div style="position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 1.5px solid #16a34a; pointer-events: none; z-index: 1;"></div>
-				
-				<!-- Ultra-Faint Single Centered Watermark Seal -->
-				<svg width="100%" height="100%" style="position: absolute; top:0; left:0; pointer-events:none; opacity: 0.04; z-index:0;" xmlns="http://www.w3.org/2000/svg">
-					<circle cx="561" cy="397" r="280" fill="none" stroke="#16a34a" stroke-width="2"/>
-					<circle cx="561" cy="397" r="220" fill="none" stroke="#16a34a" stroke-width="1.5"/>
-					<circle cx="561" cy="397" r="160" fill="none" stroke="#16a34a" stroke-width="1.2"/>
-					<circle cx="561" cy="397" r="100" fill="none" stroke="#16a34a" stroke-width="1"/>
+			<div style="width: 1123px; height: 794px; background: #ffffff; padding: 25px 35px 35px 35px; box-sizing: border-box; font-family: 'Playfair Display', Georgia, serif; position: relative; border: 8px solid #14532d; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; margin: 0; color: #0f172a;">
+				<!-- Inner Gold Foil Border -->
+				<div style="position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid #d97706; pointer-events: none; z-index: 1;"></div>
+				<div style="position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px; border: 1px solid #166534; pointer-events: none; z-index: 1;"></div>
+
+				<!-- Corner Golden Flourish Ornaments -->
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; top: 16px; left: 16px; z-index: 2; pointer-events: none;">
+					<path d="M5,5 L45,5 L45,12 L12,12 L12,45 L5,45 Z" fill="#d97706"/>
+					<circle cx="20" cy="20" r="4" fill="#166534"/>
 				</svg>
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; top: 16px; right: 16px; z-index: 2; pointer-events: none;">
+					<path d="M95,5 L55,5 L55,12 L88,12 L88,45 L95,45 Z" fill="#d97706"/>
+					<circle cx="80" cy="20" r="4" fill="#166534"/>
+				</svg>
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; bottom: 16px; left: 16px; z-index: 2; pointer-events: none;">
+					<path d="M5,95 L45,95 L45,88 L12,88 L12,55 L5,55 Z" fill="#d97706"/>
+					<circle cx="20" cy="80" r="4" fill="#166534"/>
+				</svg>
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; bottom: 16px; right: 16px; z-index: 2; pointer-events: none;">
+					<path d="M95,95 L55,95 L55,88 L88,88 L88,55 L95,55 Z" fill="#d97706"/>
+					<circle cx="80" cy="80" r="4" fill="#166534"/>
+				</svg>
+				
+				<!-- Watermark Seal & Logo -->
+				<svg width="100%" height="100%" style="position: absolute; top:0; left:0; pointer-events:none; opacity: 0.035; z-index:0;" xmlns="http://www.w3.org/2000/svg">
+					<circle cx="561" cy="397" r="280" fill="none" stroke="#16a34a" stroke-width="2"/>
+					<circle cx="561" cy="397" r="220" fill="none" stroke="#d97706" stroke-width="1.5"/>
+					<circle cx="561" cy="397" r="160" fill="none" stroke="#16a34a" stroke-width="1.2"/>
+					<circle cx="561" cy="397" r="100" fill="none" stroke="#d97706" stroke-width="1"/>
+				</svg>
+
+				<!-- Rounded Center Watermark Logo -->
+				<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 340px; height: 340px; opacity: 0.055; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center;">
+					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" />
+				</div>
 
 				<!-- Header Section -->
 				<div style="text-align: center; margin-top: 5px; position: relative; z-index: 2;">
-					<!-- Left Verified Badge -->
-					<div style="position: absolute; top: 0px; left: 20px; text-align: center;">
-						<svg width="55" height="55" viewBox="0 0 100 100">
-							<polygon points="50,5 64,18 82,18 88,36 100,50 88,64 82,82 64,82 50,95 36,82 18,82 12,64 0,50 12,36 18,18 36,18" fill="none" stroke="#d4af37" stroke-width="3"/>
-							<circle cx="50" cy="50" r="32" fill="#16a34a" opacity="0.1"/>
-							<circle cx="50" cy="50" r="28" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="2 1"/>
-							<text x="50" y="46" font-family="sans-serif" font-size="8" font-weight="bold" fill="#15803d" text-anchor="middle">VERIFIED</text>
-							<text x="50" y="56" font-family="sans-serif" font-size="5.5" font-weight="bold" fill="#d4af37" text-anchor="middle">OFFICIAL</text>
-							<text x="50" y="64" font-family="sans-serif" font-size="5" fill="#15803d" text-anchor="middle">SECURITY</text>
-						</svg>
-					</div>
-
-					<!-- Right Tamper Badge -->
-					<div style="position: absolute; top: 0px; right: 20px; text-align: center;">
-						<svg width="55" height="55" viewBox="0 0 100 100">
-							<circle cx="50" cy="50" r="46" fill="none" stroke="#16a34a" stroke-width="2.5"/>
-							<circle cx="50" cy="50" r="38" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-dasharray="3 2"/>
-							<circle cx="50" cy="50" r="30" fill="#16a34a" opacity="0.08"/>
-							<text x="50" y="44" font-family="sans-serif" font-size="7" font-weight="bold" fill="#15803d" text-anchor="middle">TAMPER</text>
-							<text x="50" y="54" font-family="sans-serif" font-size="7" font-weight="bold" fill="#15803d" text-anchor="middle">EVIDENT</text>
-							<text x="50" y="63" font-family="sans-serif" font-size="5.5" fill="#d4af37" text-anchor="middle">PROTECTED</text>
-						</svg>
-					</div>
-
-					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="height: 64px; margin-bottom: 6px; display: inline-block;" />
-					<h1 style="font-size: 21px; color: #1e293b; font-weight: bold; margin: 0; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 0.5px;">${orgName}</h1>
-					<h2 style="font-size: 13px; color: #475569; margin: 3px 0 0 0; font-family: 'Playfair Display', Georgia, serif; font-weight: 500;">${subHeader}</h2>
+					<div style="font-family: 'Traditional Arabic', 'Amiri', 'DejaVu Sans', serif; font-size: 22px; color: #15803d; font-weight: bold; margin-bottom: 12px; line-height: 1;">﷽</div>
+					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="height: 68px; width: 68px; border-radius: 50%; object-fit: contain; margin-bottom: 6px; display: inline-block; background: #ffffff; padding: 2px; border: 2px solid #d97706; box-shadow: 0 2px 8px rgba(0,0,0,0.06);" />
+					<h1 style="font-size: 22px; color: #0f172a; font-weight: bold; margin: 0; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 0.8px;">${orgName}</h1>
+					<h2 style="font-size: 13.5px; color: #475569; margin: 3px 0 0 0; font-family: 'Playfair Display', Georgia, serif; font-weight: 500; letter-spacing: 0.5px;">${subHeader}</h2>
 				</div>
 
 				<!-- Main Body Content -->
-				<div style="text-align: center; margin: 8px 0; position: relative; z-index: 2;">
-					<div style="font-size: 42px; font-weight: 700; color: #581c87; margin-bottom: 8px; font-family: 'Playfair Display', Georgia, serif;">
+				<div style="text-align: center; margin: 6px 0; position: relative; z-index: 2;">
+					<div style="font-size: 38px; font-weight: 700; color: #581c87; margin-bottom: 4px; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 1.5px; text-transform: uppercase;">
 						${certTitle}
 					</div>
-					<div style="font-size: 17px; color: #374151; font-style: italic; margin-bottom: 8px; font-family: 'Playfair Display', Georgia, serif;">
+					<div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
+						<div style="width: 70px; height: 1px; background: linear-gradient(to right, transparent, #d97706);"></div>
+						<span style="color: #d97706; font-size: 12px;">✦</span>
+						<div style="width: 70px; height: 1px; background: linear-gradient(to left, transparent, #d97706);"></div>
+					</div>
+					<div style="font-size: 17px; color: #475569; font-style: italic; margin-bottom: 8px; font-family: 'Playfair Display', Georgia, serif;">
 						This is to certify that
 					</div>
-					<div style="font-size: 52px; font-weight: 400; color: #4c1d95; margin-bottom: 8px; font-family: 'Great Vibes', cursive, Georgia, serif; line-height: 1.1;">
+					<div style="font-size: 54px; font-weight: 400; color: #3b0764; margin-bottom: 8px; font-family: 'Great Vibes', cursive, Georgia, serif; line-height: 1.1;">
 						${certData.fullName}
 					</div>
 					<div style="font-size: 17px; color: #4b5563; max-width: 850px; margin: 0 auto; line-height: 1.5; font-family: 'Playfair Display', Georgia, serif;">
 						successfully registered and participated in the event
 					</div>
-					<div style="font-size: 28px; font-weight: 700; color: #111827; margin: 8px 0 6px 0; font-family: 'Playfair Display', Georgia, serif;">
+					<div style="font-size: 28px; font-weight: 700; color: #0f172a; margin: 8px 0 6px 0; font-family: 'Playfair Display', Georgia, serif;">
 						${certData.eventName}
 					</div>
 					<div style="font-size: 17px; color: #374151; font-style: italic; font-family: 'Playfair Display', Georgia, serif;">
@@ -369,38 +375,40 @@ export default function CertificatesPage() {
 					</div>
 				</div>
 
-				<!-- Verification QR Code & Hash -->
-				<div style="text-align: center; margin-bottom: 6px; position: relative; z-index: 2;">
-					<div style="font-size: 9.5px; font-family: sans-serif; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 3px;">
-						VERIFICATION QR CODE
+				<!-- Verification QR Code & Security Badge Frame -->
+				<div style="text-align: center; margin-bottom: 4px; position: relative; z-index: 2;">
+					<div style="font-size: 9px; font-family: sans-serif; color: #d97706; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 4px; text-transform: uppercase;">
+						Official Security Verification
 					</div>
-					<div id="pdf-qr-box-${certData.registrationId}" style="display: inline-block; background: #fff; padding: 3px; border: 1px solid #e2e8f0; border-radius: 4px;"></div>
-					<div style="font-family: monospace; font-size: 10.5px; color: #475569; font-weight: 600; margin-top: 3px;">
+					<div id="pdf-qr-box-${certData.registrationId}" style="display: inline-block; background: #ffffff; padding: 5px; border: 2px solid #f59e0b; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.04);"></div>
+					<div style="font-family: 'Courier New', monospace; font-size: 11px; color: #1e293b; font-weight: 700; margin-top: 4px; letter-spacing: 0.5px;">
 						ID: ${certData.certificateId}
 					</div>
-					<div style="font-family: monospace; font-size: 8.5px; color: #16a34a; font-weight: 700; margin-top: 2px;">
+					<div style="font-family: 'Courier New', monospace; font-size: 8.5px; color: #16a34a; font-weight: 700; margin-top: 2px;">
 						${secHash}
 					</div>
 				</div>
 
 				<!-- Bottom Signatures -->
-				<div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 50px 10px 50px; margin-bottom: 12px; position: relative; z-index: 2;">
+				<div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 60px 0 60px; position: relative; z-index: 2;">
 					<!-- Left Signature (President) -->
-					<div style="text-align: center; width: 250px;">
-						<div style="height: 44px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
-							${presSigData ? `<img src="${presSigData}" style="height: 40px; max-width: 190px; object-fit: contain;" />` : `<svg viewBox="0 0 100 30" width="80" style="stroke: #64748b; fill: none; stroke-width: 1.2;"><path d="M10,20 Q30,5 50,22 T90,12"/></svg>`}
+					<div style="text-align: center; width: 240px; margin-bottom: 50px;">
+						<div style="height: 48px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
+							${presSigData ? `<img src="${presSigData}" style="height: 44px; max-width: 190px; object-fit: contain;" />` : ''}
 						</div>
-						<div style="font-size: 13px; font-weight: bold; color: #1e293b; margin-top: 4px; font-family: 'Playfair Display', Georgia, serif;">${presName}</div>
-						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif;">${presTitle}</div>
+						<div style="border-top: 1.5px solid #cbd5e1; margin: 4px auto 6px auto; width: 170px;"></div>
+						<div style="font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: 'Playfair Display', Georgia, serif;">${presName}</div>
+						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${presTitle}</div>
 					</div>
 
 					<!-- Right Signature (Secretary) -->
-					<div style="text-align: center; width: 250px;">
-						<div style="height: 44px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
-							${secrSigData ? `<img src="${secrSigData}" style="height: 40px; max-width: 190px; object-fit: contain;" />` : `<svg viewBox="0 0 100 30" width="80" style="stroke: #64748b; fill: none; stroke-width: 1.2;"><path d="M15,15 Q35,25 45,10 T85,18"/></svg>`}
+					<div style="text-align: center; width: 240px; margin-bottom: 50px;">
+						<div style="height: 48px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
+							${secrSigData ? `<img src="${secrSigData}" style="height: 44px; max-width: 190px; object-fit: contain;" />` : ''}
 						</div>
-						<div style="font-size: 13px; font-weight: bold; color: #1e293b; margin-top: 4px; font-family: 'Playfair Display', Georgia, serif;">${secrName}</div>
-						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif;">${secrTitle}</div>
+						<div style="border-top: 1.5px solid #cbd5e1; margin: 4px auto 6px auto; width: 170px;"></div>
+						<div style="font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: 'Playfair Display', Georgia, serif;">${secrName}</div>
+						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${secrTitle}</div>
 					</div>
 				</div>
 			</div>
@@ -408,32 +416,93 @@ export default function CertificatesPage() {
 
 		document.body.appendChild(container);
 
-		// Generate QR Code into container
+		// Generate High-Density QR Code canvas
 		const qrBox = container.querySelector(`#pdf-qr-box-${certData.registrationId}`);
 		if (qrBox) {
 			const qrCanvas = document.createElement("canvas");
-			await QRCodeMod.default.toCanvas(qrCanvas, qrValue, { width: 85, margin: 0 });
+			await QRCodeMod.default.toCanvas(qrCanvas, qrValue, {
+				width: 360,
+				margin: 1,
+				color: {
+					dark: "#1e1b4b",
+					light: "#ffffff",
+				},
+				errorCorrectionLevel: "H",
+			});
+			qrCanvas.style.width = "85px";
+			qrCanvas.style.height = "85px";
+			qrCanvas.style.display = "block";
 			qrBox.appendChild(qrCanvas);
 		}
 
 		try {
 			const targetEl = container.firstElementChild as HTMLElement;
-			const imgData = await htmlToImageMod.toJpeg(targetEl, {
-				quality: 0.98,
-				pixelRatio: 2,
+
+			// Monkey-patch to suppress cross-origin cssRules SecurityError
+			// html-to-image internally iterates document.styleSheets; cross-origin sheets throw
+			const patchedGetStyleSheets = () => {
+				const sheets: CSSStyleSheet[] = [];
+				for (const sheet of Array.from(document.styleSheets)) {
+					try {
+						// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+						sheet.cssRules; // test access — throws if cross-origin
+						sheets.push(sheet);
+					} catch {
+						// skip cross-origin sheet silently
+					}
+				}
+				return sheets;
+			};
+
+			const imgData = await htmlToImageMod.toPng(targetEl, {
+				quality: 1.0,
+				pixelRatio: 4,
 				width: 1123,
 				height: 794,
-				skipFonts: true,
-				fontEmbedCSS: "",
+				cacheBust: true,
+				skipFonts: false,
+				filter: (node: HTMLElement) => {
+					// Skip external <link rel="stylesheet"> tags — these are cross-origin
+					// and cause "Cannot access cssRules" SecurityError in html-to-image
+					if (
+						node.tagName === "LINK" &&
+						(node as HTMLLinkElement).rel === "stylesheet" &&
+						!(node as HTMLLinkElement).href?.startsWith(window.location.origin)
+					) {
+						return false;
+					}
+					return true;
+				},
+				// Provide a custom font embed function that safely skips cross-origin sheets
+				fontEmbedCSS: (() => {
+					try {
+						const safeSheets = patchedGetStyleSheets();
+						return safeSheets
+							.map((sheet) => {
+								try {
+									return Array.from(sheet.cssRules)
+										.map((r) => r.cssText)
+										.join("\n");
+								} catch {
+									return "";
+								}
+							})
+							.join("\n");
+					} catch {
+						return "";
+					}
+				})(),
 			});
+
 
 			const pdf = new jsPDFMod({
 				orientation: "landscape",
 				unit: "mm",
 				format: "a4",
+				compress: true,
 			});
 
-			pdf.addImage(imgData, "JPEG", 0, 0, 297, 210);
+			pdf.addImage(imgData, "PNG", 0, 0, 297, 210, undefined, "FAST");
 			pdf.save(`Certificate-${certData.fullName.replace(/\s+/g, "_")}-${certData.certificateId}.pdf`);
 			toast.success("PDF downloaded successfully!");
 		} catch (error) {
@@ -519,8 +588,14 @@ export default function CertificatesPage() {
 			<style>{`
 				@media print {
 					@page {
-						size: landscape;
+						size: A4 landscape;
+						margin: 0mm;
+					}
+					html, body {
+						width: 297mm;
+						height: 210mm;
 						margin: 0;
+						padding: 0;
 					}
 					body * {
 						visibility: hidden;
@@ -530,42 +605,38 @@ export default function CertificatesPage() {
 						visibility: visible;
 					}
 					#print-capture-area {
-						position: absolute;
+						position: fixed;
 						left: 0;
 						top: 0;
 						width: 297mm;
-						height: 210mm;
 						margin: 0;
 						padding: 0;
-						background-color: white !important;
+						background: white !important;
 					}
 					.print-certificate-page {
 						width: 297mm;
 						height: 210mm;
+						max-height: 210mm;
 						box-sizing: border-box;
 						page-break-after: always;
 						break-after: page;
-						border: 5px solid #16a34a !important;
+						border: 7px solid #14532d !important;
 						background: #ffffff !important;
 						-webkit-print-color-adjust: exact;
 						print-color-adjust: exact;
 						display: flex !important;
 						flex-direction: column;
 						justify-content: space-between;
-						padding: 25px;
+						padding: 18px 22px;
 						position: relative;
 						overflow: hidden;
 						margin: 0;
+						color: #0f172a;
 					}
-					.print-border-inner {
-						position: absolute;
-						top: 8px;
-						left: 8px;
-						right: 8px;
-						bottom: 8px;
-						border: 1.5px solid #16a34a;
-						pointer-events: none;
-					}
+					.print-certificate-page h1 { font-size: 18px !important; margin: 0 !important; }
+					.print-certificate-page h2 { font-size: 32px !important; margin: 2px 0 !important; }
+					.print-certificate-page h3 { font-size: 40px !important; margin: 3px 0 !important; }
+					.print-certificate-page h4 { font-size: 20px !important; margin: 2px 0 !important; }
 				}
 			`}</style>
 
@@ -573,95 +644,116 @@ export default function CertificatesPage() {
 			{printCerts.length > 0 && (
 				<div id="print-capture-area" className="hidden print:block">
 					{printCerts.map((cert) => (
-						<div key={cert.certificateId} className="print-certificate-page">
-							<div className="print-border-inner"></div>
-							
-							{/* Centered Circular Grid Watermark SVG */}
-							<svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', opacity: 0.06, zIndex: 0 }}>
-								<defs>
-									<pattern id={`print-grid-${cert.certificateId}`} width="120" height="120" patternUnits="userSpaceOnUse">
-										<circle cx="60" cy="60" r="55" fill="none" stroke="#16a34a" strokeWidth="0.8"/>
-										<circle cx="60" cy="60" r="42" fill="none" stroke="#16a34a" strokeWidth="0.6"/>
-										<circle cx="60" cy="60" r="28" fill="none" stroke="#16a34a" strokeWidth="0.5"/>
-										<circle cx="60" cy="60" r="14" fill="none" stroke="#16a34a" strokeWidth="0.4"/>
-									</pattern>
-								</defs>
-								<rect width="100%" height="100%" fill={`url(#print-grid-${cert.certificateId})`} />
+						<div key={cert.certificateId} className="print-certificate-page font-serif-title">
+							{/* Inner Gold Foil Borders */}
+							<div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', bottom: '10px', border: '2px solid #d97706', pointerEvents: 'none', zIndex: 1 }}></div>
+							<div style={{ position: 'absolute', top: '14px', left: '14px', right: '14px', bottom: '14px', border: '1px solid #166534', pointerEvents: 'none', zIndex: 1 }}></div>
+
+							{/* Corner Golden Flourish Ornaments */}
+							<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 2, pointerEvents: 'none' }}>
+								<path d="M5,5 L45,5 L45,12 L12,12 L12,45 L5,45 Z" fill="#d97706"/>
+								<circle cx="20" cy="20" r="4" fill="#166534"/>
+							</svg>
+							<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 2, pointerEvents: 'none' }}>
+								<path d="M95,5 L55,5 L55,12 L88,12 L88,45 L95,45 Z" fill="#d97706"/>
+								<circle cx="80" cy="20" r="4" fill="#166534"/>
+							</svg>
+							<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', bottom: '16px', left: '16px', zIndex: 2, pointerEvents: 'none' }}>
+								<path d="M5,95 L45,95 L45,88 L12,88 L12,55 L5,55 Z" fill="#d97706"/>
+								<circle cx="20" cy="80" r="4" fill="#166534"/>
+							</svg>
+							<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', bottom: '16px', right: '16px', zIndex: 2, pointerEvents: 'none' }}>
+								<path d="M95,95 L55,95 L55,88 L88,88 L88,55 L95,55 Z" fill="#d97706"/>
+								<circle cx="80" cy="80" r="4" fill="#166534"/>
 							</svg>
 
+							{/* Watermark Seal */}
+							<svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', opacity: 0.035, zIndex: 0 }} xmlns="http://www.w3.org/2000/svg">
+								<circle cx="50%" cy="50%" r="35%" fill="none" stroke="#16a34a" strokeWidth="2"/>
+								<circle cx="50%" cy="50%" r="28%" fill="none" stroke="#d97706" strokeWidth="1.5"/>
+								<circle cx="50%" cy="50%" r="20%" fill="none" stroke="#16a34a" strokeWidth="1.2"/>
+								<circle cx="50%" cy="50%" r="12%" fill="none" stroke="#d97706" strokeWidth="1"/>
+							</svg>
+
+							{/* Rounded Center Watermark Logo */}
+							<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 opacity-[0.055] pointer-events-none z-0 flex items-center justify-center">
+								<img src="/bangladesh-anjumane-talamije-islamia-seeklogo.png" className="w-full h-full object-contain rounded-full" alt="Watermark Logo" />
+							</div>
+
 							{/* Header */}
-							<div className="text-center mt-4 relative z-10">
+							<div className="text-center mt-3 relative z-10">
+								<div className="font-serif text-xl text-emerald-700 font-bold mb-2">﷽</div>
 								<img 
 									src="/bangladesh-anjumane-talamije-islamia-seeklogo.png" 
-									className="h-16 mx-auto mb-2" 
+									className="h-16 w-16 rounded-full object-contain mx-auto mb-1.5 p-0.5 border-2 border-amber-600 bg-white shadow-sm" 
 									alt="Logo"
 								/>
-								<h1 className="text-xl font-bold text-slate-800 font-serif-title">
+								<h1 className="text-xl font-bold text-slate-800 font-serif-title tracking-wide">
 									Bangladesh Anjumane Talamije Islamia
 								</h1>
 								<p className="text-sm text-slate-600 font-serif-title">Chhatak Uttar Upazila</p>
 							</div>
 
 							{/* Title & Body */}
-							<div className="text-center my-3 relative z-10">
-								<h2 className="text-4xl font-bold text-purple-900 mb-3 font-serif-title">
+							<div className="text-center my-2 relative z-10">
+								<h2 className="text-4xl font-bold text-purple-900 mb-1 font-serif-title uppercase tracking-wider">
 									Certificate of Participation
 								</h2>
-								<p className="text-base italic text-slate-600 mb-2 font-serif-title">This is to certify that</p>
-								<h3 className="text-5xl font-normal text-purple-950 mb-3 font-cert-name">
+								<div className="flex items-center justify-center gap-3.5 my-1.5">
+									<div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-600"></div>
+									<span className="text-amber-600 text-xs">✦</span>
+									<div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-600"></div>
+								</div>
+								<p className="text-base italic text-slate-600 mb-1.5 font-serif-title">This is to certify that</p>
+								<h3 className="text-5xl font-normal text-purple-950 mb-2 leading-tight font-cert-name">
 									{cert.fullName}
 								</h3>
 								<p className="text-base text-slate-600 max-w-xl mx-auto leading-relaxed font-serif-title">
 									successfully registered and participated in the event
 								</p>
-								<h4 className="text-2xl font-bold text-slate-900 mt-2 mb-1 font-serif-title">
+								<h4 className="text-2xl font-bold text-slate-900 mt-1.5 mb-1 font-serif-title">
 									{cert.eventName}
 								</h4>
 								<p className="text-base italic text-slate-700 font-serif-title">
 									on {cert.eventDate || new Date(cert.generatedDate).toLocaleDateString()}.
 								</p>
 							</div>
-
-							{/* QR Code Center */}
 							<div className="text-center mb-1 relative z-10">
-								<p className="text-[10px] font-sans text-slate-500 font-semibold tracking-wider mb-1">VERIFICATION QR CODE</p>
-								<QRCodeSVG 
-									value={`${window.location.origin}/verify/certificate/${cert.certificateId}`} 
-									size={70}
-									level="L"
-									includeMargin={false}
-									className="mx-auto"
-								/>
+								<p className="text-[9px] font-sans text-amber-600 font-bold tracking-widest uppercase mb-1">Official Security Verification</p>
+								<div className="inline-block p-1.5 bg-white border-2 border-amber-500 rounded-lg shadow-sm">
+									<QRCodeSVG 
+										value={`${window.location.origin}/verify/certificate/${cert.certificateId}`} 
+										size={75}
+										level="H"
+										includeMargin={false}
+										fgColor="#1e1b4b"
+										className="mx-auto"
+									/>
+								</div>
 								<p className="font-mono text-xs font-semibold text-slate-600 mt-1">ID: {cert.certificateId}</p>
 								<p className="font-mono text-[9px] font-bold text-green-700">{getSecurityHash(cert.certificateId, cert.registrationId)}</p>
 							</div>
 
 							{/* Signatures */}
-							<div className="flex justify-between items-end px-10 pb-4 relative z-10">
+							<div className="flex justify-between items-end px-10 pb-5 relative z-10 mb-[50px]">
 								<div className="text-center w-48 font-serif-title">
 									<div className="h-9 relative flex items-end justify-center pb-0.5">
 										{activeEvent?.presidentSignatureUrl ? (
 											<img src={activeEvent.presidentSignatureUrl} className="h-8 max-w-[160px] object-contain mb-1" />
-										) : (
-											<svg viewBox="0 0 100 30" width="80" className="absolute bottom-1 left-8 stroke-slate-900 fill-none stroke-1.5">
-												<path d="M10,20 Q30,5 50,22 T90,12" />
-											</svg>
-										)}
+										) : null}
 									</div>
-									<p className="font-bold text-slate-800 text-sm mt-1">{activeEvent?.presidentName || "President"}</p>
+									<div className="border-t border-slate-300 w-32 mx-auto my-1"></div>
+									<p className="font-bold text-slate-800 text-sm mt-0.5">{activeEvent?.presidentName || "President"}</p>
 									<p className="text-xs text-slate-500">{activeEvent?.presidentTitle || "Chhatak Uttar Upazila"}</p>
 								</div>
 								<div className="text-center w-48 font-serif-title">
 									<div className="h-9 relative flex items-end justify-center pb-0.5">
 										{activeEvent?.secretarySignatureUrl ? (
 											<img src={activeEvent.secretarySignatureUrl} className="h-8 max-w-[160px] object-contain mb-1" />
-										) : (
-											<svg viewBox="0 0 100 30" width="80" className="absolute bottom-1 left-8 stroke-slate-900 fill-none stroke-1.5">
-												<path d="M15,15 Q35,25 45,10 T85,18" />
-											</svg>
-										)}
+										) : null}
 									</div>
-									<p className="font-bold text-slate-800 text-sm mt-1">{activeEvent?.secretaryName || "General Secretary"}</p>
+									<div className="border-t border-slate-300 w-32 mx-auto my-1"></div>
+									<p className="font-bold text-slate-800 text-sm mt-0.5">{activeEvent?.secretaryName || "General Secretary"}</p>
 									<p className="text-xs text-slate-500">{activeEvent?.secretaryTitle || "Chhatak Uttar Upazila"}</p>
 								</div>
 							</div>
@@ -1131,7 +1223,7 @@ export default function CertificatesPage() {
 
 			{/* Certificate Preview Dialog */}
 			<Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-				<DialogContent className="max-w-4xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+				<DialogContent className="w-11/12 max-w-4xl max-h-[92vh] flex flex-col justify-between overflow-y-auto p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
 					<DialogHeader>
 						<DialogTitle className="flex items-center gap-2">
 							<Award className="w-5 h-5 text-purple-700" />
@@ -1143,123 +1235,154 @@ export default function CertificatesPage() {
 					</DialogHeader>
 
 					{previewCert && (
-						<div className="mt-4 flex flex-col items-center">
-							{/* Certificate Card matching reference image design */}
-							<div className="relative w-full max-w-[800px] aspect-[1.414] bg-white border-[3px] border-green-600 p-6 shadow-md rounded overflow-hidden flex flex-col justify-between select-none text-slate-900">
-								{/* Centered Circular Background Watermark Seal */}
-								<svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', opacity: 0.04, zIndex: 0 }} xmlns="http://www.w3.org/2000/svg">
-									<circle cx="50%" cy="50%" r="35%" fill="none" stroke="#16a34a" strokeWidth="2"/>
-									<circle cx="50%" cy="50%" r="28%" fill="none" stroke="#16a34a" strokeWidth="1.5"/>
-									<circle cx="50%" cy="50%" r="20%" fill="none" stroke="#16a34a" strokeWidth="1.2"/>
-									<circle cx="50%" cy="50%" r="12%" fill="none" stroke="#16a34a" strokeWidth="1"/>
-								</svg>
+						<div className="mt-2 flex flex-col items-center w-full">
+							{/* Scrollable Certificate Card Container */}
+							<div className="w-full overflow-x-auto py-2 flex justify-center items-start">
+								<div className="relative bg-white border-[7px] border-green-900 shadow-lg rounded select-none text-slate-900 flex flex-col justify-between" style={{ width: '760px', minWidth: '760px', aspectRatio: '1.414' }}>
+									{/* Inner Gold Foil Borders */}
+									<div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', bottom: '10px', border: '2px solid #d97706', pointerEvents: 'none', zIndex: 1 }}></div>
+									<div style={{ position: 'absolute', top: '14px', left: '14px', right: '14px', bottom: '14px', border: '1px solid #166534', pointerEvents: 'none', zIndex: 1 }}></div>
 
-								{/* Inner Green Border */}
-								<div className="absolute top-1.5 left-1.5 right-1.5 bottom-1.5 border border-green-600 pointer-events-none z-10"></div>
+									{/* Corner Golden Flourish Ornaments */}
+									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', top: '14px', left: '14px', zIndex: 2, pointerEvents: 'none' }}>
+										<path d="M5,5 L45,5 L45,12 L12,12 L12,45 L5,45 Z" fill="#d97706"/>
+										<circle cx="20" cy="20" r="4" fill="#166534"/>
+									</svg>
+									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', top: '14px', right: '14px', zIndex: 2, pointerEvents: 'none' }}>
+										<path d="M95,5 L55,5 L55,12 L88,12 L88,45 L95,45 Z" fill="#d97706"/>
+										<circle cx="80" cy="20" r="4" fill="#166534"/>
+									</svg>
+									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', bottom: '14px', left: '14px', zIndex: 2, pointerEvents: 'none' }}>
+										<path d="M5,95 L45,95 L45,88 L12,88 L12,55 L5,55 Z" fill="#d97706"/>
+										<circle cx="20" cy="80" r="4" fill="#166534"/>
+									</svg>
+									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', bottom: '14px', right: '14px', zIndex: 2, pointerEvents: 'none' }}>
+										<path d="M95,95 L55,95 L55,88 L88,88 L88,55 L95,55 Z" fill="#d97706"/>
+										<circle cx="80" cy="80" r="4" fill="#166534"/>
+									</svg>
 
-								{/* Top Header */}
-								<div className="text-center mt-2 relative z-20">
-									{/* Holographic Security Badge */}
-									<div className="absolute top-0 left-2 text-center">
-										<svg width="45" height="45" viewBox="0 0 100 100" className="inline-block">
-											<polygon points="50,5 64,18 82,18 88,36 100,50 88,64 82,82 64,82 50,95 36,82 18,82 12,64 0,50 12,36 18,18 36,18" fill="none" stroke="#d4af37" strokeWidth="3"/>
-											<circle cx="50" cy="50" r="32" fill="#16a34a" opacity="0.1"/>
-											<circle cx="50" cy="50" r="28" fill="none" stroke="#16a34a" strokeWidth="1.5" strokeDasharray="2 1"/>
-											<text x="50" y="46" fontFamily="sans-serif" fontSize="7" fontWeight="bold" fill="#15803d" textAnchor="middle">VERIFIED</text>
-											<text x="50" y="55" fontFamily="sans-serif" fontSize="5" fontWeight="bold" fill="#d4af37" textAnchor="middle">OFFICIAL</text>
-											<text x="50" y="62" fontFamily="sans-serif" fontSize="4.5" fill="#15803d" textAnchor="middle">SECURITY</text>
-										</svg>
+									{/* Centered Background Watermark Seal */}
+									<svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', opacity: 0.035, zIndex: 0 }} xmlns="http://www.w3.org/2000/svg">
+										<circle cx="50%" cy="50%" r="35%" fill="none" stroke="#16a34a" strokeWidth="2"/>
+										<circle cx="50%" cy="50%" r="28%" fill="none" stroke="#d97706" strokeWidth="1.5"/>
+										<circle cx="50%" cy="50%" r="20%" fill="none" stroke="#16a34a" strokeWidth="1.2"/>
+										<circle cx="50%" cy="50%" r="12%" fill="none" stroke="#d97706" strokeWidth="1"/>
+									</svg>
+
+									{/* Rounded Center Watermark Logo */}
+									<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 opacity-[0.055] pointer-events-none z-0 flex items-center justify-center">
+										<img src="/bangladesh-anjumane-talamije-islamia-seeklogo.png" className="w-full h-full object-contain rounded-full" alt="Watermark Logo" />
 									</div>
 
-									<img
-										src="/bangladesh-anjumane-talamije-islamia-seeklogo.png"
-										className="h-12 mx-auto mb-1.5 pointer-events-none"
-										alt="Logo"
-									/>
-									<h2 className="text-sm font-bold text-slate-800 font-serif-title leading-tight">
-										Bangladesh Anjumane Talamije Islamia
-									</h2>
-									<p className="text-xs text-slate-500 font-serif-title">Chhatak Uttar Upazila</p>
-								</div>
-
-								{/* Title & Body */}
-								<div className="text-center relative z-20">
-									<h3 className="text-3xl font-bold text-purple-900 mb-1 leading-tight font-serif-title">
-										Certificate of Participation
-									</h3>
-									<p className="text-xs italic text-slate-500 mb-1 font-serif-title">This is to certify that</p>
-									<h4 className="text-4xl font-normal text-purple-950 mb-1.5 leading-tight font-cert-name">
-										{previewCert.fullName}
-									</h4>
-									<p className="text-xs text-slate-600 max-w-lg mx-auto leading-relaxed font-serif-title">
-										successfully registered and participated in the event
-									</p>
-									<h5 className="text-lg font-bold text-slate-900 mt-1 mb-0.5 font-serif-title">
-										{previewCert.eventName}
-									</h5>
-									<p className="text-xs italic text-slate-700 font-serif-title">
-										on {previewCert.eventDate || new Date(previewCert.generatedDate || Date.now()).toLocaleDateString()}.
-									</p>
-								</div>
-
-								{/* Center QR Code */}
-								<div className="text-center relative z-20">
-									<p className="text-[8px] font-sans text-slate-400 font-semibold tracking-wider mb-0.5">VERIFICATION QR CODE</p>
-									<QRCodeSVG
-										value={`${window.location.origin}/verify/certificate/${previewCert.certificateId}`}
-										size={52}
-										level="L"
-										includeMargin={false}
-										className="mx-auto"
-									/>
-									<p className="font-mono text-[10px] font-semibold text-slate-600 mt-0.5">ID: {previewCert.certificateId}</p>
-									<p className="font-mono text-[8px] font-bold text-green-700 mt-0.5">{getSecurityHash(previewCert.certificateId, previewCert.registrationId)}</p>
-								</div>
-
-								{/* Bottom Signatures */}
-								<div className="flex justify-between items-end px-6 pb-2 relative z-20 font-serif-title">
-									<div className="text-center w-40">
-										<div className="h-6 relative flex items-end justify-center pb-0.5">
-											{activeEvent?.presidentSignatureUrl ? (
-												<img src={activeEvent.presidentSignatureUrl} className="h-5 max-w-[120px] object-contain mb-0.5" />
-											) : (
-												<svg viewBox="0 0 100 30" width="45" className="absolute bottom-0.5 stroke-slate-900 fill-none stroke-1.5">
-													<path d="M10,20 Q30,5 50,22 T90,12" />
-												</svg>
-											)}
-										</div>
-										<p className="font-bold text-slate-800 text-xs mt-0.5">{activeEvent?.presidentName || "President"}</p>
-										<p className="text-[9px] text-slate-400">{activeEvent?.presidentTitle || "Chhatak Uttar Upazila"}</p>
+									{/* Top Header */}
+									<div className="text-center mt-2 relative z-20 px-4">
+										<div className="font-serif text-xl text-emerald-700 font-bold mb-2">﷽</div>
+										<img
+											src="/bangladesh-anjumane-talamije-islamia-seeklogo.png"
+											className="h-12 w-12 rounded-full object-contain mx-auto mb-1.5 pointer-events-none p-0.5 border-2 border-amber-600 bg-white shadow-sm"
+											alt="Logo"
+										/>
+										<h2 className="text-base font-bold text-slate-800 font-serif-title leading-tight tracking-wide">
+											Bangladesh Anjumane Talamije Islamia
+										</h2>
+										<p className="text-xs text-slate-500 font-serif-title">Chhatak Uttar Upazila</p>
 									</div>
-									<div className="text-center w-40">
-										<div className="h-6 relative flex items-end justify-center pb-0.5">
-											{activeEvent?.secretarySignatureUrl ? (
-												<img src={activeEvent.secretarySignatureUrl} className="h-5 max-w-[120px] object-contain mb-0.5" />
-											) : (
-												<svg viewBox="0 0 100 30" width="45" className="absolute bottom-0.5 stroke-slate-900 fill-none stroke-1.5">
-													<path d="M15,15 Q35,25 45,10 T85,18" />
-												</svg>
-											)}
+
+									{/* Title & Body */}
+									<div className="text-center relative z-20 my-1">
+										<h3 className="text-3xl font-bold text-purple-900 mb-0.5 leading-none font-serif-title uppercase tracking-wider whitespace-nowrap">
+											Certificate of Participation
+										</h3>
+										<div className="flex items-center justify-center gap-3 my-1.5">
+											<div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-600"></div>
+											<span className="text-amber-600 text-xs">✦</span>
+											<div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-600"></div>
 										</div>
-										<p className="font-bold text-slate-800 text-xs mt-0.5">{activeEvent?.secretaryName || "General Secretary"}</p>
-										<p className="text-[9px] text-slate-400">{activeEvent?.secretaryTitle || "Chhatak Uttar Upazila"}</p>
+										<p className="text-xs italic text-slate-500 mb-0.5 font-serif-title">This is to certify that</p>
+										<h4 className="text-4xl font-normal text-purple-950 mb-1 leading-tight font-cert-name">
+											{previewCert.fullName}
+										</h4>
+										<p className="text-xs text-slate-600 max-w-lg mx-auto leading-relaxed font-serif-title">
+											successfully registered and participated in the event
+										</p>
+										<h5 className="text-lg font-bold text-slate-900 mt-0.5 mb-0.5 font-serif-title">
+											{previewCert.eventName}
+										</h5>
+										<p className="text-xs italic text-slate-700 font-serif-title">
+											on {previewCert.eventDate || new Date(previewCert.generatedDate || Date.now()).toLocaleDateString()}.
+										</p>
+									</div>
+
+									{/* Center QR Code */}
+									<div className="text-center relative z-20 my-0.5">
+										<p className="text-[8px] font-sans text-amber-600 font-bold tracking-widest uppercase mb-0.5">Official Security Verification</p>
+										<div className="inline-block p-1 bg-white border border-amber-500 rounded shadow-xs">
+											<QRCodeSVG
+												value={`${window.location.origin}/verify/certificate/${previewCert.certificateId}`}
+												size={52}
+												level="H"
+												includeMargin={false}
+												fgColor="#1e1b4b"
+												className="mx-auto"
+											/>
+										</div>
+										<p className="font-mono text-[10px] font-semibold text-slate-600 mt-0.5">ID: {previewCert.certificateId}</p>
+										<p className="font-mono text-[8px] font-bold text-green-700 mt-0.5">{getSecurityHash(previewCert.certificateId, previewCert.registrationId)}</p>
+									</div>
+
+									{/* Bottom Signatures */}
+									<div className="flex justify-between items-end px-6 pb-5 mb-[50px] relative z-20 font-serif-title">
+										<div className="text-center w-40">
+											<div className="h-6 relative flex items-end justify-center pb-0.5">
+												{activeEvent?.presidentSignatureUrl ? (
+													<img src={activeEvent.presidentSignatureUrl} className="h-5 max-w-[120px] object-contain mb-0.5" />
+												) : null}
+											</div>
+											<div className="border-t border-slate-300 w-28 mx-auto my-0.5"></div>
+											<p className="font-bold text-slate-800 text-xs mt-0.5">{activeEvent?.presidentName || "President"}</p>
+											<p className="text-[9px] text-slate-400">{activeEvent?.presidentTitle || "Chhatak Uttar Upazila"}</p>
+										</div>
+										<div className="text-center w-40">
+											<div className="h-6 relative flex items-end justify-center pb-0.5">
+												{activeEvent?.secretarySignatureUrl ? (
+													<img src={activeEvent.secretarySignatureUrl} className="h-5 max-w-[120px] object-contain mb-0.5" />
+												) : null}
+											</div>
+											<div className="border-t border-slate-300 w-28 mx-auto my-0.5"></div>
+											<p className="font-bold text-slate-800 text-xs mt-0.5">{activeEvent?.secretaryName || "General Secretary"}</p>
+											<p className="text-[9px] text-slate-400">{activeEvent?.secretaryTitle || "Chhatak Uttar Upazila"}</p>
+										</div>
 									</div>
 								</div>
 							</div>
 
 							{/* Actions inside Modal */}
-							<div className="flex justify-end gap-3 w-full mt-6">
+							<div className="flex flex-col sm:flex-row justify-end gap-3 w-full mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
 								<Button
 									variant="outline"
-									onClick={() => downloadPDF(previewCert)}
-									className="flex items-center gap-2"
+									onClick={() => {
+										const certData = {
+											...previewCert,
+											fullName: previewCert.fullName,
+											eventAddress: previewCert.eventAddress || activeEvent?.address || "",
+										};
+										downloadPDF(certData);
+									}}
+									className="flex items-center justify-center gap-2 cursor-pointer"
 								>
 									<Download className="w-4 h-4" />
 									Download PDF
 								</Button>
 								<Button
-									onClick={() => setPrintCerts([previewCert])}
-									className="flex items-center gap-2 bg-purple-700 hover:bg-purple-800 text-white"
+									onClick={() => {
+										const certData = {
+											...previewCert,
+											fullName: previewCert.fullName,
+											eventAddress: previewCert.eventAddress || activeEvent?.address || "",
+										};
+										setPrintCerts([certData]);
+									}}
+									className="flex items-center justify-center gap-2 bg-purple-700 hover:bg-purple-800 text-white cursor-pointer"
 								>
 									<Printer className="w-4 h-4" />
 									Print Certificate
