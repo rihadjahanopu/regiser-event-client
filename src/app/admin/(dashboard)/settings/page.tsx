@@ -4,8 +4,23 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageIcon, Upload, Trash2, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import {
+  ImageIcon,
+  Upload,
+  Trash2,
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
+  Calendar,
+  Clock,
+  MapPin,
+  Phone,
+  FileText,
+  Save,
+  RotateCcw,
+} from "lucide-react";
 
 export default function SettingsPage() {
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
@@ -17,13 +32,30 @@ export default function SettingsPage() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Event info state
+  const [eventName, setEventName] = useState("");
+  const [eventAddress, setEventAddress] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventStartTime, setEventStartTime] = useState("");
+  const [organiserContact, setOrganiserContact] = useState("");
+  const [showCountdown, setShowCountdown] = useState(true);
+  const [savingEvent, setSavingEvent] = useState(false);
+  const [clearingEvent, setClearingEvent] = useState(false);
+
   const fetchSettings = async () => {
     setLoading(true);
     try {
       const res = await axios.get("/api/settings");
-      if (res.data.success) {
-        setCoverUrl(res.data.data?.eventCoverUrl || null);
-        setIsRegistrationOpen(res.data.data?.isRegistrationOpen ?? true);
+      if (res.data.success && res.data.data) {
+        const d = res.data.data;
+        setCoverUrl(d.eventCoverUrl || null);
+        setIsRegistrationOpen(d.isRegistrationOpen ?? true);
+        setEventName(d.eventName || "");
+        setEventAddress(d.eventAddress || "");
+        setEventDate(d.eventDate || "");
+        setEventStartTime(d.eventStartTime || "");
+        setOrganiserContact(d.organiserContact || "");
+        setShowCountdown(d.showCountdown ?? true);
       }
     } catch {
       toast.error("Failed to fetch settings");
@@ -40,11 +72,11 @@ export default function SettingsPage() {
     setUpdatingStatus(true);
     try {
       const res = await axios.put("/api/admin/settings/status", {
-        isOpen: !isRegistrationOpen
+        isOpen: !isRegistrationOpen,
       });
       if (res.data.success) {
         setIsRegistrationOpen(res.data.data.isRegistrationOpen);
-        toast.success(`Registration is now ${res.data.data.isRegistrationOpen ? 'Open' : 'Closed'}`);
+        toast.success(`Registration is now ${res.data.data.isRegistrationOpen ? "Open" : "Closed"}`);
       } else {
         toast.error(res.data.error);
       }
@@ -52,6 +84,54 @@ export default function SettingsPage() {
       toast.error(err.response?.data?.error || "Failed to update registration status");
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  const handleSaveEventDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingEvent(true);
+    try {
+      const res = await axios.put("/api/admin/settings/event", {
+        eventName,
+        eventAddress,
+        eventDate,
+        eventStartTime,
+        organiserContact,
+        showCountdown,
+      });
+
+      if (res.data.success) {
+        toast.success("Event details saved successfully!");
+      } else {
+        toast.error(res.data.error || "Failed to save event details");
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to save event details");
+    } finally {
+      setSavingEvent(false);
+    }
+  };
+
+  const handleClearEventDetails = async () => {
+    if (!window.confirm("Are you sure you want to clear/delete event details?")) return;
+    setClearingEvent(true);
+    try {
+      const res = await axios.delete("/api/admin/settings/event");
+      if (res.data.success) {
+        setEventName("");
+        setEventAddress("");
+        setEventDate("");
+        setEventStartTime("");
+        setOrganiserContact("");
+        setShowCountdown(true);
+        toast.success("Event details cleared!");
+      } else {
+        toast.error(res.data.error);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to clear event details");
+    } finally {
+      setClearingEvent(false);
     }
   };
 
@@ -103,9 +183,9 @@ export default function SettingsPage() {
     const isConfirmed = window.confirm(
       "WARNING: Are you absolutely sure you want to delete ALL registrations? This action cannot be undone and will erase all data permanently!"
     );
-    
+
     if (!isConfirmed) return;
-    
+
     const doubleCheck = window.prompt("Type 'DELETE ALL' to confirm:");
     if (doubleCheck !== "DELETE ALL") {
       toast.error("Confirmation failed. Data was not deleted.");
@@ -128,18 +208,19 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-3xl pb-12">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Settings</h1>
-        <p className="text-slate-500">Manage event appearance and global configuration.</p>
+        <p className="text-slate-500">Manage event schedule, appearance, and global configuration.</p>
       </div>
 
+      {/* Registration Status */}
       <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
           <div className="space-y-1">
             <CardTitle className="text-lg">Registration Status</CardTitle>
             <CardDescription>
-              Turn event registration on or off. When off, users cannot submit new registrations.
+              Turn event registration on or off manually.
             </CardDescription>
           </div>
           <div>
@@ -147,18 +228,19 @@ export default function SettingsPage() {
               onClick={toggleRegistrationStatus}
               disabled={updatingStatus || loading}
               className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
-                isRegistrationOpen ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                isRegistrationOpen ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
               }`}
             >
               <span
                 className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                  isRegistrationOpen ? 'translate-x-6' : 'translate-x-1'
+                  isRegistrationOpen ? "translate-x-6" : "translate-x-1"
                 }`}
               />
             </button>
           </div>
         </CardHeader>
-        
+
+        {/* Cover Image Upload */}
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
             <ImageIcon className="w-5 h-5 text-blue-600" />
@@ -175,7 +257,6 @@ export default function SettingsPage() {
             </div>
           ) : coverUrl ? (
             <div className="space-y-4">
-              {/* Preview */}
               <div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 group">
                 <img
                   src={coverUrl}
@@ -249,7 +330,141 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="border border-red-200 dark:border-red-900 shadow-sm mt-8">
+      {/* ── Event Details & Schedule Management ── */}
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+            <FileText className="w-5 h-5 text-blue-600" />
+            Event Details & Schedule
+          </CardTitle>
+          <CardDescription>
+            Configure Event Name, Location, Date, Time, Organiser Contact, and Countdown Timer. These will be displayed on the Registration Form & downloadable Ticket PDF. Form auto-closes 30m before Start Time!
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSaveEventDetails} className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+                <FileText className="w-4 h-4 text-slate-400" /> Event Name
+              </label>
+              <Input
+                placeholder="e.g. Medha Jahai Competition 2026"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+                className="h-10"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+                <MapPin className="w-4 h-4 text-slate-400" /> Event Address / Venue
+              </label>
+              <Input
+                placeholder="e.g. Chhatak Uttar Secondary School Grounds"
+                value={eventAddress}
+                onChange={(e) => setEventAddress(e.target.value)}
+                className="h-10"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+                  <Calendar className="w-4 h-4 text-slate-400" /> Event Date
+                </label>
+                <Input
+                  type="date"
+                  value={eventDate}
+                  onChange={(e) => setEventDate(e.target.value)}
+                  className="h-10"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+                  <Clock className="w-4 h-4 text-slate-400" /> Event Start Time
+                </label>
+                <Input
+                  type="time"
+                  value={eventStartTime}
+                  onChange={(e) => setEventStartTime(e.target.value)}
+                  className="h-10"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+                <Phone className="w-4 h-4 text-slate-400" /> Organiser Contact
+              </label>
+              <Input
+                placeholder="e.g. 01700000000 / info@talamij.org"
+                value={organiserContact}
+                onChange={(e) => setOrganiserContact(e.target.value)}
+                className="h-10"
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                  Show Countdown Timer
+                </p>
+                <p className="text-xs text-slate-500">
+                  Display an animated live countdown clock on the registration form.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCountdown(!showCountdown)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                  showCountdown ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    showCountdown ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Button type="submit" disabled={savingEvent} className="bg-blue-600 hover:bg-blue-700">
+                {savingEvent ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" /> Save Event Details
+                  </>
+                )}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClearEventDetails}
+                disabled={clearingEvent}
+              >
+                {clearingEvent ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Clearing...
+                  </>
+                ) : (
+                  <>
+                    <RotateCcw className="w-4 h-4 mr-2 text-slate-500" /> Clear Details
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Danger Zone */}
+      <Card className="border border-red-200 dark:border-red-900 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-500">
             <AlertTriangle className="w-5 h-5" />
@@ -287,3 +502,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

@@ -2,11 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
+import CountdownTimer, { calculateTimeLeft } from "@/components/CountdownTimer";
 import {
 	ArrowLeft,
 	ArrowRight,
 	BookOpen,
+	Calendar,
 	CheckCircle2,
+	Clock,
 	GraduationCap,
 	Heart,
 	Layers,
@@ -62,6 +65,7 @@ const STEPS = [
 			"class",
 			"subjectGroup",
 			"rollNumber",
+			"regNumber",
 			"passingYear",
 			"gradeGpa",
 		],
@@ -98,13 +102,40 @@ export default function RegistrationPage() {
 	const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
 	const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
+	// Event details state
+	const [eventDetails, setEventDetails] = useState<{
+		eventName?: string;
+		eventAddress?: string;
+		eventDate?: string;
+		eventStartTime?: string;
+		organiserContact?: string;
+		showCountdown?: boolean;
+	}>({});
+	const [isCutoffClosed, setIsCutoffClosed] = useState(false);
+
 	useEffect(() => {
 		axios
 			.get("/api/settings")
 			.then((res) => {
 				if (res.data.success && res.data.data) {
-					setCoverUrl(res.data.data.eventCoverUrl || null);
-					setIsRegistrationOpen(res.data.data.isRegistrationOpen ?? true);
+					const data = res.data.data;
+					setCoverUrl(data.eventCoverUrl || null);
+					setIsRegistrationOpen(data.isRegistrationOpen ?? true);
+					setEventDetails({
+						eventName: data.eventName || "",
+						eventAddress: data.eventAddress || "",
+						eventDate: data.eventDate || "",
+						eventStartTime: data.eventStartTime || "",
+						organiserContact: data.organiserContact || "",
+						showCountdown: data.showCountdown ?? true,
+					});
+
+					if (data.eventDate) {
+						const timeLeft = calculateTimeLeft(data.eventDate, data.eventStartTime || "");
+						if (timeLeft.isCutoffReached) {
+							setIsCutoffClosed(true);
+						}
+					}
 				}
 			})
 			.catch(() => {
@@ -129,6 +160,7 @@ export default function RegistrationPage() {
 			class: "",
 			subjectGroup: "",
 			rollNumber: "",
+			regNumber: "",
 			bloodGroup: "",
 			emergencyContact: "",
 			passingYear: "",
@@ -329,39 +361,87 @@ export default function RegistrationPage() {
 
 				{/* Form area — scrollable */}
 				<div className="flex-1 overflow-y-auto">
-					<div className="min-h-full flex flex-col justify-center p-5 sm:p-8 md:p-10 max-w-xl mx-auto w-full py-6">
+					<div className="min-h-full flex flex-col justify-center p-5 sm:p-8 md:p-10 max-w-xl mx-auto w-full py-6 space-y-6">
 						{/* Event Cover Image */}
 						{coverUrl && (
-							<div className="mb-6 rounded-xl overflow-hidden  ">
+							<div className="rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
 								<Image
 									src={coverUrl}
 									alt="Event Cover"
-									width={800} // Next.js Image Component-এর জন্য width ও height প্রয়োজন
+									width={800}
 									height={400}
 									className="w-full h-auto max-h-60 object-contain mx-auto"
 								/>
 							</div>
 						)}
 
-						{isLoadingSettings ?
+						{/* Event Header Card (if event details are set) */}
+						{(eventDetails.eventName || eventDetails.eventAddress || eventDetails.eventDate || eventDetails.organiserContact) && (
+							<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+								{eventDetails.eventName && (
+									<h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+										{eventDetails.eventName}
+									</h2>
+								)}
+
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+									{eventDetails.eventAddress && (
+										<div className="flex items-center space-x-2">
+											<MapPin className="w-4 h-4 text-blue-500 shrink-0" />
+											<span>{eventDetails.eventAddress}</span>
+										</div>
+									)}
+
+									{(eventDetails.eventDate || eventDetails.eventStartTime) && (
+										<div className="flex items-center space-x-2">
+											<Calendar className="w-4 h-4 text-blue-500 shrink-0" />
+											<span>
+												{eventDetails.eventDate}{" "}
+												{eventDetails.eventStartTime ? `@ ${eventDetails.eventStartTime}` : ""}
+											</span>
+										</div>
+									)}
+
+									{eventDetails.organiserContact && (
+										<div className="flex items-center space-x-2 sm:col-span-2">
+											<Phone className="w-4 h-4 text-blue-500 shrink-0" />
+											<span>Organiser: <strong className="text-slate-800 dark:text-slate-200">{eventDetails.organiserContact}</strong></span>
+										</div>
+									)}
+								</div>
+							</div>
+						)}
+
+						{/* Fancy Live Countdown Timer */}
+						{eventDetails.eventDate && eventDetails.showCountdown !== false && !isCutoffClosed && (
+							<CountdownTimer
+								eventDate={eventDetails.eventDate}
+								eventStartTime={eventDetails.eventStartTime || "00:00"}
+								onAutoClose={() => setIsCutoffClosed(true)}
+							/>
+						)}
+
+						{isLoadingSettings ? (
 							<div className="flex flex-col items-center justify-center py-20 text-slate-500">
 								<Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
 								<p>Loading form...</p>
 							</div>
-						: !isRegistrationOpen ?
+						) : !isRegistrationOpen || isCutoffClosed ? (
 							<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center shadow-sm">
-								<div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+								<div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
 									<Heart className="w-8 h-8" />
 								</div>
 								<h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-									Registration Closed
+									{isCutoffClosed ? "Registration Closed (Event Starting Soon)" : "Registration Closed"}
 								</h2>
-								<p className="text-slate-500">
-									There are currently no events running. Please check back later
-									or contact the organizers for more information.
+								<p className="text-slate-500 text-sm leading-relaxed max-w-md mx-auto">
+									{isCutoffClosed
+										? "Registration automatically closed 30 minutes before event start time or event is ongoing."
+										: "There are currently no active registrations running. Please check back later or contact the organizers."}
 								</p>
 							</div>
-						:	<Form {...form}>
+						) : (
+							<Form {...form}>
 								<form
 									onSubmit={form.handleSubmit(onSubmit)}
 									className="space-y-6 w-full">
@@ -607,6 +687,29 @@ export default function RegistrationPage() {
 
 													<FormField
 														control={form.control}
+														name="regNumber"
+														render={({ field }) => (
+															<FormItem>
+																<FormLabel>
+																	Registration Number{" "}
+																	<span className="text-slate-400 text-xs">
+																		(Optional)
+																	</span>
+																</FormLabel>
+																<FormControl>
+																	<Input
+																		placeholder="REG-123456"
+																		className="h-11"
+																		{...field}
+																	/>
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														)}
+													/>
+
+													<FormField
+														control={form.control}
 														name="passingYear"
 														render={({ field }) => (
 															<FormItem>
@@ -834,7 +937,7 @@ export default function RegistrationPage() {
 									</div>
 								</form>
 							</Form>
-						}
+						)}
 					</div>
 				</div>
 

@@ -549,6 +549,16 @@ export default function RegistrationsPage() {
 								/>
 							</div>
 							<div className="grid gap-2">
+								<Label htmlFor="regNumber">Registration Number</Label>
+								<Input
+									id="regNumber"
+									value={editData.regNumber || ""}
+									onChange={(e) =>
+										setEditData({ ...editData, regNumber: e.target.value })
+									}
+								/>
+							</div>
+							<div className="grid gap-2">
 								<Label htmlFor="status">Status</Label>
 								<Select
 									value={editData.status}
@@ -656,6 +666,10 @@ export default function RegistrationsPage() {
 							<div>
 								<span className="font-semibold text-slate-500">Roll No:</span>{" "}
 								{viewData.rollNumber || "N/A"}
+							</div>
+							<div>
+								<span className="font-semibold text-slate-500">Reg No:</span>{" "}
+								{viewData.regNumber || "N/A"}
 							</div>
 							<div>
 								<span className="font-semibold text-slate-500">

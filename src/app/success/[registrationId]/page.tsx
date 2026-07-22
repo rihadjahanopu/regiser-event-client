@@ -25,19 +25,38 @@ export default function SuccessPage() {
 	const [data, setData] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
 	const [pdfLoading, setPdfLoading] = useState(false);
+	const [eventDetails, setEventDetails] = useState<{
+		eventName?: string;
+		eventAddress?: string;
+		eventDate?: string;
+		eventStartTime?: string;
+		organiserContact?: string;
+	}>({});
 	const ticketRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		async function fetchData() {
 			try {
-				const response = await axios.get(
-					`/api/registration/verify/${registrationId}`
-				);
-				const res = response.data;
-				if (res.success) {
-					setData(res.registration);
+				const [regRes, setRes] = await Promise.all([
+					axios.get(`/api/registration/verify/${registrationId}`),
+					axios.get(`/api/settings`).catch(() => ({ data: { success: false } })),
+				]);
+
+				if (regRes.data.success) {
+					setData(regRes.data.registration);
 				} else {
-					toast.error(res.error || "Failed to load ticket.");
+					toast.error(regRes.data.error || "Failed to load ticket.");
+				}
+
+				if (setRes.data.success && setRes.data.data) {
+					const d = setRes.data.data;
+					setEventDetails({
+						eventName: d.eventName || "",
+						eventAddress: d.eventAddress || "",
+						eventDate: d.eventDate || "",
+						eventStartTime: d.eventStartTime || "",
+						organiserContact: d.organiserContact || "",
+					});
 				}
 			} catch (error: any) {
 				toast.error(error.response?.data?.error || "Failed to fetch ticket.");
@@ -86,35 +105,38 @@ export default function SuccessPage() {
 						img.src = "/bangladesh-anjumane-talamije-islamia-seeklogo.png";
 					}
 				);
-				doc.addImage(logoImg, "PNG", 16, 12, 14, 14);
+				doc.addImage(logoImg, "PNG", 14, 8, 12, 12);
 			} catch {
 				console.warn("Logo load failed — skipping");
 			}
 
-			// ── Organization header ──────────────────────────────────────
-			// ১ম লাইন: সংগঠনের নাম
+			// ── Organization header & Event Title ────────────────────────
 			doc.setFont("helvetica", "bold");
-			doc.setFontSize(14);
+			doc.setFontSize(11);
 			doc.setTextColor(15, 23, 42);
-			doc.text("Bangladesh Anjumane Talamije Islamia", 34, 20);
+			doc.text("Bangladesh Anjumane Talamije Islamia - Chhatak Uttar", 28, 12);
 
-			// ২য় লাইন: উপজেলার নাম (y-axis বাড়িয়ে নিচে নামানো হলো)
-			doc.text("Chhatak Uttar Upazila", 34, 26); // y-axis 20 থেকে বাড়িয়ে 26 করা হয়েছে
+			if (eventDetails.eventName) {
+				doc.setFont("helvetica", "bold");
+				doc.setFontSize(10);
+				doc.setTextColor(37, 99, 235);
+				doc.text(eventDetails.eventName.slice(0, 48), 28, 17);
+			} else {
+				doc.setFont("helvetica", "normal");
+				doc.setFontSize(8);
+				doc.setTextColor(100, 116, 139);
+				doc.text("Participant Ticket", 28, 17);
+			}
 
-			// ৩য় লাইন: Participant Ticket (আগের চেয়ে নিচে নামানো হলো যাতে একটার ওপর আরেকটা না ওঠে)
-			doc.setFont("helvetica", "normal");
-			doc.setFontSize(9);
-			doc.setTextColor(100, 116, 139);
-			doc.text("Participant Ticket", 34, 32); // y-axis 25 থেকে বাড়িয়ে 32 করা হয়েছে
 			// ── Participant name ─────────────────────────────────────────
 			const fullNameText =
 				String(data.fullName || "")
 					.toUpperCase()
 					.trim() || "PARTICIPANT";
 			doc.setFont("helvetica", "bold");
-			doc.setFontSize(16);
+			doc.setFontSize(14);
 			doc.setTextColor(15, 23, 42);
-			doc.text(fullNameText, 16, 45);
+			doc.text(fullNameText, 14, 27);
 
 			// ── Detail helper — skips if value is empty ──────────────────
 			const field = (
@@ -126,16 +148,16 @@ export default function SuccessPage() {
 				const v = String(value ?? "").trim();
 				if (!v) return;
 				doc.setFont("helvetica", "bold");
-				doc.setFontSize(7);
+				doc.setFontSize(6.5);
 				doc.setTextColor(100, 116, 139);
 				doc.text(label, x, y);
 				doc.setFont("helvetica", "bold");
-				doc.setFontSize(9);
+				doc.setFontSize(8.5);
 				doc.setTextColor(15, 23, 42);
-				doc.text(v, x, y + 5);
+				doc.text(v, x, y + 4);
 			};
 
-			// Row 1 — institution (truncated if optional fields exist) + passing yr + gpa
+			// Row 1 — institution + passing yr + gpa
 			const hasExtra = !!(
 				String(data.passingYear ?? "").trim() ||
 				String(data.gradeGpa ?? "").trim()
@@ -146,20 +168,40 @@ export default function SuccessPage() {
 					(String(data.schoolName || "").length > 20 ? "…" : "")
 				:	String(data.schoolName || "");
 
-			field("INSTITUTION", schoolDisplay, 16, 55);
-			field("PASSING YR", data.passingYear, 80, 55);
-			field("GPA/GRADE", data.gradeGpa, 115, 55);
+			field("INSTITUTION", schoolDisplay, 14, 35);
+			field("PASSING YR", data.passingYear, 75, 35);
+			field("GPA/GRADE", data.gradeGpa, 110, 35);
 
 			// Row 2 — mobile / group / district
-			field("MOBILE", data.mobile, 16, 68);
-			field("GROUP", data.subjectGroup, 70, 68);
-			field("DISTRICT", data.district, 105, 68);
+			field("MOBILE", data.mobile, 14, 46);
+			field("GROUP", data.subjectGroup, 65, 46);
+			field("DISTRICT", data.district, 100, 46);
+
+			// Row 3 — Event Schedule & Venue (if available)
+			const eventTimeStr = [eventDetails.eventDate, eventDetails.eventStartTime]
+				.filter(Boolean)
+				.join(" @ ");
+			if (eventTimeStr) {
+				field("EVENT TIME", eventTimeStr, 14, 57);
+			}
+			if (eventDetails.eventAddress) {
+				field("VENUE", eventDetails.eventAddress.slice(0, 25), 65, 57);
+			}
+			if (eventDetails.organiserContact) {
+				field("ORGANISER CONTACT", eventDetails.organiserContact.slice(0, 20), 105, 57);
+			}
+
+			// Footer note
+			doc.setFont("helvetica", "normal");
+			doc.setFontSize(6.5);
+			doc.setTextColor(148, 163, 184);
+			doc.text("Present this digital ticket at the event entry.", 14, 73);
 
 			// ── Right side — QR ─────────────────────────────────────────
 			doc.setFont("helvetica", "bold");
-			doc.setFontSize(14);
+			doc.setFontSize(13);
 			doc.setTextColor(15, 23, 42);
-			doc.text("ADMIT ONE", 170, 18, { align: "center" });
+			doc.text("ADMIT ONE", 170, 16, { align: "center" });
 
 			const verifyUrl = `${window.location.origin}/verify/${data.registrationId}`;
 			const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
@@ -167,18 +209,18 @@ export default function SuccessPage() {
 				margin: 0,
 				color: { dark: "#000000", light: "#ffffff" },
 			});
-			doc.addImage(qrDataUrl, "PNG", 152.5, 25, 35, 35);
+			doc.addImage(qrDataUrl, "PNG", 152.5, 21, 35, 35);
 
 			// Ticket number
 			doc.setFont("helvetica", "bold");
-			doc.setFontSize(10);
+			doc.setFontSize(9);
 			doc.setTextColor(59, 130, 246);
-			doc.text(`NO. ${data.ticketNumber}`, 170, 68, { align: "center" });
+			doc.text(`NO. ${data.ticketNumber}`, 170, 64, { align: "center" });
 
 			doc.setFont("helvetica", "normal");
-			doc.setFontSize(7);
+			doc.setFontSize(6.5);
 			doc.setTextColor(148, 163, 184);
-			doc.text("Scan to verify", 170, 73, { align: "center" });
+			doc.text("Scan to verify", 170, 69, { align: "center" });
 
 			doc.save(`ticket-${data.registrationId}.pdf`);
 			toast.success("Ticket downloaded as PDF!");
@@ -219,7 +261,6 @@ export default function SuccessPage() {
 	}
 
 	// Verification URL that is encoded in the QR code
-	// We use window.location.origin to get the current host dynamically
 	const verifyUrl =
 		typeof window !== "undefined" ?
 			`${window.location.origin}/verify/${data.registrationId}`
@@ -263,7 +304,12 @@ export default function SuccessPage() {
 									<br />
 									Chhatak Uttar Upazila
 								</h2>
-								<p className="text-blue-100 text-sm opacity-90">
+								{eventDetails.eventName && (
+									<p className="text-amber-300 font-semibold text-xs sm:text-sm mt-0.5">
+										{eventDetails.eventName}
+									</p>
+								)}
+								<p className="text-blue-100 text-xs opacity-90">
 									Participant Ticket
 								</p>
 							</div>
@@ -310,6 +356,7 @@ export default function SuccessPage() {
 											<p className="font-medium">{data.schoolName}</p>
 											<p className="text-sm text-slate-600">
 												{data.class} • {data.subjectGroup}
+												{data.regNumber ? ` • Reg: ${data.regNumber}` : ""}
 											</p>
 										</div>
 									</div>
@@ -328,9 +375,9 @@ export default function SuccessPage() {
 										<MapPin className="w-5 h-5 text-slate-400 mt-0.5" />
 										<div>
 											<p className="text-sm text-slate-500 font-medium">
-												Location
+												Location / Venue
 											</p>
-											<p className="font-medium">{data.district}</p>
+											<p className="font-medium">{eventDetails.eventAddress || data.district}</p>
 										</div>
 									</div>
 
@@ -338,14 +385,23 @@ export default function SuccessPage() {
 										<Calendar className="w-5 h-5 text-slate-400 mt-0.5" />
 										<div>
 											<p className="text-sm text-slate-500 font-medium">
-												Registered On
+												Event Schedule
 											</p>
 											<p className="font-medium">
-												{new Date(data.registrationDate).toLocaleDateString()}
+												{eventDetails.eventDate
+													? `${eventDetails.eventDate} ${eventDetails.eventStartTime ? `@ ${eventDetails.eventStartTime}` : ""}`
+													: new Date(data.registrationDate).toLocaleDateString()}
 											</p>
 										</div>
 									</div>
 								</div>
+
+								{eventDetails.organiserContact && (
+									<div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/50 flex items-center justify-between text-xs sm:text-sm">
+										<span className="text-slate-600 dark:text-slate-400">Organiser Helpline:</span>
+										<span className="font-bold text-blue-700 dark:text-blue-300">{eventDetails.organiserContact}</span>
+									</div>
+								)}
 
 								<div className="pt-4 mt-4 border-t border-dashed border-slate-200 dark:border-slate-800">
 									<p className="text-xs text-slate-400 text-center md:text-left">

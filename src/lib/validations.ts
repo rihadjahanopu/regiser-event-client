@@ -13,6 +13,7 @@ export const registrationSchema = z.object({
   class: z.string().min(1, "Class is required."),
   subjectGroup: z.string().min(2, "Subject / Group is required."),
   rollNumber: z.string().optional().or(z.literal("")),
+  regNumber: z.string().optional().or(z.literal("")),
   bloodGroup: z.string().optional().or(z.literal("")),
   emergencyContact: z.string().regex(/^(\+88)?01[3-9]\d{8}$/, "Invalid Bangladeshi mobile number.").optional().or(z.literal("")),
   passingYear: z.string().optional().or(z.literal("")),
