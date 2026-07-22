@@ -5,6 +5,8 @@ import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, User, School, CalendarClock, TrendingUp, Loader2 } from "lucide-react";
 
+import RecentRegistrationChart from "@/components/admin/RecentRegistrationChart";
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -116,43 +118,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-        <Card className="col-span-1 lg:col-span-2 border-0 shadow-lg shadow-slate-200/50 dark:shadow-none dark:bg-slate-900">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-blue-600" />
-              <span>Recent Registration Trend (Last 7 Days)</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-             {/* Using simple bars for now, Recharts requires Client Component */}
-            <div className="h-64 flex items-end justify-between space-x-2 pt-4">
-              {stats.last7Days.length > 0 ? (
-                stats.last7Days.map((day: any, i: number) => {
-                  const max = Math.max(...stats.last7Days.map((d: any) => d.count), 1);
-                  const height = `${(day.count / max) * 100}%`;
-                  return (
-                    <div key={i} className="flex flex-col items-center flex-1 group">
-                      <div className="text-xs text-slate-500 mb-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {day.count}
-                      </div>
-                      <div 
-                        className="w-full bg-blue-100 dark:bg-blue-900/50 hover:bg-blue-600 dark:hover:bg-blue-500 rounded-t-md transition-all duration-500"
-                        style={{ height }}
-                      />
-                      <div className="text-xs text-slate-500 mt-2 truncate w-full text-center">
-                        {new Date(day.date).getDate()}
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                  No data available
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <RecentRegistrationChart data={stats.last7Days || []} />
       </div>
     </div>
   );
