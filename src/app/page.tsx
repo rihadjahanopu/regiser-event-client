@@ -20,7 +20,7 @@ import {
 	User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -42,7 +42,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { RegistrationFormValues, registrationSchema } from "@/lib/validations";
+import { RegistrationFormValues } from "@/lib/validations";
+import { buildDynamicSchema, FieldConfig } from "@/lib/fieldConfig";
 import axios from "axios";
 import Image from "next/image";
 
@@ -113,6 +114,9 @@ export default function RegistrationPage() {
 	}>({});
 	const [isCutoffClosed, setIsCutoffClosed] = useState(false);
 
+	// Form Field config state
+	const [fieldConfig, setFieldConfig] = useState<Partial<FieldConfig>>({});
+
 	useEffect(() => {
 		axios
 			.get("/api/settings")
@@ -130,6 +134,10 @@ export default function RegistrationPage() {
 						showCountdown: data.showCountdown ?? true,
 					});
 
+					if (data.fieldConfig) {
+						setFieldConfig(data.fieldConfig);
+					}
+
 					if (data.eventDate) {
 						const timeLeft = calculateTimeLeft(data.eventDate, data.eventStartTime || "");
 						if (timeLeft.isCutoffReached) {
@@ -144,9 +152,14 @@ export default function RegistrationPage() {
 			.finally(() => setIsLoadingSettings(false));
 	}, []);
 
+	// Dynamically generated schema based on admin config
+	const dynamicSchema = useMemo(() => {
+		return buildDynamicSchema(fieldConfig);
+	}, [fieldConfig]);
+
 	// eslint-disable-next-line @typescript-eslint/typedef
 	const form = useForm<RegistrationFormValues>({
-		resolver: zodResolver(registrationSchema),
+		resolver: zodResolver(dynamicSchema) as any,
 		defaultValues: {
 			fullName: "",
 			mobile: "",
@@ -531,9 +544,13 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Email{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.email ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<div className="relative">
@@ -669,9 +686,13 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Roll Number{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.rollNumber ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -692,9 +713,13 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Registration Number{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.regNumber ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -715,9 +740,13 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Passing Year{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.passingYear ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -738,9 +767,13 @@ export default function RegistrationPage() {
 															<FormItem className="sm:col-span-2">
 																<FormLabel>
 																	Grade / GPA{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.gradeGpa ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -808,9 +841,13 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Blood Group{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.bloodGroup ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<Select
 																	onValueChange={field.onChange}
@@ -851,9 +888,13 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Father&apos;s Name{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.fatherName ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<Input
@@ -874,9 +915,13 @@ export default function RegistrationPage() {
 															<FormItem>
 																<FormLabel>
 																	Emergency Contact{" "}
-																	<span className="text-slate-400 text-xs">
-																		(Optional)
-																	</span>
+																	{fieldConfig.emergencyContact ? (
+																		<span className="text-red-500">*</span>
+																	) : (
+																		<span className="text-slate-400 text-xs">
+																			(Optional)
+																		</span>
+																	)}
 																</FormLabel>
 																<FormControl>
 																	<div className="relative">

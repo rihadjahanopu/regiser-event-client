@@ -42,6 +42,20 @@ export default function SettingsPage() {
   const [savingEvent, setSavingEvent] = useState(false);
   const [clearingEvent, setClearingEvent] = useState(false);
 
+  // Form Field Config state
+  const [fieldConfig, setFieldConfig] = useState<Record<string, boolean>>({
+    email: false,
+    dob: false,
+    fatherName: false,
+    rollNumber: false,
+    regNumber: false,
+    bloodGroup: false,
+    emergencyContact: false,
+    passingYear: false,
+    gradeGpa: false,
+  });
+  const [savingFieldConfig, setSavingFieldConfig] = useState(false);
+
   const fetchSettings = async () => {
     setLoading(true);
     try {
@@ -56,6 +70,9 @@ export default function SettingsPage() {
         setEventStartTime(d.eventStartTime || "");
         setOrganiserContact(d.organiserContact || "");
         setShowCountdown(d.showCountdown ?? true);
+        if (d.fieldConfig) {
+          setFieldConfig(d.fieldConfig);
+        }
       }
     } catch {
       toast.error("Failed to fetch settings");
@@ -133,6 +150,32 @@ export default function SettingsPage() {
     } finally {
       setClearingEvent(false);
     }
+  };
+
+  const handleSaveFieldConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingFieldConfig(true);
+    try {
+      const res = await axios.put("/api/admin/settings/field-config", {
+        fieldConfig,
+      });
+      if (res.data.success) {
+        toast.success("Form field validation configuration updated!");
+      } else {
+        toast.error(res.data.error || "Failed to update validation configuration");
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to update validation configuration");
+    } finally {
+      setSavingFieldConfig(false);
+    }
+  };
+
+  const toggleFieldRequired = (fieldName: string) => {
+    setFieldConfig((prev) => ({
+      ...prev,
+      [fieldName]: !prev[fieldName],
+    }));
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -455,6 +498,84 @@ export default function SettingsPage() {
                 ) : (
                   <>
                     <RotateCcw className="w-4 h-4 mr-2 text-slate-500" /> Clear Details
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* ── Form Field Configuration ── */}
+      <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+            <CheckCircle2 className="w-5 h-5 text-blue-600" />
+            Registration Form Field Settings
+          </CardTitle>
+          <CardDescription>
+            Choose which optional fields should be set to <strong>Required (বাধ্যতামূলক)</strong>. Fields that are not toggled will remain <strong>Optional</strong>.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSaveFieldConfig} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { name: "email", label: "Email Address" },
+                { name: "dob", label: "Date of Birth" },
+                { name: "fatherName", label: "Father's Name" },
+                { name: "rollNumber", label: "Roll Number" },
+                { name: "regNumber", label: "Registration Number" },
+                { name: "bloodGroup", label: "Blood Group" },
+                { name: "emergencyContact", label: "Emergency Contact" },
+                { name: "passingYear", label: "Passing Year" },
+                { name: "gradeGpa", label: "GPA / Grade" },
+              ].map((field) => (
+                <div
+                  key={field.name}
+                  className="flex items-center justify-between p-3 rounded-lg border border-slate-150 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                >
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                    {field.label}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      fieldConfig[field.name]
+                        ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400"
+                        : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                    }`}>
+                      {fieldConfig[field.name] ? "Required" : "Optional"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toggleFieldRequired(field.name)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                        fieldConfig[field.name] ? "bg-amber-500" : "bg-slate-300 dark:bg-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          fieldConfig[field.name] ? "translate-x-6" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 border-t border-slate-150 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <span className="text-xs text-slate-500 italic">
+                Note: Core fields (Name, Mobile, Gender, Address, School, Class, Group) are always Required.
+              </span>
+              <Button type="submit" disabled={savingFieldConfig} className="bg-blue-600 hover:bg-blue-700">
+                {savingFieldConfig ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" /> Save Field Settings
                   </>
                 )}
               </Button>
