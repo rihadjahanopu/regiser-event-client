@@ -261,11 +261,11 @@ export default function CertificatesPage() {
 		}
 	};
 
-	// Full-bleed A4 Vector PDF Generation (100% Crisp Vector Text & Graphics)
+	// Full-bleed A4 Ultra-HD PDF Generation (Preserves Beautiful Layout & Calligraphy + 600DPI Ultra-Clarity)
 	const downloadPDF = async (certData: any) => {
 		const orgName = "Bangladesh Anjumane Talamije Islamia";
 		const subHeader = "Chhatak Uttar Upazila";
-		const certTitle = "CERTIFICATE OF PARTICIPATION";
+		const certTitle = "Certificate of Participation";
 		const qrValue = `${window.location.origin}/verify/certificate/${certData.certificateId}`;
 		const dateStr = certData.eventDate || new Date(certData.generatedDate || Date.now()).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
 		const secHash = getSecurityHash(certData.certificateId, certData.registrationId);
@@ -278,238 +278,245 @@ export default function CertificatesPage() {
 		const secrTitle = activeEvent?.secretaryTitle || "General Secretary, Chhatak Uttar";
 		const secrSigUrl = activeEvent?.secretarySignatureUrl || "";
 
-		toast.info("Preparing PDF download...");
+		toast.info("Preparing Ultra-HD PDF download...");
 
-		try {
-			// Pre-convert external images to base64 data URLs & load jsPDF/QRCode
-			const [presSigData, secrSigData, logoData, QRCodeMod, jsPDFMod] = await Promise.all([
-				loadImageAsDataUrl(presSigUrl),
-				loadImageAsDataUrl(secrSigUrl),
-				loadImageAsDataUrl(window.location.origin + "/bangladesh-anjumane-talamije-islamia-seeklogo.png"),
-				import("qrcode"),
-				import("jspdf").then((m) => m.jsPDF),
-			]);
+		// Pre-convert external images to base64 data URLs & load modules
+		const [presSigData, secrSigData, logoData, QRCodeMod, htmlToImageMod, jsPDFMod] = await Promise.all([
+			loadImageAsDataUrl(presSigUrl),
+			loadImageAsDataUrl(secrSigUrl),
+			loadImageAsDataUrl(window.location.origin + "/bangladesh-anjumane-talamije-islamia-seeklogo.png"),
+			import("qrcode"),
+			import("html-to-image"),
+			import("jspdf").then((m) => m.jsPDF),
+		]);
 
-			const qrDataUrl = await QRCodeMod.default.toDataURL(qrValue, {
+		// Create off-screen rendering container matching the exact HTML preview design
+		const container = document.createElement("div");
+		container.style.position = "fixed";
+		container.style.top = "0";
+		container.style.left = "0";
+		container.style.width = "1123px";
+		container.style.height = "794px";
+		container.style.zIndex = "-9999";
+		container.style.pointerEvents = "none";
+		container.style.overflow = "hidden";
+
+		container.innerHTML = `
+			<div style="width: 1123px; height: 794px; background: #ffffff; padding: 25px 35px 35px 35px; box-sizing: border-box; font-family: 'Playfair Display', Georgia, serif; position: relative; border: 8px solid #14532d; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; margin: 0; color: #0f172a;">
+				<!-- Inner Gold Foil Border -->
+				<div style="position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid #d97706; pointer-events: none; z-index: 1;"></div>
+				<div style="position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px; border: 1px solid #166534; pointer-events: none; z-index: 1;"></div>
+
+				<!-- Corner Golden Flourish Ornaments -->
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; top: 16px; left: 16px; z-index: 2; pointer-events: none;">
+					<path d="M5,5 L45,5 L45,12 L12,12 L12,45 L5,45 Z" fill="#d97706"/>
+					<circle cx="20" cy="20" r="4" fill="#166534"/>
+				</svg>
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; top: 16px; right: 16px; z-index: 2; pointer-events: none;">
+					<path d="M95,5 L55,5 L55,12 L88,12 L88,45 L95,45 Z" fill="#d97706"/>
+					<circle cx="80" cy="20" r="4" fill="#166534"/>
+				</svg>
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; bottom: 16px; left: 16px; z-index: 2; pointer-events: none;">
+					<path d="M5,95 L45,95 L45,88 L12,88 L12,55 L5,55 Z" fill="#d97706"/>
+					<circle cx="20" cy="80" r="4" fill="#166534"/>
+				</svg>
+				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; bottom: 16px; right: 16px; z-index: 2; pointer-events: none;">
+					<path d="M95,95 L55,95 L55,88 L88,88 L88,55 L95,55 Z" fill="#d97706"/>
+					<circle cx="80" cy="80" r="4" fill="#166534"/>
+				</svg>
+				
+				<!-- Watermark Seal & Logo -->
+				<svg width="100%" height="100%" style="position: absolute; top:0; left:0; pointer-events:none; opacity: 0.035; z-index:0;" xmlns="http://www.w3.org/2000/svg">
+					<circle cx="561" cy="397" r="280" fill="none" stroke="#16a34a" stroke-width="2"/>
+					<circle cx="561" cy="397" r="220" fill="none" stroke="#d97706" stroke-width="1.5"/>
+					<circle cx="561" cy="397" r="160" fill="none" stroke="#16a34a" stroke-width="1.2"/>
+					<circle cx="561" cy="397" r="100" fill="none" stroke="#d97706" stroke-width="1"/>
+				</svg>
+
+				<!-- Rounded Center Watermark Logo -->
+				<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 340px; height: 340px; opacity: 0.055; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center;">
+					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" />
+				</div>
+
+				<!-- Header Section -->
+				<div style="text-align: center; margin-top: 5px; position: relative; z-index: 2;">
+					<div style="font-family: 'Traditional Arabic', 'Amiri', 'DejaVu Sans', serif; font-size: 22px; color: #15803d; font-weight: bold; margin-bottom: 12px; line-height: 1;">﷽</div>
+					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="height: 68px; width: 68px; border-radius: 50%; object-fit: contain; margin-bottom: 6px; display: inline-block; background: #ffffff; padding: 2px; border: 2px solid #d97706; box-shadow: 0 2px 8px rgba(0,0,0,0.06);" />
+					<h1 style="font-size: 22px; color: #0f172a; font-weight: bold; margin: 0; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 0.8px;">${orgName}</h1>
+					<h2 style="font-size: 13.5px; color: #475569; margin: 3px 0 0 0; font-family: 'Playfair Display', Georgia, serif; font-weight: 500; letter-spacing: 0.5px;">${subHeader}</h2>
+				</div>
+
+				<!-- Main Body Content -->
+				<div style="text-align: center; margin: 6px 0; position: relative; z-index: 2;">
+					<div style="font-size: 38px; font-weight: 700; color: #581c87; margin-bottom: 4px; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 1.5px; text-transform: uppercase;">
+						${certTitle}
+					</div>
+					<div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
+						<div style="width: 70px; height: 1px; background: linear-gradient(to right, transparent, #d97706);"></div>
+						<span style="color: #d97706; font-size: 12px;">✦</span>
+						<div style="width: 70px; height: 1px; background: linear-gradient(to left, transparent, #d97706);"></div>
+					</div>
+					<div style="font-size: 17px; color: #475569; font-style: italic; margin-bottom: 8px; font-family: 'Playfair Display', Georgia, serif;">
+						This is to certify that
+					</div>
+					<div style="font-size: 54px; font-weight: 400; color: #3b0764; margin-bottom: 8px; font-family: 'Great Vibes', cursive, Georgia, serif; line-height: 1.1;">
+						${certData.fullName}
+					</div>
+					<div style="font-size: 17px; color: #4b5563; max-width: 850px; margin: 0 auto; line-height: 1.5; font-family: 'Playfair Display', Georgia, serif;">
+						successfully registered and participated in the event
+					</div>
+					<div style="font-size: 28px; font-weight: 700; color: #0f172a; margin: 8px 0 6px 0; font-family: 'Playfair Display', Georgia, serif;">
+						${certData.eventName}
+					</div>
+					<div style="font-size: 17px; color: #374151; font-style: italic; font-family: 'Playfair Display', Georgia, serif;">
+						on ${dateStr}.
+					</div>
+				</div>
+
+				<!-- Verification QR Code & Security Badge Frame -->
+				<div style="text-align: center; margin-bottom: 4px; position: relative; z-index: 2;">
+					<div style="font-size: 9px; font-family: sans-serif; color: #d97706; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 4px; text-transform: uppercase;">
+						Official Security Verification
+					</div>
+					<div id="pdf-qr-box-${certData.registrationId}" style="display: inline-block; background: #ffffff; padding: 5px; border: 2px solid #f59e0b; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.04);"></div>
+					<div style="font-family: 'Courier New', monospace; font-size: 11px; color: #1e293b; font-weight: 700; margin-top: 4px; letter-spacing: 0.5px;">
+						ID: ${certData.certificateId}
+					</div>
+					<div style="font-family: 'Courier New', monospace; font-size: 8.5px; color: #16a34a; font-weight: 700; margin-top: 2px;">
+						${secHash}
+					</div>
+				</div>
+
+				<!-- Bottom Signatures -->
+				<div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 60px 0 60px; position: relative; z-index: 2;">
+					<!-- Left Signature (President) -->
+					<div style="text-align: center; width: 240px; margin-bottom: 50px;">
+						<div style="height: 48px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
+							${presSigData ? `<img src="${presSigData}" style="height: 44px; max-width: 190px; object-fit: contain;" />` : ''}
+						</div>
+						<div style="border-top: 1.5px solid #cbd5e1; margin: 4px auto 6px auto; width: 170px;"></div>
+						<div style="font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: 'Playfair Display', Georgia, serif;">${presName}</div>
+						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${presTitle}</div>
+					</div>
+
+					<!-- Right Signature (Secretary) -->
+					<div style="text-align: center; width: 240px; margin-bottom: 50px;">
+						<div style="height: 48px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
+							${secrSigData ? `<img src="${secrSigData}" style="height: 44px; max-width: 190px; object-fit: contain;" />` : ''}
+						</div>
+						<div style="border-top: 1.5px solid #cbd5e1; margin: 4px auto 6px auto; width: 170px;"></div>
+						<div style="font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: 'Playfair Display', Georgia, serif;">${secrName}</div>
+						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${secrTitle}</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		document.body.appendChild(container);
+		// Give the browser a full frame to paint the DOM before capturing
+		await new Promise((resolve) => setTimeout(resolve, 300));
+
+		// Generate High-Density QR Code canvas
+		const qrBox = container.querySelector(`#pdf-qr-box-${certData.registrationId}`);
+		if (qrBox) {
+			const qrCanvas = document.createElement("canvas");
+			await QRCodeMod.default.toCanvas(qrCanvas, qrValue, {
 				width: 360,
 				margin: 1,
-				color: { dark: "#1e1b4b", light: "#ffffff" },
+				color: {
+					dark: "#1e1b4b",
+					light: "#ffffff",
+				},
 				errorCorrectionLevel: "H",
 			});
+			qrCanvas.style.width = "85px";
+			qrCanvas.style.height = "85px";
+			qrCanvas.style.display = "block";
+			qrBox.appendChild(qrCanvas);
+		}
 
-			const doc = new jsPDFMod({
+		try {
+			// Ensure fonts are loaded before capture
+			if (document.fonts) {
+				await document.fonts.ready;
+			}
+
+			// Monkey-patch to suppress cross-origin cssRules SecurityError
+			// html-to-image internally iterates document.styleSheets; cross-origin sheets throw
+			const patchedGetStyleSheets = () => {
+				const sheets: CSSStyleSheet[] = [];
+				for (const sheet of Array.from(document.styleSheets)) {
+					try {
+						// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+						sheet.cssRules; // test access — throws if cross-origin
+						sheets.push(sheet);
+					} catch {
+						// skip cross-origin sheet silently
+					}
+				}
+				return sheets;
+			};
+			const targetEl = container.firstElementChild as HTMLElement;
+
+			// Capture at 3x High-Density (3369 x 2382 px ≈ 300DPI) — safe GPU memory range
+			// pixelRatio:5 = 5615x3970px which overflows GPU memory causing rainbow corruption
+			const imgData = await htmlToImageMod.toPng(targetEl, {
+				quality: 1.0,
+				pixelRatio: 3,
+				width: 1123,
+				height: 794,
+				cacheBust: true,
+				skipFonts: false,
+				filter: (node: HTMLElement) => {
+					// Skip external <link rel="stylesheet"> tags — these are cross-origin
+					// and cause "Cannot access cssRules" SecurityError in html-to-image
+					if (
+						node.tagName === "LINK" &&
+						(node as HTMLLinkElement).rel === "stylesheet" &&
+						!(node as HTMLLinkElement).href?.startsWith(window.location.origin)
+					) {
+						return false;
+					}
+					return true;
+				},
+				// Provide a custom font embed function that safely skips cross-origin sheets
+				fontEmbedCSS: (() => {
+					try {
+						const safeSheets = patchedGetStyleSheets();
+						return safeSheets
+							.map((sheet) => {
+								try {
+									return Array.from(sheet.cssRules)
+										.map((r) => r.cssText)
+										.join("\n");
+								} catch {
+									return "";
+								}
+							})
+							.join("\n");
+					} catch {
+						return "";
+					}
+				})(),
+			});
+
+			const pdf = new jsPDFMod({
 				orientation: "landscape",
 				unit: "mm",
 				format: "a4",
 				compress: true,
 			});
 
-			// Page dimensions: 297mm x 210mm
-			const pageWidth = 297;
-			const pageHeight = 210;
-			const centerX = pageWidth / 2;
-
-			// 1. Background Fill
-			doc.setFillColor(255, 255, 255);
-			doc.rect(0, 0, pageWidth, pageHeight, "F");
-
-			// 2. Vector Borders
-			// Outer Dark Green Border
-			doc.setDrawColor(20, 83, 45); // #14532d
-			doc.setLineWidth(2.2);
-			doc.rect(4, 4, pageWidth - 8, pageHeight - 8);
-
-			// Inner Gold Foil Border
-			doc.setDrawColor(217, 119, 6); // #d97706
-			doc.setLineWidth(0.6);
-			doc.rect(7, 7, pageWidth - 14, pageHeight - 14);
-
-			// Thin Green Inner Border
-			doc.setDrawColor(22, 101, 52); // #166534
-			doc.setLineWidth(0.3);
-			doc.rect(8.5, 8.5, pageWidth - 17, pageHeight - 17);
-
-			// 3. Corner Vector Flourish Accents
-			const drawCornerAccents = (x: number, y: number, isRight: boolean, isBottom: boolean) => {
-				doc.setFillColor(217, 119, 6);
-				const w = 12;
-				const h = 2.2;
-				const vx = isRight ? x - w : x;
-				const vy = isBottom ? y - h : y;
-				doc.rect(vx, vy, w, h, "F");
-				const hy = isBottom ? y - w : y;
-				const hx = isRight ? x - h : x;
-				doc.rect(hx, hy, h, w, "F");
-
-				doc.setFillColor(22, 101, 52);
-				const cx = isRight ? x - 4 : x + 4;
-				const cy = isBottom ? y - 4 : y + 4;
-				doc.circle(cx, cy, 1.2, "F");
-			};
-			drawCornerAccents(9.5, 9.5, false, false);
-			drawCornerAccents(pageWidth - 9.5, 9.5, true, false);
-			drawCornerAccents(9.5, pageHeight - 9.5, false, true);
-			drawCornerAccents(pageWidth - 9.5, pageHeight - 9.5, true, true);
-
-			// 4. Background Watermark Circles & Logo
-			doc.setDrawColor(22, 163, 74);
-			doc.setLineWidth(0.2);
-			doc.circle(centerX, pageHeight / 2, 70);
-			doc.setDrawColor(217, 119, 6);
-			doc.setLineWidth(0.15);
-			doc.circle(centerX, pageHeight / 2, 55);
-			doc.setDrawColor(22, 163, 74);
-			doc.setLineWidth(0.1);
-			doc.circle(centerX, pageHeight / 2, 40);
-
-			if (logoData) {
-				doc.addImage(logoData, "PNG", centerX - 35, pageHeight / 2 - 35, 70, 70);
-			}
-
-			// 5. Header Section (Vector Text)
-			let currentY = 19;
-
-			// Bismillah
-			doc.setFont("times", "bold");
-			doc.setFontSize(14);
-			doc.setTextColor(21, 128, 61); // #15803d
-			doc.text("﷽", centerX, currentY, { align: "center" });
-
-			currentY += 4;
-			// Top Logo
-			if (logoData) {
-				doc.addImage(logoData, "PNG", centerX - 8, currentY, 16, 16);
-			}
-			currentY += 21;
-
-			// Organization Name
-			doc.setFont("times", "bold");
-			doc.setFontSize(17);
-			doc.setTextColor(15, 23, 42); // #0f172a
-			doc.text(orgName, centerX, currentY, { align: "center" });
-
-			currentY += 5;
-			// Subheader
-			doc.setFont("times", "normal");
-			doc.setFontSize(10.5);
-			doc.setTextColor(71, 85, 105); // #475569
-			doc.text(subHeader, centerX, currentY, { align: "center" });
-
-			// 6. Main Body Content (Vector Text)
-			currentY += 13;
-			// Certificate Title
-			doc.setFont("times", "bold");
-			doc.setFontSize(24);
-			doc.setTextColor(88, 28, 135); // #581c87
-			doc.text(certTitle, centerX, currentY, { align: "center" });
-
-			currentY += 3.5;
-			// Decorative Line
-			doc.setDrawColor(217, 119, 6);
-			doc.setLineWidth(0.4);
-			doc.line(centerX - 25, currentY, centerX - 5, currentY);
-			doc.line(centerX + 5, currentY, centerX + 25, currentY);
-			doc.setFontSize(8);
-			doc.setTextColor(217, 119, 6);
-			doc.text("✦", centerX, currentY + 1, { align: "center" });
-
-			currentY += 8;
-			// "This is to certify that"
-			doc.setFont("times", "italic");
-			doc.setFontSize(13);
-			doc.setTextColor(71, 85, 105);
-			doc.text("This is to certify that", centerX, currentY, { align: "center" });
-
-			currentY += 14;
-			// Participant Name (Vector Text - Never pixelates)
-			doc.setFont("times", "bolditalic");
-			doc.setFontSize(30);
-			doc.setTextColor(59, 7, 100); // #3b0764
-			doc.text(certData.fullName, centerX, currentY, { align: "center" });
-
-			currentY += 9;
-			// "successfully registered and participated in the event"
-			doc.setFont("times", "normal");
-			doc.setFontSize(12);
-			doc.setTextColor(75, 85, 99); // #4b5563
-			doc.text("successfully registered and participated in the event", centerX, currentY, { align: "center" });
-
-			currentY += 10;
-			// Event Name
-			doc.setFont("times", "bold");
-			doc.setFontSize(19);
-			doc.setTextColor(15, 23, 42);
-			doc.text(certData.eventName, centerX, currentY, { align: "center" });
-
-			currentY += 7;
-			// Date
-			doc.setFont("times", "italic");
-			doc.setFontSize(11.5);
-			doc.setTextColor(55, 65, 81);
-			doc.text(`on ${dateStr}.`, centerX, currentY, { align: "center" });
-
-			// 7. Verification QR & Security Badge
-			currentY += 6;
-			doc.setFont("helvetica", "bold");
-			doc.setFontSize(6.5);
-			doc.setTextColor(217, 119, 6);
-			doc.text("OFFICIAL SECURITY VERIFICATION", centerX, currentY, { align: "center" });
-
-			currentY += 2;
-			doc.addImage(qrDataUrl, "PNG", centerX - 10, currentY, 20, 20);
-
-			currentY += 23.5;
-			doc.setFont("courier", "bold");
-			doc.setFontSize(8.5);
-			doc.setTextColor(30, 41, 59);
-			doc.text(`ID: ${certData.certificateId}`, centerX, currentY, { align: "center" });
-
-			currentY += 3.5;
-			doc.setFont("courier", "bold");
-			doc.setFontSize(7);
-			doc.setTextColor(22, 163, 74);
-			doc.text(secHash, centerX, currentY, { align: "center" });
-
-			// 8. Signatures Section
-			const sigY = 170;
-
-			// Left Signature (President)
-			if (presSigData) {
-				doc.addImage(presSigData, "PNG", 30, sigY - 11, 45, 10);
-			}
-			doc.setDrawColor(203, 213, 225);
-			doc.setLineWidth(0.4);
-			doc.line(25, sigY, 80, sigY);
-			doc.setFont("times", "bold");
-			doc.setFontSize(10);
-			doc.setTextColor(15, 23, 42);
-			doc.text(presName, 52.5, sigY + 4.5, { align: "center" });
-			doc.setFont("times", "normal");
-			doc.setFontSize(8);
-			doc.setTextColor(100, 116, 139);
-			doc.text(presTitle, 52.5, sigY + 8.5, { align: "center" });
-
-			// Right Signature (Secretary)
-			if (secrSigData) {
-				doc.addImage(secrSigData, "PNG", 222, sigY - 11, 45, 10);
-			}
-			doc.setDrawColor(203, 213, 225);
-			doc.setLineWidth(0.4);
-			doc.line(217, sigY, 272, sigY);
-			doc.setFont("times", "bold");
-			doc.setFontSize(10);
-			doc.setTextColor(15, 23, 42);
-			doc.text(secrName, 244.5, sigY + 4.5, { align: "center" });
-			doc.setFont("times", "normal");
-			doc.setFontSize(8);
-			doc.setTextColor(100, 116, 139);
-			doc.text(secrTitle, 244.5, sigY + 8.5, { align: "center" });
-
-			doc.save(`Certificate-${certData.fullName.replace(/\s+/g, "_")}-${certData.certificateId}.pdf`);
+			pdf.addImage(imgData, "PNG", 0, 0, 297, 210, undefined, "FAST");
+			pdf.save(`Certificate-${certData.fullName.replace(/\s+/g, "_")}-${certData.certificateId}.pdf`);
 			toast.success("PDF downloaded successfully!");
 		} catch (error) {
 			console.error("PDF generation error details:", error);
 			toast.error("Failed to generate PDF. Please try again.");
+		} finally {
+			if (container.parentNode) {
+				container.parentNode.removeChild(container);
+			}
 		}
 	};
 
