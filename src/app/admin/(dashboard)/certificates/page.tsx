@@ -323,34 +323,45 @@ export default function CertificatesPage() {
 						margin: 0mm;
 					}
 					html, body {
-						width: 297mm;
-						height: 210mm;
-						margin: 0;
-						padding: 0;
-					}
-					body * {
-						visibility: hidden;
-						background: none !important;
-					}
-					#print-capture-area, #print-capture-area * {
-						visibility: visible;
-					}
-					#print-capture-area {
-						position: fixed;
-						left: 0;
-						top: 0;
-						width: 297mm;
-						margin: 0;
-						padding: 0;
+						width: 297mm !important;
+						height: auto !important;
+						min-height: 0 !important;
+						margin: 0 !important;
+						padding: 0 !important;
+						overflow: visible !important;
 						background: white !important;
 					}
+					body * {
+						visibility: hidden !important;
+					}
+					header, nav, aside, main, button, table, .print\:hidden {
+						display: none !important;
+					}
+					#print-capture-area, #print-capture-area * {
+						visibility: visible !important;
+					}
+					#print-capture-area {
+						position: absolute !important;
+						left: 0 !important;
+						top: 0 !important;
+						width: 297mm !important;
+						height: auto !important;
+						margin: 0 !important;
+						padding: 0 !important;
+						background: white !important;
+						overflow: visible !important;
+						display: block !important;
+						z-index: 999999 !important;
+					}
 					.print-certificate-page {
-						width: 297mm;
-						height: 210mm;
-						max-height: 210mm;
-						box-sizing: border-box;
-						page-break-after: always;
-						break-after: page;
+						width: 297mm !important;
+						height: 210mm !important;
+						max-height: 210mm !important;
+						box-sizing: border-box !important;
+						page-break-after: always !important;
+						break-after: page !important;
+						page-break-inside: avoid !important;
+						break-inside: avoid !important;
 						border: 7px solid #14532d !important;
 						background: #ffffff !important;
 						-webkit-print-color-adjust: exact;
@@ -361,8 +372,12 @@ export default function CertificatesPage() {
 						padding: 18px 22px;
 						position: relative;
 						overflow: hidden;
-						margin: 0;
+						margin: 0 !important;
 						color: #0f172a;
+					}
+					.print-certificate-page:last-child {
+						page-break-after: avoid !important;
+						break-after: avoid !important;
 					}
 					.print-certificate-page h1 { font-size: 18px !important; margin: 0 !important; }
 					.print-certificate-page h2 { font-size: 32px !important; margin: 2px 0 !important; }
