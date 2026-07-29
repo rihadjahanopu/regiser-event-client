@@ -24,21 +24,12 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
-import {
 	Search,
 	Loader2,
 	ChevronLeft,
 	ChevronRight,
 	Award,
-	Download,
 	Printer,
-	Eye,
 	History,
 	Users,
 	Trash2,
@@ -79,11 +70,6 @@ export default function CertificatesPage() {
 
 	// Action Loading States
 	const [generating, setGenerating] = useState(false);
-	const [downloadingBulk, setDownloadingBulk] = useState(false);
-
-	// Preview Modal State
-	const [previewCert, setPreviewCert] = useState<any>(null);
-	const [previewOpen, setPreviewOpen] = useState(false);
 
 	// Print Area State
 	const [printCerts, setPrintCerts] = useState<any[]>([]);
@@ -244,314 +230,77 @@ export default function CertificatesPage() {
 		return `SEC-HASH: 8F9B-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
 	};
 
-	// Helper: load an image URL as a base64 data URL (handles CORS via fetch+blob)
-	const loadImageAsDataUrl = async (url: string): Promise<string | null> => {
-		if (!url) return null;
-		try {
-			const resp = await fetch(url, { mode: "cors" });
-			const blob = await resp.blob();
-			return await new Promise((resolve) => {
-				const reader = new FileReader();
-				reader.onload = () => resolve(reader.result as string);
-				reader.onerror = () => resolve(null);
-				reader.readAsDataURL(blob);
-			});
-		} catch {
-			return null;
-		}
-	};
-
-	// Helper: load font binary as base64 string for jsPDF font VFS via FileReader
-	const loadFontAsBase64 = async (url: string): Promise<string | null> => {
-		try {
-			const resp = await fetch(url);
-			if (!resp.ok) return null;
-			const blob = await resp.blob();
-			return await new Promise((resolve) => {
-				const reader = new FileReader();
-				reader.onload = () => {
-					const result = reader.result as string;
-					const base64 = result.includes(",") ? result.split(",")[1] : result;
-					resolve(base64);
-				};
-				reader.onerror = () => resolve(null);
-				reader.readAsDataURL(blob);
-			});
-		} catch {
-			return null;
-		}
-	};
-
-	// High-Definition A4 Certificate PDF Generation (Exact Template Layout + 300DPI High-Clarity)
-	const downloadPDF = async (certData: any) => {
-		const orgName = "Bangladesh Anjumane Talamije Islamia";
-		const subHeader = "Chhatak Uttar Upazila";
-		const certTitle = "Certificate of Participation";
-		const qrValue = `${window.location.origin}/verify/certificate/${certData.certificateId}`;
-		const dateStr = certData.eventDate || new Date(certData.generatedDate || Date.now()).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
-		const secHash = getSecurityHash(certData.certificateId, certData.registrationId);
-
-		const presName = activeEvent?.presidentName || "Professor Mohammad Farhadul Islam";
-		const presTitle = activeEvent?.presidentTitle || "President, Chhatak Uttar";
-		const presSigUrl = activeEvent?.presidentSignatureUrl || "";
-
-		const secrName = activeEvent?.secretaryName || "Shah Rezwan Hayat";
-		const secrTitle = activeEvent?.secretaryTitle || "General Secretary, Chhatak Uttar";
-		const secrSigUrl = activeEvent?.secretarySignatureUrl || "";
-
-		toast.info("Preparing PDF download...");
-
-		// Pre-convert external images to base64 data URLs & load modules
-		const [presSigData, secrSigData, logoData, QRCodeMod, htmlToImageMod, jsPDFMod] = await Promise.all([
-			loadImageAsDataUrl(presSigUrl),
-			loadImageAsDataUrl(secrSigUrl),
-			loadImageAsDataUrl(window.location.origin + "/bangladesh-anjumane-talamije-islamia-seeklogo.png"),
-			import("qrcode"),
-			import("html-to-image"),
-			import("jspdf").then((m) => m.jsPDF),
-		]);
-
-		// Create off-screen rendering container matching the exact HTML preview design
-		const container = document.createElement("div");
-		container.style.position = "fixed";
-		container.style.top = "0";
-		container.style.left = "0";
-		container.style.width = "1123px";
-		container.style.height = "794px";
-		container.style.zIndex = "-9999";
-		container.style.pointerEvents = "none";
-		container.style.overflow = "hidden";
-
-		container.innerHTML = `
-			<div style="width: 1123px; height: 794px; background: #ffffff; padding: 18px 22px; box-sizing: border-box; font-family: 'Playfair Display', Georgia, serif; position: relative; border: 7px solid #14532d; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; margin: 0; color: #0f172a;">
-				<!-- Inner Gold Foil Border -->
-				<div style="position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid #d97706; pointer-events: none; z-index: 1;"></div>
-				<div style="position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px; border: 1px solid #166534; pointer-events: none; z-index: 1;"></div>
-
-				<!-- Corner Golden Flourish Ornaments -->
-				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; top: 16px; left: 16px; z-index: 2; pointer-events: none;">
-					<path d="M5,5 L45,5 L45,12 L12,12 L12,45 L5,45 Z" fill="#d97706"/>
-					<circle cx="20" cy="20" r="4" fill="#166534"/>
-				</svg>
-				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; top: 16px; right: 16px; z-index: 2; pointer-events: none;">
-					<path d="M95,5 L55,5 L55,12 L88,12 L88,45 L95,45 Z" fill="#d97706"/>
-					<circle cx="80" cy="20" r="4" fill="#166534"/>
-				</svg>
-				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; bottom: 16px; left: 16px; z-index: 2; pointer-events: none;">
-					<path d="M5,95 L45,95 L45,88 L12,88 L12,55 L5,55 Z" fill="#d97706"/>
-					<circle cx="20" cy="80" r="4" fill="#166534"/>
-				</svg>
-				<svg width="60" height="60" viewBox="0 0 100 100" style="position: absolute; bottom: 16px; right: 16px; z-index: 2; pointer-events: none;">
-					<path d="M95,95 L55,95 L55,88 L88,88 L88,55 L95,55 Z" fill="#d97706"/>
-					<circle cx="80" cy="80" r="4" fill="#166534"/>
-				</svg>
-
-				<!-- Watermark Seal -->
-				<svg width="100%" height="100%" style="position: absolute; top:0; left:0; pointer-events:none; opacity: 0.035; z-index:0;" xmlns="http://www.w3.org/2000/svg">
-					<circle cx="50%" cy="50%" r="35%" fill="none" stroke="#16a34a" stroke-width="2"/>
-					<circle cx="50%" cy="50%" r="28%" fill="none" stroke="#d97706" stroke-width="1.5"/>
-					<circle cx="50%" cy="50%" r="20%" fill="none" stroke="#16a34a" stroke-width="1.2"/>
-					<circle cx="50%" cy="50%" r="12%" fill="none" stroke="#d97706" stroke-width="1"/>
-				</svg>
-
-				<!-- Rounded Center Watermark Logo -->
-				<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 320px; opacity: 0.055; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center;">
-					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" />
-				</div>
-
-				<!-- Header Section (matches print: mt-3, text-xl bismillah, h-16 logo) -->
-				<div style="text-align: center; margin-top: 12px; position: relative; z-index: 2;">
-					<div style="font-family: serif; font-size: 20px; color: #059669; font-weight: bold; margin-bottom: 8px; line-height: 1;">﷽</div>
-					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="height: 64px; width: 64px; border-radius: 50%; object-fit: contain; margin-bottom: 6px; display: inline-block; background: #ffffff; padding: 2px; border: 2px solid #d97706; box-shadow: 0 1px 4px rgba(0,0,0,0.06);" />
-					<div style="font-size: 21px; color: #1e293b; font-weight: bold; margin: 0; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 0.8px;">Bangladesh Anjumane Talamije Islamia</div>
-					<div style="font-size: 14px; color: #475569; margin: 3px 0 0 0; font-family: 'Playfair Display', Georgia, serif;">Chhatak Uttar Upazila</div>
-				</div>
-
-				<!-- Main Body Content (matches print: text-4xl title, text-5xl name, text-2xl event) -->
-				<div style="text-align: center; margin: 8px 0; position: relative; z-index: 2;">
-					<div style="font-size: 40px; font-weight: 700; color: #581c87; margin-bottom: 4px; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 2px; text-transform: uppercase;">
-						Certificate of Participation
-					</div>
-					<div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 6px;">
-						<div style="width: 64px; height: 1px; background: linear-gradient(to right, transparent, #d97706);"></div>
-						<span style="color: #d97706; font-size: 12px;">✦</span>
-						<div style="width: 64px; height: 1px; background: linear-gradient(to left, transparent, #d97706);"></div>
-					</div>
-					<div style="font-size: 16px; color: #475569; font-style: italic; margin-bottom: 6px; font-family: 'Playfair Display', Georgia, serif;">
-						This is to certify that
-					</div>
-					<div style="font-size: 52px; font-weight: 400; color: #3b0764; margin-bottom: 8px; font-family: 'Great Vibes', cursive, Georgia, serif; line-height: 1.1;">
-						${certData.fullName}
-					</div>
-					<div style="font-size: 16px; color: #475569; max-width: 750px; margin: 0 auto; line-height: 1.6; font-family: 'Playfair Display', Georgia, serif;">
-						successfully registered and participated in the event
-					</div>
-					<div style="font-size: 26px; font-weight: 700; color: #0f172a; margin: 6px 0 4px 0; font-family: 'Playfair Display', Georgia, serif;">
-						${certData.eventName}
-					</div>
-					<div style="font-size: 16px; color: #374151; font-style: italic; font-family: 'Playfair Display', Georgia, serif;">
-						on ${dateStr}.
-					</div>
-				</div>
-
-				<!-- Verification QR (matches print: size=75, p-1.5 border-amber-500) -->
-				<div style="text-align: center; margin-bottom: 4px; position: relative; z-index: 2;">
-					<div style="font-size: 9px; font-family: sans-serif; color: #d97706; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; text-transform: uppercase;">Official Security Verification</div>
-					<div id="pdf-qr-box-${certData.registrationId}" style="display: inline-block; background: #ffffff; padding: 6px; border: 2px solid #f59e0b; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);"></div>
-					<div style="font-family: 'Courier New', monospace; font-size: 12px; color: #475569; font-weight: 600; margin-top: 4px; letter-spacing: 0.3px;">
-						ID: ${certData.certificateId}
-					</div>
-					<div style="font-family: 'Courier New', monospace; font-size: 9px; color: #16a34a; font-weight: 700; margin-top: 2px;">
-						${secHash}
-					</div>
-				</div>
-
-				<!-- Bottom Signatures (matches print: px-10 pb-5 mb-[50px] w-48) -->
-				<div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 40px 20px 40px; position: relative; z-index: 2;">
-					<!-- Left Signature (President) -->
-					<div style="text-align: center; width: 192px;">
-						<div style="height: 36px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
-							${presSigData ? `<img src="${presSigData}" style="height: 32px; max-width: 160px; object-fit: contain; margin-bottom: 4px;" />` : ''}
-						</div>
-						<div style="border-top: 1px solid #cbd5e1; margin: 4px auto 4px auto; width: 128px;"></div>
-						<div style="font-size: 14px; font-weight: bold; color: #1e293b; font-family: 'Playfair Display', Georgia, serif;">${presName}</div>
-						<div style="font-size: 12px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${presTitle}</div>
-					</div>
-
-					<!-- Right Signature (Secretary) -->
-					<div style="text-align: center; width: 192px;">
-						<div style="height: 36px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
-							${secrSigData ? `<img src="${secrSigData}" style="height: 32px; max-width: 160px; object-fit: contain; margin-bottom: 4px;" />` : ''}
-						</div>
-						<div style="border-top: 1px solid #cbd5e1; margin: 4px auto 4px auto; width: 128px;"></div>
-						<div style="font-size: 14px; font-weight: bold; color: #1e293b; font-family: 'Playfair Display', Georgia, serif;">${secrName}</div>
-						<div style="font-size: 12px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${secrTitle}</div>
-					</div>
-				</div>
-			</div>
-		`;
-
-		document.body.appendChild(container);
-		// Give browser frame time to render DOM
-		await new Promise((resolve) => setTimeout(resolve, 300));
-
-		// Generate High-Density QR Code canvas
-		const qrBox = container.querySelector(`#pdf-qr-box-${certData.registrationId}`);
-		if (qrBox) {
-			const qrCanvas = document.createElement("canvas");
-			await QRCodeMod.default.toCanvas(qrCanvas, qrValue, {
-				width: 360,
-				margin: 1,
-				color: { dark: "#1e1b4b", light: "#ffffff" },
-				errorCorrectionLevel: "H",
-			});
-			qrCanvas.style.width = "75px";
-			qrCanvas.style.height = "75px";
-			qrCanvas.style.display = "block";
-			qrBox.appendChild(qrCanvas);
-		}
-
-		try {
-			if (document.fonts) {
-				await document.fonts.ready;
-			}
-
-			const targetEl = container.firstElementChild as HTMLElement;
-
-			// Capture at pixelRatio: 2 (2246 x 1588 px) for 300DPI Crisp Quality without GPU Memory Overflow or SecurityError
-			const imgData = await htmlToImageMod.toPng(targetEl, {
-				quality: 1.0,
-				pixelRatio: 2,
-				width: 1123,
-				height: 794,
-				cacheBust: true,
-				fontEmbedCSS: "", // Bypass cross-origin document.styleSheets cssRules SecurityError
-				filter: (node: HTMLElement) => {
-					if (
-						node.tagName === "LINK" &&
-						(node as HTMLLinkElement).rel === "stylesheet"
-					) {
-						return false;
-					}
-					return true;
-				},
-			});
-
-			const pdf = new jsPDFMod({
-				orientation: "landscape",
-				unit: "mm",
-				format: "a4",
-				compress: true,
-			});
-
-			pdf.addImage(imgData, "PNG", 0, 0, 297, 210, undefined, "FAST");
-			pdf.save(`Certificate-${certData.fullName.replace(/\s+/g, "_")}-${certData.certificateId}.pdf`);
-			toast.success("PDF downloaded successfully!");
-		} catch (error) {
-			console.error("PDF generation error details:", error);
-			toast.error("Failed to generate PDF. Please try again.");
-		} finally {
-			if (container.parentNode) {
-				container.parentNode.removeChild(container);
-			}
-		}
-	};
-
-	// Bulk PDF Downloads
-	const handleDownloadBulkPDFs = async () => {
-		const certsToDownload = participants.filter(
-			(p) => selectedRegIds.includes(p.registrationId) && p.certificate
-		);
-
-		if (certsToDownload.length === 0) {
-			toast.warning("None of the selected participants have certificates generated yet. Generate them first.");
-			return;
-		}
-
-		setDownloadingBulk(true);
-		toast.info(`Preparing ${certsToDownload.length} certificates for download...`);
-
-		for (let i = 0; i < certsToDownload.length; i++) {
-			const p = certsToDownload[i];
-			const certData = {
-				...p.certificate,
-				fullName: p.fullName,
-				eventAddress: p.certificate.eventAddress || activeEvent?.address || "",
-			};
-			await downloadPDF(certData);
-			await new Promise((resolve) => setTimeout(resolve, 300));
-		}
-
-		setDownloadingBulk(false);
-		toast.success("Bulk download complete!");
-	};
-
-	// Bulk Printing
-	const handlePrintBulk = async () => {
-		const certsToPrint = participants.filter(
-			(p) => selectedRegIds.includes(p.registrationId) && p.certificate
-		);
+	// Bulk Printing for Selected
+	const handlePrintBulk = () => {
+		const certsToPrint = participants.filter((p) => selectedRegIds.includes(p.registrationId));
 
 		if (certsToPrint.length === 0) {
-			toast.warning("None of the selected participants have certificates generated yet. Generate them first.");
+			toast.warning("Please select at least one participant to print.");
 			return;
 		}
 
 		const formattedCerts = certsToPrint.map((p) => ({
-			...p.certificate,
+			certificateId: p.certificate?.certificateId || `CERT-${p.registrationId}`,
+			registrationId: p.registrationId,
 			fullName: p.fullName,
+			eventName: p.certificate?.eventName || activeEvent?.name || "Event",
+			eventDate: p.certificate?.eventDate || activeEvent?.date || "",
+			generatedDate: p.certificate?.generatedDate || new Date().toISOString(),
 		}));
 
 		setPrintCerts(formattedCerts);
 	};
 
+	// Print All Certificates
+	const handlePrintAll = async () => {
+		try {
+			toast.info("Preparing all certificates for print...");
+			const res = await axios.get("/api/admin/certificates/registrations", {
+				params: {
+					page: 1,
+					limit: 5000,
+					search: searchQuery,
+					status: statusFilter,
+					event: eventFilter,
+				},
+			});
+
+			if (res.data.success && res.data.data.length > 0) {
+				const allCerts = res.data.data.map((p: any) => ({
+					certificateId: p.certificate?.certificateId || `CERT-${p.registrationId}`,
+					registrationId: p.registrationId,
+					fullName: p.fullName,
+					eventName: p.certificate?.eventName || res.data.activeEvent?.name || activeEvent?.name || "Event",
+					eventDate: p.certificate?.eventDate || res.data.activeEvent?.date || activeEvent?.date || "",
+					generatedDate: p.certificate?.generatedDate || new Date().toISOString(),
+				}));
+				setPrintCerts(allCerts);
+			} else {
+				toast.warning("No participants found to print.");
+			}
+		} catch (error: any) {
+			toast.error(error.response?.data?.error || "Failed to fetch all certificates for printing.");
+		}
+	};
+
 	// Trigger print when printCerts changes
 	useEffect(() => {
 		if (printCerts.length > 0) {
-			setTimeout(() => {
+			const originalTitle = document.title;
+			if (printCerts.length === 1) {
+				const c = printCerts[0];
+				document.title = `Certificate-${c.registrationId || c.certificateId}`;
+			} else {
+				document.title = `Certificates-All-${printCerts.length}-Items`;
+			}
+
+			const timer = setTimeout(() => {
 				window.print();
 				setPrintCerts([]);
+				document.title = originalTitle;
 			}, 500);
+
+			return () => clearTimeout(timer);
 		}
 	}, [printCerts]);
 
@@ -699,9 +448,14 @@ export default function CertificatesPage() {
 									</svg>
 								</div>
 								<p className="text-base italic text-slate-600 mb-1.5 font-serif-title">This is to certify that</p>
-								<h3 className="text-5xl font-normal text-purple-950 mb-2 leading-tight font-cert-name">
+								<h3 className="text-5xl font-normal text-purple-950 mb-1 leading-tight font-cert-name">
 									{cert.fullName}
 								</h3>
+								{cert.registrationId && (
+									<p className="text-sm font-mono font-bold text-purple-900/80 mb-2">
+										Registration ID: {cert.registrationId}
+									</p>
+								)}
 								<p className="text-base text-slate-600 max-w-xl mx-auto leading-relaxed font-serif-title">
 									successfully registered and participated in the event
 								</p>
@@ -724,7 +478,7 @@ export default function CertificatesPage() {
 										className="mx-auto"
 									/>
 								</div>
-								<p className="font-mono text-xs font-semibold text-slate-600 mt-1">ID: {cert.certificateId}</p>
+								<p className="font-mono text-xs font-semibold text-slate-600 mt-1">Cert ID: {cert.certificateId} | Reg ID: {cert.registrationId}</p>
 								<p className="font-mono text-[9px] font-bold text-green-700">{getSecurityHash(cert.certificateId, cert.registrationId)}</p>
 							</div>
 
@@ -764,7 +518,7 @@ export default function CertificatesPage() {
 						Certificate Manage
 					</h1>
 					<p className="text-slate-500">
-						Generate, download, and print event certificates for participants.
+						Generate and print event certificates for participants.
 					</p>
 				</div>
 				<div className="flex items-center gap-3">
@@ -862,31 +616,28 @@ export default function CertificatesPage() {
 					)}
 				</div>
 
-				{/* Bulk actions */}
-				{activeTab === "participants" && selectedRegIds.length > 0 && (
-					<div className="flex flex-wrap gap-2 w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0">
-						<div className="text-sm font-medium text-slate-500 mr-2 flex items-center">
-							{selectedRegIds.length} selected
-						</div>
-						<Button onClick={handleGenerateCertificates} disabled={generating} size="sm" className="bg-purple-700 hover:bg-purple-800 text-white">
-							{generating ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : null}
-							Generate Certificates
-						</Button>
-						<Button
-							onClick={handleDownloadBulkPDFs}
-							variant="outline"
-							disabled={downloadingBulk}
-							size="sm"
-						>
-							{downloadingBulk ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : <Download className="w-4 h-4 mr-1.5" />}
-							Download PDFs
-						</Button>
-						<Button onClick={handlePrintBulk} variant="outline" size="sm">
-							<Printer className="w-4 h-4 mr-1.5" />
-							Print Selected
-						</Button>
-					</div>
-				)}
+				{/* Actions */}
+				<div className="flex flex-wrap gap-2 w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0">
+					{activeTab === "participants" && selectedRegIds.length > 0 && (
+						<>
+							<div className="text-sm font-medium text-slate-500 mr-2 flex items-center">
+								{selectedRegIds.length} selected
+							</div>
+							<Button onClick={handleGenerateCertificates} disabled={generating} size="sm" className="bg-purple-700 hover:bg-purple-800 text-white">
+								{generating ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : null}
+								Generate Certificates
+							</Button>
+							<Button onClick={handlePrintBulk} variant="outline" size="sm">
+								<Printer className="w-4 h-4 mr-1.5" />
+								Print Selected
+							</Button>
+						</>
+					)}
+					<Button onClick={handlePrintAll} variant="outline" size="sm" className="border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950 font-semibold">
+						<Printer className="w-4 h-4 mr-1.5" />
+						Print All
+					</Button>
+				</div>
 			</div>
 
 			{/* Main Table */}
@@ -980,29 +731,19 @@ export default function CertificatesPage() {
 																variant="ghost"
 																size="sm"
 																className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
-																title="Preview"
-																onClick={() => {
-																	setPreviewCert({ ...cert, fullName: item.fullName });
-																	setPreviewOpen(true);
-																}}
-															>
-																<Eye className="w-4 h-4" />
-															</Button>
-															<Button
-																variant="ghost"
-																size="sm"
-																className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
-																title="Download PDF"
-																onClick={() => downloadPDF({ ...cert, fullName: item.fullName })}
-															>
-																<Download className="w-4 h-4" />
-															</Button>
-															<Button
-																variant="ghost"
-																size="sm"
-																className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
 																title="Print"
-																onClick={() => setPrintCerts([{ ...cert, fullName: item.fullName }])}
+																onClick={() =>
+																	setPrintCerts([
+																		{
+																			certificateId: cert?.certificateId || `CERT-${item.registrationId}`,
+																			registrationId: item.registrationId,
+																			fullName: item.fullName,
+																			eventName: cert?.eventName || activeEvent?.name || "Event",
+																			eventDate: cert?.eventDate || activeEvent?.date || "",
+																			generatedDate: cert?.generatedDate || new Date().toISOString(),
+																		},
+																	])
+																}
 															>
 																<Printer className="w-4 h-4" />
 															</Button>
@@ -1140,29 +881,16 @@ export default function CertificatesPage() {
 														variant="ghost"
 														size="sm"
 														className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
-														title="Preview"
-														onClick={() => {
-															setPreviewCert(item);
-															setPreviewOpen(true);
-														}}
-													>
-														<Eye className="w-4 h-4" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="sm"
-														className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
-														title="Reprint (PDF)"
-														onClick={() => downloadPDF(item)}
-													>
-														<Download className="w-4 h-4" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="sm"
-														className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
 														title="Print"
-														onClick={() => setPrintCerts([item])}
+														onClick={() =>
+															setPrintCerts([
+																{
+																	...item,
+																	fullName: item.fullName,
+																	registrationId: item.registrationId,
+																},
+															])
+														}
 													>
 														<Printer className="w-4 h-4" />
 													</Button>
@@ -1215,177 +943,7 @@ export default function CertificatesPage() {
 				</div>
 			)}
 
-			{/* Certificate Preview Dialog */}
-			<Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-				<DialogContent className="w-11/12 max-w-4xl max-h-[92vh] flex flex-col justify-between overflow-y-auto p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
-					<DialogHeader>
-						<DialogTitle className="flex items-center gap-2">
-							<Award className="w-5 h-5 text-purple-700" />
-							Certificate Preview
-						</DialogTitle>
-						<DialogDescription>
-							Preview of the issued certificate for {previewCert?.fullName}.
-						</DialogDescription>
-					</DialogHeader>
 
-					{previewCert && (
-						<div className="mt-2 flex flex-col items-center w-full">
-							{/* Scrollable Certificate Card Container */}
-							<div className="w-full overflow-x-auto py-2 flex justify-center items-start">
-								<div className="relative bg-white border-[7px] border-green-900 shadow-lg rounded select-none text-slate-900 flex flex-col justify-between" style={{ width: '760px', minWidth: '760px', aspectRatio: '1.414' }}>
-									{/* Inner Gold Foil Borders */}
-									<div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', bottom: '10px', border: '2px solid #d97706', pointerEvents: 'none', zIndex: 1 }}></div>
-									<div style={{ position: 'absolute', top: '14px', left: '14px', right: '14px', bottom: '14px', border: '1px solid #166534', pointerEvents: 'none', zIndex: 1 }}></div>
-
-									{/* Corner Golden Flourish Ornaments */}
-									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', top: '14px', left: '14px', zIndex: 2, pointerEvents: 'none' }}>
-										<path d="M5,5 L45,5 L45,12 L12,12 L12,45 L5,45 Z" fill="#d97706"/>
-										<circle cx="20" cy="20" r="4" fill="#166534"/>
-									</svg>
-									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', top: '14px', right: '14px', zIndex: 2, pointerEvents: 'none' }}>
-										<path d="M95,5 L55,5 L55,12 L88,12 L88,45 L95,45 Z" fill="#d97706"/>
-										<circle cx="80" cy="20" r="4" fill="#166534"/>
-									</svg>
-									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', bottom: '14px', left: '14px', zIndex: 2, pointerEvents: 'none' }}>
-										<path d="M5,95 L45,95 L45,88 L12,88 L12,55 L5,55 Z" fill="#d97706"/>
-										<circle cx="20" cy="80" r="4" fill="#166534"/>
-									</svg>
-									<svg width="60" height="60" viewBox="0 0 100 100" style={{ position: 'absolute', bottom: '14px', right: '14px', zIndex: 2, pointerEvents: 'none' }}>
-										<path d="M95,95 L55,95 L55,88 L88,88 L88,55 L95,55 Z" fill="#d97706"/>
-										<circle cx="80" cy="80" r="4" fill="#166534"/>
-									</svg>
-
-									{/* Centered Background Watermark Seal */}
-									<svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', opacity: 0.035, zIndex: 0 }} xmlns="http://www.w3.org/2000/svg">
-										<circle cx="50%" cy="50%" r="35%" fill="none" stroke="#16a34a" strokeWidth="2"/>
-										<circle cx="50%" cy="50%" r="28%" fill="none" stroke="#d97706" strokeWidth="1.5"/>
-										<circle cx="50%" cy="50%" r="20%" fill="none" stroke="#16a34a" strokeWidth="1.2"/>
-										<circle cx="50%" cy="50%" r="12%" fill="none" stroke="#d97706" strokeWidth="1"/>
-									</svg>
-
-									{/* Rounded Center Watermark Logo */}
-									<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 opacity-[0.055] pointer-events-none z-0 flex items-center justify-center">
-										<img src="/bangladesh-anjumane-talamije-islamia-seeklogo.png" className="w-full h-full object-contain rounded-full" alt="Watermark Logo" />
-									</div>
-
-									{/* Top Header */}
-									<div className="text-center mt-2 relative z-20 px-4">
-										<div className="font-serif text-xl text-emerald-700 font-bold mb-2">﷽</div>
-										<img
-											src="/bangladesh-anjumane-talamije-islamia-seeklogo.png"
-											className="h-12 w-12 rounded-full object-contain mx-auto mb-1.5 pointer-events-none p-0.5 border-2 border-amber-600 bg-white shadow-sm"
-											alt="Logo"
-										/>
-										<h2 className="text-base font-bold text-slate-800 font-serif-title leading-tight tracking-wide">
-											Bangladesh Anjumane Talamije Islamia
-										</h2>
-										<p className="text-xs text-slate-500 font-serif-title">Chhatak Uttar Upazila</p>
-									</div>
-
-									{/* Title & Body */}
-									<div className="text-center relative z-20 my-1">
-										<h3 className="text-3xl font-bold text-purple-900 mb-0.5 leading-none font-serif-title uppercase tracking-wider whitespace-nowrap">
-											Certificate of Participation
-										</h3>
-										<div className="flex items-center justify-center gap-3 my-1.5">
-											<div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-600"></div>
-											<span className="text-amber-600 text-xs">✦</span>
-											<div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-600"></div>
-										</div>
-										<p className="text-xs italic text-slate-500 mb-0.5 font-serif-title">This is to certify that</p>
-										<h4 className="text-4xl font-normal text-purple-950 mb-1 leading-tight font-cert-name">
-											{previewCert.fullName}
-										</h4>
-										<p className="text-xs text-slate-600 max-w-lg mx-auto leading-relaxed font-serif-title">
-											successfully registered and participated in the event
-										</p>
-										<h5 className="text-lg font-bold text-slate-900 mt-0.5 mb-0.5 font-serif-title">
-											{previewCert.eventName}
-										</h5>
-										<p className="text-xs italic text-slate-700 font-serif-title">
-											on {previewCert.eventDate || new Date(previewCert.generatedDate || Date.now()).toLocaleDateString()}.
-										</p>
-									</div>
-
-									{/* Center QR Code */}
-									<div className="text-center relative z-20 my-0.5">
-										<p className="text-[8px] font-sans text-amber-600 font-bold tracking-widest uppercase mb-0.5">Official Security Verification</p>
-										<div className="inline-block p-1 bg-white border border-amber-500 rounded shadow-xs">
-											<QRCodeSVG
-												value={`${window.location.origin}/verify/certificate/${previewCert.certificateId}`}
-												size={52}
-												level="H"
-												includeMargin={false}
-												fgColor="#1e1b4b"
-												className="mx-auto"
-											/>
-										</div>
-										<p className="font-mono text-[10px] font-semibold text-slate-600 mt-0.5">ID: {previewCert.certificateId}</p>
-										<p className="font-mono text-[8px] font-bold text-green-700 mt-0.5">{getSecurityHash(previewCert.certificateId, previewCert.registrationId)}</p>
-									</div>
-
-									{/* Bottom Signatures */}
-									<div className="flex justify-between items-end px-6 pb-5 mb-[50px] relative z-20 font-serif-title">
-										<div className="text-center w-40">
-											<div className="h-6 relative flex items-end justify-center pb-0.5">
-												{activeEvent?.presidentSignatureUrl ? (
-													<img src={activeEvent.presidentSignatureUrl} className="h-5 max-w-[120px] object-contain mb-0.5" />
-												) : null}
-											</div>
-											<div className="border-t border-slate-300 w-28 mx-auto my-0.5"></div>
-											<p className="font-bold text-slate-800 text-xs mt-0.5">{activeEvent?.presidentName || "President"}</p>
-											<p className="text-[9px] text-slate-400">{activeEvent?.presidentTitle || "Chhatak Uttar Upazila"}</p>
-										</div>
-										<div className="text-center w-40">
-											<div className="h-6 relative flex items-end justify-center pb-0.5">
-												{activeEvent?.secretarySignatureUrl ? (
-													<img src={activeEvent.secretarySignatureUrl} className="h-5 max-w-[120px] object-contain mb-0.5" />
-												) : null}
-											</div>
-											<div className="border-t border-slate-300 w-28 mx-auto my-0.5"></div>
-											<p className="font-bold text-slate-800 text-xs mt-0.5">{activeEvent?.secretaryName || "General Secretary"}</p>
-											<p className="text-[9px] text-slate-400">{activeEvent?.secretaryTitle || "Chhatak Uttar Upazila"}</p>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							{/* Actions inside Modal */}
-							<div className="flex flex-col sm:flex-row justify-end gap-3 w-full mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-								<Button
-									variant="outline"
-									onClick={() => {
-										const certData = {
-											...previewCert,
-											fullName: previewCert.fullName,
-											eventAddress: previewCert.eventAddress || activeEvent?.address || "",
-										};
-										downloadPDF(certData);
-									}}
-									className="flex items-center justify-center gap-2 cursor-pointer"
-								>
-									<Download className="w-4 h-4" />
-									Download PDF
-								</Button>
-								<Button
-									onClick={() => {
-										const certData = {
-											...previewCert,
-											fullName: previewCert.fullName,
-											eventAddress: previewCert.eventAddress || activeEvent?.address || "",
-										};
-										setPrintCerts([certData]);
-									}}
-									className="flex items-center justify-center gap-2 bg-purple-700 hover:bg-purple-800 text-white cursor-pointer"
-								>
-									<Printer className="w-4 h-4" />
-									Print Certificate
-								</Button>
-							</div>
-						</div>
-					)}
-				</DialogContent>
-			</Dialog>
 		</div>
 	);
 }

@@ -443,7 +443,14 @@ export default function SuccessPage() {
 				{/* Actions */}
 				<div className="flex flex-col sm:flex-row justify-center gap-4 print:hidden pt-4">
 					<Button
-						onClick={() => window.print()}
+						onClick={() => {
+							const originalTitle = document.title;
+							document.title = `Ticket-${data?.registrationId || registrationId || "Participant"}`;
+							window.print();
+							setTimeout(() => {
+								document.title = originalTitle;
+							}, 1000);
+						}}
 						variant="outline"
 						className="w-full sm:w-auto h-12 px-6">
 						<Printer className="mr-2 h-4 w-4" />
