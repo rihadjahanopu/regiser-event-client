@@ -334,7 +334,7 @@ export default function CertificatesPage() {
 					body * {
 						visibility: hidden !important;
 					}
-					header, nav, aside, main, button, table, .print\:hidden {
+					.print\:hidden, header, nav, aside, button, table {
 						display: none !important;
 					}
 					#print-capture-area, #print-capture-area * {
@@ -389,8 +389,8 @@ export default function CertificatesPage() {
 			{/* Bulk printing container */}
 			{printCerts.length > 0 && (
 				<div id="print-capture-area" className="hidden print:block">
-					{printCerts.map((cert) => (
-						<div key={cert.certificateId} className="print-certificate-page font-serif-title">
+					{printCerts.map((cert, index) => (
+						<div key={`${cert.certificateId || cert.registrationId}-${index}`} className="print-certificate-page font-serif-title">
 							{/* Inner Gold Foil Borders */}
 							<div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', bottom: '10px', border: '2px solid #d97706', pointerEvents: 'none', zIndex: 1 }}></div>
 							<div style={{ position: 'absolute', top: '14px', left: '14px', right: '14px', bottom: '14px', border: '1px solid #166534', pointerEvents: 'none', zIndex: 1 }}></div>
