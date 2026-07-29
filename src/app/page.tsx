@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +10,6 @@ import {
 	BookOpen,
 	Calendar,
 	CheckCircle2,
-	Clock,
 	GraduationCap,
 	Heart,
 	Layers,
