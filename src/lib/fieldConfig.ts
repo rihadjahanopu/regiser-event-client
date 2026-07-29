@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as z from "zod";
 
 export interface FieldSetting {

@@ -261,7 +261,28 @@ export default function CertificatesPage() {
 		}
 	};
 
-	// Full-bleed A4 Ultra-HD PDF Generation (Preserves Beautiful Layout & Calligraphy + 600DPI Ultra-Clarity)
+	// Helper: load font binary as base64 string for jsPDF font VFS via FileReader
+	const loadFontAsBase64 = async (url: string): Promise<string | null> => {
+		try {
+			const resp = await fetch(url);
+			if (!resp.ok) return null;
+			const blob = await resp.blob();
+			return await new Promise((resolve) => {
+				const reader = new FileReader();
+				reader.onload = () => {
+					const result = reader.result as string;
+					const base64 = result.includes(",") ? result.split(",")[1] : result;
+					resolve(base64);
+				};
+				reader.onerror = () => resolve(null);
+				reader.readAsDataURL(blob);
+			});
+		} catch {
+			return null;
+		}
+	};
+
+	// High-Definition A4 Certificate PDF Generation (Exact Template Layout + 300DPI High-Clarity)
 	const downloadPDF = async (certData: any) => {
 		const orgName = "Bangladesh Anjumane Talamije Islamia";
 		const subHeader = "Chhatak Uttar Upazila";
@@ -278,7 +299,7 @@ export default function CertificatesPage() {
 		const secrTitle = activeEvent?.secretaryTitle || "General Secretary, Chhatak Uttar";
 		const secrSigUrl = activeEvent?.secretarySignatureUrl || "";
 
-		toast.info("Preparing Ultra-HD PDF download...");
+		toast.info("Preparing PDF download...");
 
 		// Pre-convert external images to base64 data URLs & load modules
 		const [presSigData, secrSigData, logoData, QRCodeMod, htmlToImageMod, jsPDFMod] = await Promise.all([
@@ -302,7 +323,7 @@ export default function CertificatesPage() {
 		container.style.overflow = "hidden";
 
 		container.innerHTML = `
-			<div style="width: 1123px; height: 794px; background: #ffffff; padding: 25px 35px 35px 35px; box-sizing: border-box; font-family: 'Playfair Display', Georgia, serif; position: relative; border: 8px solid #14532d; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; margin: 0; color: #0f172a;">
+			<div style="width: 1123px; height: 794px; background: #ffffff; padding: 18px 22px; box-sizing: border-box; font-family: 'Playfair Display', Georgia, serif; position: relative; border: 7px solid #14532d; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; margin: 0; color: #0f172a;">
 				<!-- Inner Gold Foil Border -->
 				<div style="position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid #d97706; pointer-events: none; z-index: 1;"></div>
 				<div style="position: absolute; top: 14px; left: 14px; right: 14px; bottom: 14px; border: 1px solid #166534; pointer-events: none; z-index: 1;"></div>
@@ -324,96 +345,94 @@ export default function CertificatesPage() {
 					<path d="M95,95 L55,95 L55,88 L88,88 L88,55 L95,55 Z" fill="#d97706"/>
 					<circle cx="80" cy="80" r="4" fill="#166534"/>
 				</svg>
-				
-				<!-- Watermark Seal & Logo -->
+
+				<!-- Watermark Seal -->
 				<svg width="100%" height="100%" style="position: absolute; top:0; left:0; pointer-events:none; opacity: 0.035; z-index:0;" xmlns="http://www.w3.org/2000/svg">
-					<circle cx="561" cy="397" r="280" fill="none" stroke="#16a34a" stroke-width="2"/>
-					<circle cx="561" cy="397" r="220" fill="none" stroke="#d97706" stroke-width="1.5"/>
-					<circle cx="561" cy="397" r="160" fill="none" stroke="#16a34a" stroke-width="1.2"/>
-					<circle cx="561" cy="397" r="100" fill="none" stroke="#d97706" stroke-width="1"/>
+					<circle cx="50%" cy="50%" r="35%" fill="none" stroke="#16a34a" stroke-width="2"/>
+					<circle cx="50%" cy="50%" r="28%" fill="none" stroke="#d97706" stroke-width="1.5"/>
+					<circle cx="50%" cy="50%" r="20%" fill="none" stroke="#16a34a" stroke-width="1.2"/>
+					<circle cx="50%" cy="50%" r="12%" fill="none" stroke="#d97706" stroke-width="1"/>
 				</svg>
 
 				<!-- Rounded Center Watermark Logo -->
-				<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 340px; height: 340px; opacity: 0.055; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center;">
+				<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 320px; opacity: 0.055; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center;">
 					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" />
 				</div>
 
-				<!-- Header Section -->
-				<div style="text-align: center; margin-top: 5px; position: relative; z-index: 2;">
-					<div style="font-family: 'Traditional Arabic', 'Amiri', 'DejaVu Sans', serif; font-size: 22px; color: #15803d; font-weight: bold; margin-bottom: 12px; line-height: 1;">﷽</div>
-					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="height: 68px; width: 68px; border-radius: 50%; object-fit: contain; margin-bottom: 6px; display: inline-block; background: #ffffff; padding: 2px; border: 2px solid #d97706; box-shadow: 0 2px 8px rgba(0,0,0,0.06);" />
-					<h1 style="font-size: 22px; color: #0f172a; font-weight: bold; margin: 0; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 0.8px;">${orgName}</h1>
-					<h2 style="font-size: 13.5px; color: #475569; margin: 3px 0 0 0; font-family: 'Playfair Display', Georgia, serif; font-weight: 500; letter-spacing: 0.5px;">${subHeader}</h2>
+				<!-- Header Section (matches print: mt-3, text-xl bismillah, h-16 logo) -->
+				<div style="text-align: center; margin-top: 12px; position: relative; z-index: 2;">
+					<div style="font-family: serif; font-size: 20px; color: #059669; font-weight: bold; margin-bottom: 8px; line-height: 1;">﷽</div>
+					<img src="${logoData || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}" style="height: 64px; width: 64px; border-radius: 50%; object-fit: contain; margin-bottom: 6px; display: inline-block; background: #ffffff; padding: 2px; border: 2px solid #d97706; box-shadow: 0 1px 4px rgba(0,0,0,0.06);" />
+					<div style="font-size: 21px; color: #1e293b; font-weight: bold; margin: 0; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 0.8px;">Bangladesh Anjumane Talamije Islamia</div>
+					<div style="font-size: 14px; color: #475569; margin: 3px 0 0 0; font-family: 'Playfair Display', Georgia, serif;">Chhatak Uttar Upazila</div>
 				</div>
 
-				<!-- Main Body Content -->
-				<div style="text-align: center; margin: 6px 0; position: relative; z-index: 2;">
-					<div style="font-size: 38px; font-weight: 700; color: #581c87; margin-bottom: 4px; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 1.5px; text-transform: uppercase;">
-						${certTitle}
+				<!-- Main Body Content (matches print: text-4xl title, text-5xl name, text-2xl event) -->
+				<div style="text-align: center; margin: 8px 0; position: relative; z-index: 2;">
+					<div style="font-size: 40px; font-weight: 700; color: #581c87; margin-bottom: 4px; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 2px; text-transform: uppercase;">
+						Certificate of Participation
 					</div>
-					<div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
-						<div style="width: 70px; height: 1px; background: linear-gradient(to right, transparent, #d97706);"></div>
+					<div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 6px;">
+						<div style="width: 64px; height: 1px; background: linear-gradient(to right, transparent, #d97706);"></div>
 						<span style="color: #d97706; font-size: 12px;">✦</span>
-						<div style="width: 70px; height: 1px; background: linear-gradient(to left, transparent, #d97706);"></div>
+						<div style="width: 64px; height: 1px; background: linear-gradient(to left, transparent, #d97706);"></div>
 					</div>
-					<div style="font-size: 17px; color: #475569; font-style: italic; margin-bottom: 8px; font-family: 'Playfair Display', Georgia, serif;">
+					<div style="font-size: 16px; color: #475569; font-style: italic; margin-bottom: 6px; font-family: 'Playfair Display', Georgia, serif;">
 						This is to certify that
 					</div>
-					<div style="font-size: 54px; font-weight: 400; color: #3b0764; margin-bottom: 8px; font-family: 'Great Vibes', cursive, Georgia, serif; line-height: 1.1;">
+					<div style="font-size: 52px; font-weight: 400; color: #3b0764; margin-bottom: 8px; font-family: 'Great Vibes', cursive, Georgia, serif; line-height: 1.1;">
 						${certData.fullName}
 					</div>
-					<div style="font-size: 17px; color: #4b5563; max-width: 850px; margin: 0 auto; line-height: 1.5; font-family: 'Playfair Display', Georgia, serif;">
+					<div style="font-size: 16px; color: #475569; max-width: 750px; margin: 0 auto; line-height: 1.6; font-family: 'Playfair Display', Georgia, serif;">
 						successfully registered and participated in the event
 					</div>
-					<div style="font-size: 28px; font-weight: 700; color: #0f172a; margin: 8px 0 6px 0; font-family: 'Playfair Display', Georgia, serif;">
+					<div style="font-size: 26px; font-weight: 700; color: #0f172a; margin: 6px 0 4px 0; font-family: 'Playfair Display', Georgia, serif;">
 						${certData.eventName}
 					</div>
-					<div style="font-size: 17px; color: #374151; font-style: italic; font-family: 'Playfair Display', Georgia, serif;">
+					<div style="font-size: 16px; color: #374151; font-style: italic; font-family: 'Playfair Display', Georgia, serif;">
 						on ${dateStr}.
 					</div>
 				</div>
 
-				<!-- Verification QR Code & Security Badge Frame -->
+				<!-- Verification QR (matches print: size=75, p-1.5 border-amber-500) -->
 				<div style="text-align: center; margin-bottom: 4px; position: relative; z-index: 2;">
-					<div style="font-size: 9px; font-family: sans-serif; color: #d97706; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 4px; text-transform: uppercase;">
-						Official Security Verification
-					</div>
-					<div id="pdf-qr-box-${certData.registrationId}" style="display: inline-block; background: #ffffff; padding: 5px; border: 2px solid #f59e0b; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.04);"></div>
-					<div style="font-family: 'Courier New', monospace; font-size: 11px; color: #1e293b; font-weight: 700; margin-top: 4px; letter-spacing: 0.5px;">
+					<div style="font-size: 9px; font-family: sans-serif; color: #d97706; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; text-transform: uppercase;">Official Security Verification</div>
+					<div id="pdf-qr-box-${certData.registrationId}" style="display: inline-block; background: #ffffff; padding: 6px; border: 2px solid #f59e0b; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);"></div>
+					<div style="font-family: 'Courier New', monospace; font-size: 12px; color: #475569; font-weight: 600; margin-top: 4px; letter-spacing: 0.3px;">
 						ID: ${certData.certificateId}
 					</div>
-					<div style="font-family: 'Courier New', monospace; font-size: 8.5px; color: #16a34a; font-weight: 700; margin-top: 2px;">
+					<div style="font-family: 'Courier New', monospace; font-size: 9px; color: #16a34a; font-weight: 700; margin-top: 2px;">
 						${secHash}
 					</div>
 				</div>
 
-				<!-- Bottom Signatures -->
-				<div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 60px 0 60px; position: relative; z-index: 2;">
+				<!-- Bottom Signatures (matches print: px-10 pb-5 mb-[50px] w-48) -->
+				<div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 40px 20px 40px; position: relative; z-index: 2;">
 					<!-- Left Signature (President) -->
-					<div style="text-align: center; width: 240px; margin-bottom: 50px;">
-						<div style="height: 48px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
-							${presSigData ? `<img src="${presSigData}" style="height: 44px; max-width: 190px; object-fit: contain;" />` : ''}
+					<div style="text-align: center; width: 192px;">
+						<div style="height: 36px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
+							${presSigData ? `<img src="${presSigData}" style="height: 32px; max-width: 160px; object-fit: contain; margin-bottom: 4px;" />` : ''}
 						</div>
-						<div style="border-top: 1.5px solid #cbd5e1; margin: 4px auto 6px auto; width: 170px;"></div>
-						<div style="font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: 'Playfair Display', Georgia, serif;">${presName}</div>
-						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${presTitle}</div>
+						<div style="border-top: 1px solid #cbd5e1; margin: 4px auto 4px auto; width: 128px;"></div>
+						<div style="font-size: 14px; font-weight: bold; color: #1e293b; font-family: 'Playfair Display', Georgia, serif;">${presName}</div>
+						<div style="font-size: 12px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${presTitle}</div>
 					</div>
 
 					<!-- Right Signature (Secretary) -->
-					<div style="text-align: center; width: 240px; margin-bottom: 50px;">
-						<div style="height: 48px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
-							${secrSigData ? `<img src="${secrSigData}" style="height: 44px; max-width: 190px; object-fit: contain;" />` : ''}
+					<div style="text-align: center; width: 192px;">
+						<div style="height: 36px; position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 2px;">
+							${secrSigData ? `<img src="${secrSigData}" style="height: 32px; max-width: 160px; object-fit: contain; margin-bottom: 4px;" />` : ''}
 						</div>
-						<div style="border-top: 1.5px solid #cbd5e1; margin: 4px auto 6px auto; width: 170px;"></div>
-						<div style="font-size: 13.5px; font-weight: bold; color: #0f172a; font-family: 'Playfair Display', Georgia, serif;">${secrName}</div>
-						<div style="font-size: 10.5px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${secrTitle}</div>
+						<div style="border-top: 1px solid #cbd5e1; margin: 4px auto 4px auto; width: 128px;"></div>
+						<div style="font-size: 14px; font-weight: bold; color: #1e293b; font-family: 'Playfair Display', Georgia, serif;">${secrName}</div>
+						<div style="font-size: 12px; color: #64748b; font-family: 'Playfair Display', Georgia, serif; margin-top: 2px;">${secrTitle}</div>
 					</div>
 				</div>
 			</div>
 		`;
 
 		document.body.appendChild(container);
-		// Give the browser a full frame to paint the DOM before capturing
+		// Give browser frame time to render DOM
 		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		// Generate High-Density QR Code canvas
@@ -423,81 +442,39 @@ export default function CertificatesPage() {
 			await QRCodeMod.default.toCanvas(qrCanvas, qrValue, {
 				width: 360,
 				margin: 1,
-				color: {
-					dark: "#1e1b4b",
-					light: "#ffffff",
-				},
+				color: { dark: "#1e1b4b", light: "#ffffff" },
 				errorCorrectionLevel: "H",
 			});
-			qrCanvas.style.width = "85px";
-			qrCanvas.style.height = "85px";
+			qrCanvas.style.width = "75px";
+			qrCanvas.style.height = "75px";
 			qrCanvas.style.display = "block";
 			qrBox.appendChild(qrCanvas);
 		}
 
 		try {
-			// Ensure fonts are loaded before capture
 			if (document.fonts) {
 				await document.fonts.ready;
 			}
 
-			// Monkey-patch to suppress cross-origin cssRules SecurityError
-			// html-to-image internally iterates document.styleSheets; cross-origin sheets throw
-			const patchedGetStyleSheets = () => {
-				const sheets: CSSStyleSheet[] = [];
-				for (const sheet of Array.from(document.styleSheets)) {
-					try {
-						// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-						sheet.cssRules; // test access — throws if cross-origin
-						sheets.push(sheet);
-					} catch {
-						// skip cross-origin sheet silently
-					}
-				}
-				return sheets;
-			};
 			const targetEl = container.firstElementChild as HTMLElement;
 
-			// Capture at 3x High-Density (3369 x 2382 px ≈ 300DPI) — safe GPU memory range
-			// pixelRatio:5 = 5615x3970px which overflows GPU memory causing rainbow corruption
+			// Capture at pixelRatio: 2 (2246 x 1588 px) for 300DPI Crisp Quality without GPU Memory Overflow or SecurityError
 			const imgData = await htmlToImageMod.toPng(targetEl, {
 				quality: 1.0,
-				pixelRatio: 3,
+				pixelRatio: 2,
 				width: 1123,
 				height: 794,
 				cacheBust: true,
-				skipFonts: false,
+				fontEmbedCSS: "", // Bypass cross-origin document.styleSheets cssRules SecurityError
 				filter: (node: HTMLElement) => {
-					// Skip external <link rel="stylesheet"> tags — these are cross-origin
-					// and cause "Cannot access cssRules" SecurityError in html-to-image
 					if (
 						node.tagName === "LINK" &&
-						(node as HTMLLinkElement).rel === "stylesheet" &&
-						!(node as HTMLLinkElement).href?.startsWith(window.location.origin)
+						(node as HTMLLinkElement).rel === "stylesheet"
 					) {
 						return false;
 					}
 					return true;
 				},
-				// Provide a custom font embed function that safely skips cross-origin sheets
-				fontEmbedCSS: (() => {
-					try {
-						const safeSheets = patchedGetStyleSheets();
-						return safeSheets
-							.map((sheet) => {
-								try {
-									return Array.from(sheet.cssRules)
-										.map((r) => r.cssText)
-										.join("\n");
-								} catch {
-									return "";
-								}
-							})
-							.join("\n");
-					} catch {
-						return "";
-					}
-				})(),
 			});
 
 			const pdf = new jsPDFMod({
@@ -704,10 +681,22 @@ export default function CertificatesPage() {
 								<h2 className="text-4xl font-bold text-purple-900 mb-1 font-serif-title uppercase tracking-wider">
 									Certificate of Participation
 								</h2>
-								<div className="flex items-center justify-center gap-3.5 my-1.5">
-									<div className="w-16 h-px bg-gradient-to-r from-transparent to-amber-600"></div>
-									<span className="text-amber-600 text-xs">✦</span>
-									<div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-600"></div>
+								<div className="flex items-center justify-center my-1.5">
+									<svg width="160" height="14" viewBox="0 0 160 14" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' } as React.CSSProperties}>
+										<defs>
+											<linearGradient id="grad-left-p" x1="0" y1="0" x2="1" y2="0">
+												<stop offset="0%" stopColor="transparent" />
+												<stop offset="100%" stopColor="#d97706" />
+											</linearGradient>
+											<linearGradient id="grad-right-p" x1="0" y1="0" x2="1" y2="0">
+												<stop offset="0%" stopColor="#d97706" />
+												<stop offset="100%" stopColor="transparent" />
+											</linearGradient>
+										</defs>
+										<line x1="0" y1="7" x2="64" y2="7" stroke="url(#grad-left-p)" strokeWidth="1" />
+										<text x="80" y="11" textAnchor="middle" fill="#d97706" fontSize="12" fontFamily="serif">✦</text>
+										<line x1="96" y1="7" x2="160" y2="7" stroke="url(#grad-right-p)" strokeWidth="1" />
+									</svg>
 								</div>
 								<p className="text-base italic text-slate-600 mb-1.5 font-serif-title">This is to certify that</p>
 								<h3 className="text-5xl font-normal text-purple-950 mb-2 leading-tight font-cert-name">

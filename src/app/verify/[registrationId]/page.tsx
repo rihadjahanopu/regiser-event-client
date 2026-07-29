@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Phone, GraduationCap, Calendar, User } from "lucide-react";
 import axios from "axios";

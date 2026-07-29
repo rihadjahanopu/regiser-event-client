@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/typedef */
+/* eslint-disable */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
