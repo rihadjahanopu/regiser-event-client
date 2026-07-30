@@ -1,35 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ShieldAlert, ArrowLeft, Home, ShieldCheck, Loader2 } from "lucide-react";
+import { ShieldAlert, ArrowLeft, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-client";
-import { useState } from "react";
-import axios from "axios";
-import { toast } from "sonner";
 
 export default function UnauthorizedPage() {
   const { data: session } = useSession();
-  const [claiming, setClaiming] = useState(false);
-
-  const handleClaimAdmin = async () => {
-    if (!session?.user?.email) return;
-    setClaiming(true);
-    try {
-      const res = await axios.post("/api/admin/claim-admin-role", {
-        email: session.user.email,
-      });
-      if (res.data.success) {
-        toast.success("Admin role granted! Redirecting to Admin Dashboard...");
-        setTimeout(() => {
-          window.location.href = "/admin";
-        }, 1000);
-      }
-    } catch (err) {
-      toast.error("Failed to grant admin role");
-      setClaiming(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#07070f] flex items-center justify-center p-6 text-white relative overflow-hidden">
@@ -44,25 +21,13 @@ export default function UnauthorizedPage() {
 
         <h1 className="text-4xl font-extrabold tracking-tight mb-3">403 Forbidden</h1>
         <p className="text-slate-400 text-base leading-relaxed mb-6">
-          Access denied. You do not have permissions to view this resource. Please make sure you are logged in with an account that has admin privileges.
+          Access denied. You do not have permission to view this resource. Please sign in with an account that has admin privileges.
         </p>
 
         {session?.user && (
-          <div className="mb-6 p-4 rounded-2xl bg-violet-900/20 border border-violet-500/30 text-left space-y-3">
-            <p className="text-xs text-violet-300 font-semibold">Currently logged in as:</p>
+          <div className="mb-6 p-4 rounded-2xl bg-white/5 border border-white/10 text-left">
+            <p className="text-xs text-slate-400 font-semibold mb-1">Currently logged in as:</p>
             <p className="text-sm font-bold text-white">{session.user.name} ({session.user.email})</p>
-            <Button
-              onClick={handleClaimAdmin}
-              disabled={claiming}
-              className="w-full h-10 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2"
-            >
-              {claiming ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <ShieldCheck className="w-4 h-4" />
-              )}
-              Grant Admin Role to This Account
-            </Button>
           </div>
         )}
 
