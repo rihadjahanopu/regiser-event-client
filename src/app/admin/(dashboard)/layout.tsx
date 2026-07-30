@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
   LayoutDashboard, 
@@ -21,14 +21,23 @@ import {
   Images,
   Crown
 } from "lucide-react";
-import { signOut } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isPending && session?.user && session.user.role !== "admin") {
+      toast.error("Access denied. Admin privileges required.");
+      router.replace("/dashboard");
+    }
+  }, [session, isPending, router]);
 
 
   const handleLogout = async () => {

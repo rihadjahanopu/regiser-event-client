@@ -150,6 +150,11 @@ export default function ProfileSettings({ isAdmin = false }: { isAdmin?: boolean
       });
       if (res.data.success) {
         toast.success("Profile information updated successfully!");
+        if (res.data.user?.image) {
+          setAvatarPreview(res.data.user.image);
+        }
+        setAvatarFile(null);
+        router.refresh();
       }
     } catch (err: any) {
       toast.error(err.response?.data?.error || "Failed to update profile information");

@@ -19,12 +19,8 @@ export async function middleware(request: NextRequest) {
   const isRegisterPage = pathname === "/admin/register" || pathname === "/register";
   const isDashboardPath = pathname.startsWith("/dashboard");
 
-  // Public admin paths — allow through without session check
+  // Public auth paths — allow through so client component can handle role-based redirect
   if (isLoginPage || isRegisterPage) {
-    // If already has a session token, redirect to admin dashboard
-    if (sessionToken) {
-      return NextResponse.redirect(new URL("/admin", request.url));
-    }
     return NextResponse.next();
   }
 

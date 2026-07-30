@@ -1,8 +1,8 @@
 /* eslint-disable */
 "use client";
 
-import { useState } from "react";
-import { signIn } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
+import { signIn, authClient, useSession } from "@/lib/auth-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,29 @@ import { Lock, Mail, Loader2, ArrowRight, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AdminLogin() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+  const { data: session, isPending } = useSession();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isPending && session?.user) {
+      if (callbackUrl) {
+        router.replace(callbackUrl);
+      } else if (session.user.role === "admin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/dashboard");
+      }
+    }
+  }, [session, isPending, callbackUrl, router]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -27,8 +45,19 @@ export default function AdminLogin() {
     }, {
       onSuccess: async () => {
         toast.success("Welcome back!");
-        // Full page reload ensures middleware reads the new cookie
-        window.location.href = "/admin";
+        try {
+          const sessionRes = await authClient.getSession();
+          const role = sessionRes?.data?.user?.role;
+          if (callbackUrl) {
+            window.location.href = callbackUrl;
+          } else if (role === "admin") {
+            window.location.href = "/admin";
+          } else {
+            window.location.href = "/dashboard";
+          }
+        } catch {
+          window.location.href = callbackUrl || "/dashboard";
+        }
       },
       onError: (ctx) => {
         toast.error(ctx.error.message || "Invalid credentials");
