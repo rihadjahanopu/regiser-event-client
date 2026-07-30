@@ -1300,7 +1300,7 @@ export default function SettingsPage() {
 
 					{/* Certificate & Ticket Custom Watermark Image Upload Box */}
 					<div className="border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3">
-						<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block flex items-center justify-between">
+						<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
 							<span>Certificate &amp; Ticket Custom Watermark Image</span>
 							<span className="text-[10px] text-indigo-600 font-normal">Optional (Defaults to Navbar Logo if not uploaded)</span>
 						</label>
@@ -1575,7 +1575,7 @@ export default function SettingsPage() {
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-purple-50/40 dark:bg-purple-950/10 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30">
 								{/* President */}
 								<div className="space-y-3">
-									<span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider block flex items-center gap-1.5">
+									<span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
 										<PenLine className="w-3.5 h-3.5" /> President Signature
 									</span>
 									<div>
@@ -1671,7 +1671,7 @@ export default function SettingsPage() {
 
 								{/* Secretary */}
 								<div className="space-y-3">
-									<span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider block flex items-center gap-1.5">
+									<span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
 										<PenLine className="w-3.5 h-3.5" /> Secretary Signature
 									</span>
 									<div>
@@ -2996,7 +2996,7 @@ export default function SettingsPage() {
 
 							{/* Dedicated Certificate Top Logo Upload */}
 							<div className="p-4 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3">
-								<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block flex items-center justify-between">
+								<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
 									<span>Dedicated Certificate Top Logo (Optional)</span>
 									<span className="text-[10px] text-indigo-600 font-normal">Defaults to Navbar Logo if not set</span>
 								</label>

@@ -63,7 +63,7 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
       </AnimatePresence>
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0c0c16] border-r border-white/5 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:static md:block flex flex-col`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0c0c16] border-r border-white/5 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:static md:flex flex-col`}>
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/5">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-lg font-bold tracking-wider uppercase bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
