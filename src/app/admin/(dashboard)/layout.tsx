@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { 
   LayoutDashboard, 
@@ -28,19 +28,28 @@ import { toast } from "sonner";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
   const handleLogout = async () => {
-    await signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Logged out successfully");
-          router.push("/admin/login");
+    try {
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("Logged out successfully");
+            // Full page reload ensures cleared cookie is detected by middleware
+            window.location.href = "/admin/login";
+          },
+          onError: () => {
+            // Force redirect even on error
+            window.location.href = "/admin/login";
+          },
         }
-      }
-    });
+      });
+    } catch {
+      // Fallback redirect if signOut throws
+      window.location.href = "/admin/login";
+    }
   };
 
   const navItems = [
