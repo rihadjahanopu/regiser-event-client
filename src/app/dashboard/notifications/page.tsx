@@ -18,6 +18,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 interface NotificationItem {
   id: string;
@@ -34,6 +35,7 @@ export default function UserNotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [filter, setFilter] = useState<"all" | "unread" | "blogs" | "system">("all");
+  const { setUnreadCount, clearUnread } = useNotificationStore();
 
   useEffect(() => {
     fetchNotifications();
@@ -44,7 +46,10 @@ export default function UserNotificationsPage() {
       setLoading(true);
       const res = await axios.get("/api/user/notifications");
       if (res.data.success) {
-        setNotifications(res.data.data || []);
+        const data = res.data.data || [];
+        setNotifications(data);
+        // Sync unread count to global store
+        setUnreadCount(data.filter((n: NotificationItem) => !n.read).length);
       } else {
         setError(true);
       }
@@ -57,18 +62,22 @@ export default function UserNotificationsPage() {
 
   const markAllAsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    clearUnread();
     toast.success("All notifications marked as read");
   };
 
   const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    setNotifications((prev) => {
+      const updated = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
+      setUnreadCount(updated.filter((n) => !n.read).length);
+      return updated;
+    });
   };
 
   const clearNotifications = () => {
     if (!confirm("Are you sure you want to clear all notifications?")) return;
     setNotifications([]);
+    clearUnread();
     toast.success("Notifications cleared");
   };
 

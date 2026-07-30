@@ -24,6 +24,8 @@ import { useEffect, useState, useRef } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import axios from "axios";
 import { toast } from "sonner";
+import { useUserStore } from "@/store/useUserStore";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 interface NavbarProps {
   isRegistrationOpen?: boolean;
@@ -103,9 +105,13 @@ export default function Navbar({
     }
   };
 
-  const user = session?.user;
+  // Use Zustand profile for avatar/name (updates live after profile save)
+  const zustandProfile = useUserStore((s) => s.profile);
+  const unreadCount = useNotificationStore((s) => s.unreadCount);
+
+  const user = zustandProfile || session?.user;
   const isLoggedIn = !!session && !!user;
-  const isAdmin = user?.role === "admin";
+  const isAdmin = (zustandProfile?.role || (session?.user as any)?.role) === "admin";
 
   // Determine Nav links based on Role
   let navLinks: { label: string; href: string }[] = [];

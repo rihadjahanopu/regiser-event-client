@@ -13,17 +13,22 @@ import {
   LogOut, 
   Menu, 
   X,
-  User
 } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUserStore } from "@/store/useUserStore";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 export default function UserDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Zustand stores
+  const profile = useUserStore((s) => s.profile);
+  const unreadCount = useNotificationStore((s) => s.unreadCount);
 
   const handleLogout = async () => {
     try {
@@ -48,11 +53,12 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
     { name: "Add Blog", href: "/dashboard/add-blog", icon: PenTool },
     { name: "My Blogs", href: "/dashboard/my-blogs", icon: FileText },
     { name: "Blog Analytics", href: "/dashboard/analytics", icon: BarChart2 },
-    { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
+    { name: "Notifications", href: "/dashboard/notifications", icon: Bell, badge: unreadCount },
     { name: "Profile Settings", href: "/dashboard/profile", icon: Settings },
   ];
 
-  const user = session?.user;
+  // Use Zustand profile if available, fallback to session
+  const user = profile || session?.user;
 
   return (
     <div className="min-h-screen bg-[#07070e] text-white flex">
@@ -89,20 +95,28 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
+            const badge = (item as any).badge;
             
             return (
               <Link 
                 key={item.name} 
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all ${
+                className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                   isActive 
                     ? 'bg-gradient-to-r from-violet-600/25 to-indigo-600/10 border border-violet-500/25 text-violet-300 font-medium shadow-lg shadow-violet-500/5' 
                     : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
                 }`}
               >
-                <Icon className="w-5 h-5 shrink-0" />
-                <span className="text-sm">{item.name}</span>
+                <div className="flex items-center space-x-3">
+                  <Icon className="w-5 h-5 shrink-0" />
+                  <span className="text-sm">{item.name}</span>
+                </div>
+                {badge > 0 && (
+                  <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-violet-600 text-white text-[10px] font-bold flex items-center justify-center">
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
               </Link>
             )
           })}
@@ -116,7 +130,7 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
                 <img src={user.image} alt={user.name} className="w-9 h-9 rounded-full object-cover border border-white/10" />
               ) : (
                 <div className="w-9 h-9 rounded-full bg-violet-600/30 text-violet-300 flex items-center justify-center font-semibold border border-white/10">
-                  {user.name.charAt(0).toUpperCase()}
+                  {user.name?.charAt(0)?.toUpperCase()}
                 </div>
               )}
               <div className="min-w-0 flex-1">
@@ -146,8 +160,19 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex-1"></div>
-          <div className="flex items-center space-x-4">
-            {/* Header Icons / Quick Links */}
+          <div className="flex items-center gap-4">
+            {/* Notification bell in header */}
+            <Link
+              href="/dashboard/notifications"
+              className="relative p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-violet-600 text-white text-[9px] font-bold flex items-center justify-center">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+            </Link>
             <Link 
               href="/" 
               className="text-xs px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition-all"

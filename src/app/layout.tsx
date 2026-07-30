@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/typedef */
 import { Toaster } from "@/components/ui/sonner";
+import UserInitializer from "@/components/UserInitializer";
 import type { Metadata } from "next";
 import {
 	Geist_Mono,
@@ -61,6 +62,7 @@ export default function RootLayout({
 				/>
 			</head>
 			<body>
+				<UserInitializer />
 				{children}
 				<Toaster
 					richColors

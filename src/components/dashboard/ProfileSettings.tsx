@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useSession, authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/store/useUserStore";
 
 interface Session {
   id: string;
@@ -40,6 +41,7 @@ interface Session {
 export default function ProfileSettings({ isAdmin = false }: { isAdmin?: boolean }) {
   const router = useRouter();
   const { data: authSession, isPending } = useSession();
+  const { updateAvatar, updateName } = useUserStore();
   const [loading, setLoading] = useState(false);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -152,6 +154,10 @@ export default function ProfileSettings({ isAdmin = false }: { isAdmin?: boolean
         toast.success("Profile information updated successfully!");
         if (res.data.user?.image) {
           setAvatarPreview(res.data.user.image);
+          updateAvatar(res.data.user.image);
+        }
+        if (res.data.user?.name) {
+          updateName(res.data.user.name);
         }
         setAvatarFile(null);
         router.refresh();
