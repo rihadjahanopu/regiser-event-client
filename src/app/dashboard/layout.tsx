@@ -26,14 +26,21 @@ export default function UserDashboardLayout({ children }: { children: React.Reac
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
-    await signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Logged out successfully");
-          router.push("/admin/login");
+    try {
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success("Logged out successfully");
+            window.location.href = "/admin/login";
+          },
+          onError: () => {
+            window.location.href = "/admin/login";
+          }
         }
-      }
-    });
+      });
+    } catch {
+      window.location.href = "/admin/login";
+    }
   };
 
   const navItems = [

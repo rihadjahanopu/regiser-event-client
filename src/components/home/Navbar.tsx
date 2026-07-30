@@ -91,12 +91,15 @@ export default function Navbar({
             toast.success("Logged out successfully");
             setDropdownOpen(false);
             setOpen(false);
-            router.push("/admin/login");
+            window.location.href = "/admin/login";
+          },
+          onError: () => {
+            window.location.href = "/admin/login";
           }
         }
       });
-    } catch (error) {
-      toast.error("Failed to sign out");
+    } catch {
+      window.location.href = "/admin/login";
     }
   };
 
