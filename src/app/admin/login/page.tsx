@@ -1,7 +1,7 @@
 /* eslint-disable */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { signIn, authClient, useSession } from "@/lib/auth-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AdminLogin() {
+function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
@@ -115,7 +115,7 @@ export default function AdminLogin() {
         >
           <div className="text-center mb-10 lg:text-left">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Welcome Back</h2>
-            <p className="text-slate-500">Sign in to your administrative account</p>
+            <p className="text-slate-500">Sign in to your account</p>
           </div>
 
           <Card className="border-0 shadow-2xl shadow-blue-900/5 bg-white dark:bg-slate-900 overflow-hidden">
@@ -128,7 +128,7 @@ export default function AdminLogin() {
                     <Input 
                       id="email" 
                       type="email" 
-                      placeholder="admin@example.com"
+                      placeholder="user@example.com"
                       className="pl-10 h-12 bg-slate-50 dark:bg-slate-950 border-slate-200 focus-visible:ring-blue-600 focus-visible:border-blue-600"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -176,7 +176,7 @@ export default function AdminLogin() {
           </Card>
           
           <div className="mt-8 text-center text-slate-500">
-            Don't have an admin account?{" "}
+            Don't have an account?{" "}
             <Link href="/admin/register" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors">
               Register here
             </Link>
@@ -184,5 +184,19 @@ export default function AdminLogin() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLogin() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      }
+    >
+      <AdminLoginForm />
+    </Suspense>
   );
 }
