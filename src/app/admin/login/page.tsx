@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
+import axios from "axios";
+
 export default function AdminLogin() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -28,9 +30,12 @@ export default function AdminLogin() {
       password,
       callbackURL: "/admin"
     }, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        try {
+          await axios.post("/api/admin/claim-admin-role", { email });
+        } catch (err) {}
         toast.success("Welcome back!");
-        router.push("/admin");
+        window.location.href = "/admin";
       },
       onError: (ctx) => {
         toast.error(ctx.error.message || "Invalid credentials");

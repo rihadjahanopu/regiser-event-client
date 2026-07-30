@@ -33,6 +33,15 @@ export default function SuccessPage() {
 		eventStartTime?: string;
 		organiserContact?: string;
 	}>({});
+	const [siteSettings, setSiteSettings] = useState({
+		navbarLogoUrl: "",
+		watermarkUrl: "",
+		regFormOrgLine1: "Bangladesh Anjumane Talamije Islamia",
+		regFormOrgLine2: "Chhatak Uttar Upazila",
+		successPageTitle: "Registration Successful!",
+		successPageSubtitle: "Your digital ticket is ready. Please save or print it.",
+		ticketParticipantLabel: "Participant Ticket",
+	});
 	const ticketRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -57,6 +66,15 @@ export default function SuccessPage() {
 						eventDate: d.eventDate || "",
 						eventStartTime: d.eventStartTime || "",
 						organiserContact: d.organiserContact || "",
+					});
+					setSiteSettings({
+						navbarLogoUrl: d.navbarLogoUrl || "",
+						watermarkUrl: d.watermarkUrl || "",
+						regFormOrgLine1: d.regFormOrgLine1 || "Bangladesh Anjumane Talamije Islamia",
+						regFormOrgLine2: d.regFormOrgLine2 || "Chhatak Uttar Upazila",
+						successPageTitle: d.successPageTitle || "Registration Successful!",
+						successPageSubtitle: d.successPageSubtitle || "Your digital ticket is ready. Please save or print it.",
+						ticketParticipantLabel: d.ticketParticipantLabel || "Participant Ticket",
 					});
 				}
 			} catch (error: any) {
@@ -97,13 +115,14 @@ export default function SuccessPage() {
 
 			// ── Logo (optional — skip silently if fails) ─────────────────
 			try {
+				const logoSrc = siteSettings.navbarLogoUrl || "/bangladesh-anjumane-talamije-islamia-seeklogo.png";
 				const logoImg = await new Promise<HTMLImageElement>(
 					(resolve, reject) => {
 						const img = new Image();
 						img.crossOrigin = "Anonymous";
 						img.onload = () => resolve(img);
 						img.onerror = reject;
-						img.src = "/bangladesh-anjumane-talamije-islamia-seeklogo.png";
+						img.src = logoSrc;
 					}
 				);
 				doc.addImage(logoImg, "PNG", 14, 8, 12, 12);
@@ -115,7 +134,8 @@ export default function SuccessPage() {
 			doc.setFont("helvetica", "bold");
 			doc.setFontSize(11);
 			doc.setTextColor(15, 23, 42);
-			doc.text("Bangladesh Anjumane Talamije Islamia - Chhatak Uttar", 28, 12);
+			const pdfOrgHeader = `${siteSettings.regFormOrgLine1} - ${siteSettings.regFormOrgLine2}`;
+			doc.text(pdfOrgHeader.slice(0, 60), 28, 12);
 
 			if (eventDetails.eventName) {
 				doc.setFont("helvetica", "bold");
@@ -284,10 +304,10 @@ export default function SuccessPage() {
 						<CheckCircle2 className="w-8 h-8" />
 					</div>
 					<h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-						Registration Successful!
+						{siteSettings.successPageTitle}
 					</h1>
 					<p className="text-slate-500">
-						Your digital ticket is ready. Please save or print it.
+						{siteSettings.successPageSubtitle}
 					</p>
 				</div>
 
@@ -298,18 +318,18 @@ export default function SuccessPage() {
 					{/* Header */}
 					<div className="bg-blue-600 p-4 sm:p-6 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
 						<div className="flex items-center space-x-4">
-							<div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center p-1 shadow-sm shrink-0">
+							<div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center p-1 shadow-sm shrink-0 overflow-hidden">
 								<img
-									src="/bangladesh-anjumane-talamije-islamia-seeklogo.png"
+									src={siteSettings.navbarLogoUrl || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}
 									alt="Logo"
 									className="w-full h-full object-contain"
 								/>
 							</div>
 							<div>
 								<h2 className="text-sm sm:text-xl md:text-2xl font-bold tracking-tight leading-tight">
-									Bangladesh Anjumane Talamije Islamia
+									{siteSettings.regFormOrgLine1}
 									<br />
-									Chhatak Uttar Upazila
+									{siteSettings.regFormOrgLine2}
 								</h2>
 								{eventDetails.eventName && (
 									<p className="text-amber-300 font-semibold text-xs sm:text-sm mt-0.5">
@@ -317,7 +337,7 @@ export default function SuccessPage() {
 									</p>
 								)}
 								<p className="text-blue-100 text-xs opacity-90">
-									Participant Ticket
+									{siteSettings.ticketParticipantLabel}
 								</p>
 							</div>
 						</div>
@@ -335,7 +355,7 @@ export default function SuccessPage() {
 						{/* Watermark / Hallmark */}
 						<div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none">
 							<img
-								src="/bangladesh-anjumane-talamije-islamia-seeklogo.png"
+								src={siteSettings.watermarkUrl || siteSettings.navbarLogoUrl || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}
 								alt="Watermark"
 								className="w-80 h-80 object-contain"
 							/>

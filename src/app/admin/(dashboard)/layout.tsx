@@ -5,11 +5,21 @@ import Link from "next/link";
 import { 
   LayoutDashboard, 
   Users, 
-  Settings, 
   LogOut,
   Menu,
   X,
-  Award
+  Award,
+  FileCheck2,
+  BookOpen,
+  Layers,
+  Tag,
+  MessageSquare,
+  Flag,
+  User,
+  Sliders,
+  Home,
+  Images,
+  Crown
 } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -37,7 +47,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Registrations", href: "/admin/registrations", icon: Users },
     { name: "Certificates", href: "/admin/certificates", icon: Award },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
+    { name: "User Management", href: "/admin/users", icon: Users },
+    { name: "Gallery", href: "/admin/gallery", icon: Images },
+    { name: "Leadership", href: "/admin/team", icon: Crown },
+    { name: "Blog Review", href: "/admin/blog-review", icon: FileCheck2 },
+    { name: "Published Blogs", href: "/admin/published-blogs", icon: BookOpen },
+    { name: "Categories", href: "/admin/categories", icon: Layers },
+    { name: "Tags", href: "/admin/tags", icon: Tag },
+    { name: "Comments", href: "/admin/comments", icon: MessageSquare },
+    { name: "Reports", href: "/admin/reports", icon: Flag },
+    { name: "Site Settings", href: "/admin/settings", icon: Sliders },
+    { name: "Profile Settings", href: "/admin/profile", icon: User },
   ];
 
   return (
@@ -59,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
         
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/admin");
@@ -81,7 +101,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-1">
+          <Link
+            href="/"
+            className="flex items-center space-x-3 px-3 py-2.5 rounded-lg w-full text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <Home className="w-5 h-5" />
+            <span>Go to Home</span>
+          </Link>
           <button 
             onClick={handleLogout}
             className="flex items-center space-x-3 px-3 py-2.5 rounded-lg w-full text-slate-600 dark:text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 transition-colors"

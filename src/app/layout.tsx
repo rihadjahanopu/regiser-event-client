@@ -1,53 +1,72 @@
-import type { Metadata } from "next";
-import { Outfit, Geist_Mono, Playfair_Display, Great_Vibes } from "next/font/google";
+/* eslint-disable @typescript-eslint/typedef */
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from "next";
+import {
+	Geist_Mono,
+	Great_Vibes,
+	Outfit,
+	Playfair_Display,
+} from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
+	variable: "--font-outfit",
+	subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
 });
 
 const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
+	variable: "--font-playfair",
+	subsets: ["latin"],
 });
 
 const greatVibes = Great_Vibes({
-  variable: "--font-great-vibes",
-  weight: "400",
-  subsets: ["latin"],
+	variable: "--font-great-vibes",
+	weight: "400",
+	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Talamij — Participant Registration",
-  description: "Register for the event and get your digital QR ticket instantly.",
+	title: "Talamij — Empowering Youth & Community",
+	description:
+		"Talamij is a non-profit organization dedicated to youth talent development, leadership building, and social progress.",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="en"
-      className={`${outfit.variable} ${geistMono.variable} ${playfair.variable} ${greatVibes.variable} antialiased`}
-    >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
-      </head>
-      <body className="h-screen overflow-hidden">
-        {children}
-        <Toaster richColors position="top-right" />
-      </body>
-    </html>
-  );
+	return (
+		<html
+			lang="en"
+			className={`${outfit.variable} ${geistMono.variable} ${playfair.variable} ${greatVibes.variable} antialiased`}>
+			<head>
+				<link
+					rel="preconnect"
+					href="https://fonts.googleapis.com"
+				/>
+				<link
+					rel="preconnect"
+					href="https://fonts.gstatic.com"
+					crossOrigin="anonymous"
+				/>
+				<link
+					href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+					rel="stylesheet"
+				/>
+			</head>
+			<body>
+				{children}
+				<Toaster
+					richColors
+					position="top-right"
+				/>
+			</body>
+		</html>
+	);
 }

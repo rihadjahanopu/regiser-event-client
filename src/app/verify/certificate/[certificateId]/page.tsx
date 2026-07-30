@@ -28,6 +28,11 @@ export default function VerificationPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [certData, setCertData] = useState<any>(null);
 	const [regData, setRegData] = useState<any>(null);
+	const [siteSettings, setSiteSettings] = useState({
+		navbarLogoUrl: "",
+		regFormOrgLine1: "Bangladesh Anjumane Talamije Islamia",
+		regFormOrgLine2: "Chhatak Uttar Upazila",
+	});
 
 	// Generate Security Checksum
 	const getSecurityHash = (certId: string, regId: string) => {
@@ -40,6 +45,20 @@ export default function VerificationPage() {
 		const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, "0");
 		return `SEC-HASH: 8F9B-${hex.slice(0, 4)}-${hex.slice(4, 8)}`;
 	};
+
+	useEffect(() => {
+		// Fetch site settings for logo and org name
+		axios.get("/api/settings").then((res) => {
+			if (res.data.success && res.data.data) {
+				const d = res.data.data;
+				setSiteSettings({
+					navbarLogoUrl: d.navbarLogoUrl || "",
+					regFormOrgLine1: d.regFormOrgLine1 || "Bangladesh Anjumane Talamije Islamia",
+					regFormOrgLine2: d.regFormOrgLine2 || "Chhatak Uttar Upazila",
+				});
+			}
+		}).catch(() => {});
+	}, []);
 
 	useEffect(() => {
 		async function verifyCertificate() {
@@ -71,14 +90,14 @@ export default function VerificationPage() {
 				{/* Top Logo */}
 				<div className="text-center">
 					<img 
-						src="/bangladesh-anjumane-talamije-islamia-seeklogo.png" 
+						src={siteSettings.navbarLogoUrl || "/bangladesh-anjumane-talamije-islamia-seeklogo.png"}
 						className="h-16 mx-auto mb-3" 
 						alt="Logo"
 					/>
 					<h1 className="text-sm font-bold text-slate-800 dark:text-slate-200 tracking-wider uppercase leading-snug">
-						Bangladesh Anjumane Talamije Islamia
+						{siteSettings.regFormOrgLine1}
 					</h1>
-					<p className="text-[11px] text-slate-500 uppercase tracking-widest mt-1">Chhatak Uttar Upazila</p>
+					<p className="text-[11px] text-slate-500 uppercase tracking-widest mt-1">{siteSettings.regFormOrgLine2}</p>
 				</div>
 
 				{loading ? (
@@ -233,7 +252,7 @@ export default function VerificationPage() {
 
 				{/* Footer Copyright */}
 				<div className="text-center text-xs text-slate-400 py-2">
-					&copy; {new Date().getFullYear()} Bangladesh Anjumane Talamije Islamia. All rights reserved.
+					&copy; {new Date().getFullYear()} {siteSettings.regFormOrgLine1}. All rights reserved.
 				</div>
 			</div>
 		</div>
