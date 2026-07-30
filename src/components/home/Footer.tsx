@@ -157,9 +157,23 @@ export default function Footer({
           {copyrightText ||
             `© ${new Date().getFullYear()} Bangladesh Anjumane Talamije Islamia (Chhatak Uttar Upazila). All rights reserved.`}
         </p>
-        <p className="flex items-center gap-1">
-          Made with <Heart className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="flex items-center gap-1">
+            Developed by{" "}
+            <a
+              href="https://www.rihadjahanopu.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-slate-300 hover:text-violet-400 font-medium underline underline-offset-2 transition-colors"
+            >
+              Rihad Jahan Opu
+            </a>
+          </p>
+          <span>•</span>
+          <p className="flex items-center gap-1">
+            Made with <Heart className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
+          </p>
+        </div>
       </div>
     </footer>
   );

@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { signIn } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,10 +12,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-import axios from "axios";
-
 export default function AdminLogin() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,12 +26,6 @@ export default function AdminLogin() {
       password,
     }, {
       onSuccess: async () => {
-        try {
-          // withCredentials ensures the session cookie is sent with this proxied request
-          await axios.post("/api/admin/claim-admin-role", { email }, { withCredentials: true });
-        } catch (err) {
-          // Ignore — user may already have admin role set
-        }
         toast.success("Welcome back!");
         // Full page reload ensures middleware reads the new cookie
         window.location.href = "/admin";
