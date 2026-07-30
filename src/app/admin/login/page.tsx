@@ -28,13 +28,16 @@ export default function AdminLogin() {
     await signIn.email({
       email,
       password,
-      callbackURL: "/admin"
     }, {
       onSuccess: async () => {
         try {
-          await axios.post("/api/admin/claim-admin-role", { email });
-        } catch (err) {}
+          // withCredentials ensures the session cookie is sent with this proxied request
+          await axios.post("/api/admin/claim-admin-role", { email }, { withCredentials: true });
+        } catch (err) {
+          // Ignore — user may already have admin role set
+        }
         toast.success("Welcome back!");
+        // Full page reload ensures middleware reads the new cookie
         window.location.href = "/admin";
       },
       onError: (ctx) => {
