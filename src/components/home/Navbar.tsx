@@ -239,14 +239,16 @@ export default function Navbar({
                         </div>
 
                         {/* Dropdown Links */}
-                        <Link
-                          href={isAdmin ? "/admin/profile" : "/dashboard/profile"}
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm hover:bg-white/5 hover:text-white transition-colors"
-                        >
-                          <User className="w-4 h-4" />
-                          My Profile
-                        </Link>
+                        {user?.username ? (
+                          <Link
+                            href={`/${user.username}`}
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-violet-300 hover:bg-white/5 hover:text-white transition-colors font-medium"
+                          >
+                            <User className="w-4 h-4 text-violet-400" />
+                            Public Profile
+                          </Link>
+                        ) : null}
                         <Link
                           href={isAdmin ? "/admin" : "/dashboard"}
                           onClick={() => setDropdownOpen(false)}

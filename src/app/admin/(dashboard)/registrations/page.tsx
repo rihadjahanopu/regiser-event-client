@@ -289,43 +289,43 @@ export default function RegistrationsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-5">
 				<div>
-					<h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+					<h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
 						Registrations
 					</h1>
-					<p className="text-slate-500">
-						Manage all event participants ({total} total)
+					<p className="text-slate-400 text-xs mt-1">
+						Manage all event participants ({total} total registrations)
 					</p>
 				</div>
 				<div className="flex flex-wrap gap-2">
 					<Button
-						variant="outline"
 						onClick={exportExcel}
-						disabled={exportLoading === "excel"}>
+						disabled={exportLoading === "excel"}
+						className="bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-semibold rounded-xl">
 						{exportLoading === "excel" ?
-							<PdfLoader className="mr-2 h-4 w-4 animate-spin" />
-						:	<Download className="mr-2 h-4 w-4" />}
-						Excel
+							<PdfLoader className="mr-2 h-3.5 w-3.5 animate-spin" />
+						:	<Download className="mr-2 h-3.5 w-3.5 text-violet-400" />}
+						Excel Export
 					</Button>
 					<Button
-						variant="outline"
 						onClick={exportPDF}
-						disabled={exportLoading === "pdf"}>
+						disabled={exportLoading === "pdf"}
+						className="bg-white/5 hover:bg-white/10 text-white border border-white/10 text-xs font-semibold rounded-xl">
 						{exportLoading === "pdf" ?
-							<PdfLoader className="mr-2 h-4 w-4 animate-spin" />
-						:	<Download className="mr-2 h-4 w-4" />}
-						PDF
+							<PdfLoader className="mr-2 h-3.5 w-3.5 animate-spin" />
+						:	<Download className="mr-2 h-3.5 w-3.5 text-indigo-400" />}
+						PDF Export
 					</Button>
 				</div>
 			</div>
 
-			<div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+			<div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-[#0c0c16] p-4 rounded-2xl shadow-xl border border-white/5">
 				<div className="relative w-full sm:w-72">
-					<Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+					<Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
 					<Input
 						placeholder="Search by name, mobile, ID..."
-						className="pl-9"
+						className="pl-10 bg-white/5 border-white/10 text-white placeholder-slate-500 rounded-xl text-sm"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
 					/>
@@ -334,10 +334,10 @@ export default function RegistrationsPage() {
 					<Select
 						value={status}
 						onValueChange={(val) => setStatus(val ?? "All")}>
-						<SelectTrigger>
+						<SelectTrigger className="bg-white/5 border-white/10 text-white rounded-xl text-sm">
 							<SelectValue placeholder="Filter by status" />
 						</SelectTrigger>
-						<SelectContent>
+						<SelectContent className="bg-[#0c0c16] border-white/10 text-white">
 							<SelectItem value="All">All Statuses</SelectItem>
 							<SelectItem value="Verified">Verified</SelectItem>
 							<SelectItem value="Pending">Pending</SelectItem>
@@ -347,19 +347,19 @@ export default function RegistrationsPage() {
 				</div>
 			</div>
 
-			<div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+			<div className="bg-[#0c0c16] rounded-2xl shadow-xl border border-white/5 overflow-hidden">
 				<div className="overflow-x-auto">
 					<Table>
 						<TableHeader>
-							<TableRow className="bg-slate-50 dark:bg-slate-800/50">
-								<TableHead className="w-12 text-center">S.N.</TableHead>
-								<TableHead>Registration ID</TableHead>
-								<TableHead>Name</TableHead>
-								<TableHead>Mobile</TableHead>
-								<TableHead>School / College</TableHead>
-								<TableHead>Date</TableHead>
-								<TableHead>Status</TableHead>
-								<TableHead className="text-right">Actions</TableHead>
+							<TableRow className="bg-white/[0.02] border-b border-white/5 text-slate-400">
+								<TableHead className="w-12 text-center text-slate-400 font-extrabold uppercase text-[11px]">S.N.</TableHead>
+								<TableHead className="text-slate-400 font-extrabold uppercase text-[11px]">Registration ID</TableHead>
+								<TableHead className="text-slate-400 font-extrabold uppercase text-[11px]">Name</TableHead>
+								<TableHead className="text-slate-400 font-extrabold uppercase text-[11px]">Mobile</TableHead>
+								<TableHead className="text-slate-400 font-extrabold uppercase text-[11px]">School / College</TableHead>
+								<TableHead className="text-slate-400 font-extrabold uppercase text-[11px]">Date</TableHead>
+								<TableHead className="text-slate-400 font-extrabold uppercase text-[11px]">Status</TableHead>
+								<TableHead className="text-right text-slate-400 font-extrabold uppercase text-[11px]">Actions</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -380,40 +380,36 @@ export default function RegistrationsPage() {
 									</TableCell>
 								</TableRow>
 							:	data.map((item, index) => (
-									<TableRow key={item._id}>
+									<TableRow key={item._id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
 										<TableCell className="font-medium text-slate-500 text-center">
 											{(page - 1) * 10 + index + 1}
 										</TableCell>
-										<TableCell className="font-mono text-sm">
+										<TableCell className="font-mono text-xs text-violet-300 font-semibold">
 											{item.registrationId}
 										</TableCell>
-										<TableCell className="font-medium">
+										<TableCell className="font-semibold text-white">
 											{item.fullName}
 										</TableCell>
-										<TableCell>{item.mobile}</TableCell>
+										<TableCell className="text-slate-300 text-xs">{item.mobile}</TableCell>
 										<TableCell
-											className="max-w-[150px] truncate"
+											className="max-w-[150px] truncate text-slate-300 text-xs"
 											title={item.schoolName}>
 											{item.schoolName}
 										</TableCell>
-										<TableCell className="text-slate-500">
+										<TableCell className="text-slate-400 text-xs">
 											{new Date(item.registrationDate).toLocaleDateString()}
 										</TableCell>
 										<TableCell>
-											<Badge
-												variant={
-													item.status === "Verified" ? "default"
-													: item.status === "Pending" ?
-														"secondary"
-													:	"destructive"
-												}
-												className={
-													item.status === "Verified" ?
-														"bg-green-100 text-green-700 hover:bg-green-100"
-													:	""
-												}>
+											<span
+												className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${
+													item.status === "Verified"
+														? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+														: item.status === "Pending"
+														? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+														: "bg-red-500/10 text-red-400 border-red-500/20"
+												}`}>
 												{item.status}
-											</Badge>
+											</span>
 										</TableCell>
 										<TableCell className="text-right">
 											<DropdownMenu>
@@ -421,59 +417,64 @@ export default function RegistrationsPage() {
 													render={
 														<Button
 															variant="ghost"
-															className="h-8 w-8 p-0"
+															className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl"
 														/>
 													}>
 													<span className="sr-only">Open menu</span>
 													<MoreHorizontal className="h-4 w-4" />
 												</DropdownMenuTrigger>
-												<DropdownMenuContent align="end">
+												<DropdownMenuContent align="end" className="bg-[#0c0c16] border-white/10 text-white">
 													<DropdownMenuGroup>
-														<DropdownMenuLabel>Actions</DropdownMenuLabel>
+														<DropdownMenuLabel className="text-slate-400 text-xs font-bold uppercase">Actions</DropdownMenuLabel>
 
 														<DropdownMenuItem
+															className="hover:bg-white/5 cursor-pointer text-xs"
 															onClick={() => {
 																setViewData(item);
 																setViewModalOpen(true);
 															}}>
-															<Eye className="mr-2 h-4 w-4" />
+															<Eye className="mr-2 h-3.5 w-3.5 text-violet-400" />
 															View Details
 														</DropdownMenuItem>
 
 														<DropdownMenuItem
+															className="hover:bg-white/5 cursor-pointer text-xs"
 															onClick={() => {
 																setEditData(item);
 																setEditModalOpen(true);
 															}}>
-															<Edit2 className="mr-2 h-4 w-4" />
+															<Edit2 className="mr-2 h-3.5 w-3.5 text-indigo-400" />
 															Edit
 														</DropdownMenuItem>
 
 														<DropdownMenuItem
-															onClick={() =>
+															className="hover:bg-white/5 cursor-pointer text-xs"
+															onClick={() => {
 																navigator.clipboard.writeText(
 																	item.registrationId
-																)
-															}>
+																);
+																toast.success("Registration ID copied!");
+															}}>
 															Copy ID
 														</DropdownMenuItem>
 
 														<DropdownMenuItem
-															className="text-red-600 focus:bg-red-50 focus:text-red-600"
+															className="text-red-400 hover:bg-red-500/10 cursor-pointer text-xs"
 															onClick={() => handleDelete(item.registrationId)}>
-															<Trash2 className="mr-2 h-4 w-4" />
+															<Trash2 className="mr-2 h-3.5 w-3.5" />
 															Delete
 														</DropdownMenuItem>
 													</DropdownMenuGroup>
-													<DropdownMenuSeparator />
+													<DropdownMenuSeparator className="bg-white/5" />
 													<DropdownMenuItem
+														className="hover:bg-white/5 cursor-pointer text-xs"
 														render={
 															<Link
 																href={`/success/${item.registrationId}`}
 																target="_blank"
 															/>
 														}>
-														<Eye className="mr-2 h-4 w-4" />
+														<Eye className="mr-2 h-3.5 w-3.5 text-emerald-400" />
 														View Ticket
 													</DropdownMenuItem>
 												</DropdownMenuContent>
@@ -487,27 +488,27 @@ export default function RegistrationsPage() {
 				</div>
 
 				{/* Pagination */}
-				<div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800">
-					<div className="text-xs sm:text-sm text-slate-500">
+				<div className="flex items-center justify-between px-6 py-4 border-t border-white/5 bg-white/[0.01]">
+					<div className="text-xs text-slate-400">
 						Showing {Math.min((page - 1) * 10 + 1, total)}–
 						{Math.min(page * 10, total)} of {total}
 					</div>
 					<div className="flex space-x-2">
 						<Button
-							variant="outline"
 							size="sm"
 							onClick={() => setPage((p) => Math.max(1, p - 1))}
-							disabled={page === 1 || loading}>
+							disabled={page === 1 || loading}
+							className="bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-xs">
 							<ChevronLeft className="h-4 w-4" />
 						</Button>
-						<div className="flex items-center justify-center px-4 text-sm font-medium">
+						<div className="flex items-center justify-center px-4 text-xs font-semibold text-slate-300">
 							Page {page} of {totalPages || 1}
 						</div>
 						<Button
-							variant="outline"
 							size="sm"
 							onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-							disabled={page >= totalPages || loading}>
+							disabled={page >= totalPages || loading}
+							className="bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-xs">
 							<ChevronRight className="h-4 w-4" />
 						</Button>
 					</div>

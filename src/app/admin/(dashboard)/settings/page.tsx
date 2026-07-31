@@ -1156,20 +1156,20 @@ export default function SettingsPage() {
 	return (
 		<div className="space-y-6 max-w-3xl pb-12">
 			<div>
-				<h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+				<h1 className="text-2xl font-bold tracking-tight text-white">
 					Settings
 				</h1>
-				<p className="text-slate-500">
+				<p className="text-slate-400 text-sm mt-0.5">
 					Manage event schedule, appearance, and global configuration.
 				</p>
 			</div>
 
 			{/* Registration Status */}
-			<Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
-				<CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
+				<CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-white/5 mb-4">
 					<div className="space-y-1">
-						<CardTitle className="text-lg">Registration Status</CardTitle>
-						<CardDescription>
+						<CardTitle className="text-lg text-white">Registration Status</CardTitle>
+						<CardDescription className="text-slate-500">
 							Turn event registration on or off manually.
 						</CardDescription>
 					</div>
@@ -1178,9 +1178,7 @@ export default function SettingsPage() {
 							onClick={toggleRegistrationStatus}
 							disabled={updatingStatus || loading}
 							className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
-								isRegistrationOpen ? "bg-blue-600" : (
-									"bg-slate-300 dark:bg-slate-700"
-								)
+								isRegistrationOpen ? "bg-violet-600" : "bg-white/10"
 							}`}>
 							<span
 								className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
@@ -1192,9 +1190,9 @@ export default function SettingsPage() {
 				</CardHeader>
 
 			{/* Site Branding & Navbar Logo Settings */}
-			<Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+					<CardTitle className="flex items-center gap-2 text-white">
 						<Globe className="w-5 h-5 text-indigo-600" />
 						Site Branding & Navbar Logo
 					</CardTitle>
@@ -1205,7 +1203,7 @@ export default function SettingsPage() {
 				<CardContent className="space-y-6">
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 						<div>
-							<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+							<label className="text-xs font-medium text-slate-300 mb-1 block">
 								Site Title / Organization Name
 							</label>
 							<Input
@@ -1216,7 +1214,7 @@ export default function SettingsPage() {
 							/>
 						</div>
 						<div>
-							<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+							<label className="text-xs font-medium text-slate-300 mb-1 block">
 								Site Subtitle / Tagline
 							</label>
 							<Input
@@ -1229,12 +1227,12 @@ export default function SettingsPage() {
 					</div>
 
 					{/* Logo Upload Preview & Control */}
-					<div className="border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3">
-						<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+					<div className="border border-white/5 p-4 rounded-xl space-y-3">
+						<label className="text-xs font-semibold text-slate-300 block">
 							Navbar & Footer Logo Image
 						</label>
 						{navbarLogoUrl ? (
-							<div className="flex items-center justify-between gap-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+							<div className="flex items-center justify-between gap-4 p-3 bg-white/3 rounded-lg border border-white/10">
 								<div className="flex items-center gap-3">
 									<img
 										src={navbarLogoUrl}
@@ -1242,7 +1240,7 @@ export default function SettingsPage() {
 										className="w-12 h-12 object-contain rounded-lg border bg-white p-1"
 									/>
 									<div>
-										<p className="text-xs font-medium text-slate-900 dark:text-white">
+										<p className="text-xs font-medium text-white">
 											Custom Logo Uploaded
 										</p>
 										<p className="text-[10px] text-slate-400">
@@ -1275,13 +1273,13 @@ export default function SettingsPage() {
 						) : (
 							<div
 								onClick={() => logoInputRef.current?.click()}
-								className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-50/50 dark:bg-slate-900/50 hover:bg-indigo-50/20 transition-all">
+								className="border-2 border-dashed border-white/10 hover:border-violet-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-white/3 hover:bg-violet-500/5 transition-all">
 								{uploadingLogo ? (
 									<Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
 								) : (
 									<Upload className="w-6 h-6 text-slate-400 group-hover:text-indigo-600" />
 								)}
-								<p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+								<p className="text-xs font-semibold text-slate-300">
 									Click to upload Navbar Logo
 								</p>
 								<p className="text-[10px] text-slate-400">
@@ -1299,13 +1297,13 @@ export default function SettingsPage() {
 					</div>
 
 					{/* Certificate & Ticket Custom Watermark Image Upload Box */}
-					<div className="border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3">
-						<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+					<div className="border border-white/5 p-4 rounded-xl space-y-3">
+						<label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
 							<span>Certificate &amp; Ticket Custom Watermark Image</span>
 							<span className="text-[10px] text-indigo-600 font-normal">Optional (Defaults to Navbar Logo if not uploaded)</span>
 						</label>
 						{watermarkUrl ? (
-							<div className="flex items-center justify-between gap-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+							<div className="flex items-center justify-between gap-4 p-3 bg-white/3 rounded-lg border border-white/10">
 								<div className="flex items-center gap-3">
 									<img
 										src={watermarkUrl}
@@ -1313,7 +1311,7 @@ export default function SettingsPage() {
 										className="w-12 h-12 object-contain rounded-lg border bg-white p-1"
 									/>
 									<div>
-										<p className="text-xs font-medium text-slate-900 dark:text-white">
+										<p className="text-xs font-medium text-white">
 											Custom Watermark Seal Uploaded
 										</p>
 										<p className="text-[10px] text-slate-400">
@@ -1346,13 +1344,13 @@ export default function SettingsPage() {
 						) : (
 							<div
 								onClick={() => watermarkInputRef.current?.click()}
-								className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-50/50 dark:bg-slate-900/50 hover:bg-indigo-50/20 transition-all">
+								className="border-2 border-dashed border-white/10 hover:border-violet-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-white/3 hover:bg-violet-500/5 transition-all">
 								{uploadingWatermark ? (
 									<Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
 								) : (
 									<Upload className="w-6 h-6 text-slate-400 group-hover:text-indigo-600" />
 								)}
-								<p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+								<p className="text-xs font-semibold text-slate-300">
 									Click to upload Custom Watermark Seal / Crest
 								</p>
 								<p className="text-[10px] text-slate-400">
@@ -1373,7 +1371,7 @@ export default function SettingsPage() {
 
 			{/* Cover Image Upload */}
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+					<CardTitle className="flex items-center gap-2 text-white">
 						<ImageIcon className="w-5 h-5 text-blue-600" />
 						Event Cover Image
 					</CardTitle>
@@ -1389,7 +1387,7 @@ export default function SettingsPage() {
 						</div>
 					: coverUrl ?
 						<div className="space-y-4">
-							<div className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 group">
+							<div className="relative rounded-xl overflow-hidden border border-white/10 group">
 								<img
 									src={coverUrl}
 									alt="Event Cover"
@@ -1423,7 +1421,7 @@ export default function SettingsPage() {
 							</div>
 						</div>
 					:	<div
-							className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl flex flex-col items-center justify-center h-52 gap-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors group"
+							className="border-2 border-dashed border-white/10 dark:border-slate-700 rounded-xl flex flex-col items-center justify-center h-52 gap-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors group"
 							onClick={() => fileInputRef.current?.click()}>
 							{uploading ?
 								<>
@@ -1433,11 +1431,11 @@ export default function SettingsPage() {
 									</p>
 								</>
 							:	<>
-									<div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+									<div className="w-16 h-16 rounded-full bg-white/5 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
 										<Upload className="w-8 h-8 text-slate-400 group-hover:text-blue-600 transition-colors" />
 									</div>
 									<div className="text-center">
-										<p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+										<p className="text-sm font-semibold text-slate-300">
 											Click to upload cover image
 										</p>
 										<p className="text-xs text-slate-400 mt-1">
@@ -1460,9 +1458,9 @@ export default function SettingsPage() {
 			</Card>
 
 			{/* ── Event Details & Schedule Management ── */}
-			<Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+					<CardTitle className="flex items-center gap-2 text-white">
 						<FileText className="w-5 h-5 text-blue-600" />
 						Event Details & Schedule
 					</CardTitle>
@@ -1477,7 +1475,7 @@ export default function SettingsPage() {
 						onSubmit={handleSaveEventDetails}
 						className="space-y-4">
 						<div>
-							<label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+							<label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 mb-1">
 								<FileText className="w-4 h-4 text-slate-400" /> Event Name
 							</label>
 							<Input
@@ -1489,7 +1487,7 @@ export default function SettingsPage() {
 						</div>
 
 						<div>
-							<label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+							<label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 mb-1">
 								<MapPin className="w-4 h-4 text-slate-400" /> Event Address /
 								Venue
 							</label>
@@ -1503,7 +1501,7 @@ export default function SettingsPage() {
 
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<div>
-								<label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+								<label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 mb-1">
 									<Calendar className="w-4 h-4 text-slate-400" /> Event Date
 								</label>
 								<Input
@@ -1515,7 +1513,7 @@ export default function SettingsPage() {
 							</div>
 
 							<div>
-								<label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+								<label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 mb-1">
 									<Clock className="w-4 h-4 text-slate-400" /> Event Start Time
 								</label>
 								<Input
@@ -1528,7 +1526,7 @@ export default function SettingsPage() {
 						</div>
 
 						<div>
-							<label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+							<label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 mb-1">
 								<Phone className="w-4 h-4 text-slate-400" /> Organiser Contact
 							</label>
 							<Input
@@ -1539,9 +1537,9 @@ export default function SettingsPage() {
 							/>
 						</div>
 
-						<div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+						<div className="flex items-center justify-between p-3 bg-white/3 rounded-lg border border-white/10">
 							<div className="space-y-0.5">
-								<p className="text-sm font-medium text-slate-800 dark:text-slate-200">
+								<p className="text-sm font-medium text-slate-200">
 									Show Countdown Timer
 								</p>
 								<p className="text-xs text-slate-500">
@@ -1553,8 +1551,8 @@ export default function SettingsPage() {
 								type="button"
 								onClick={() => setShowCountdown(!showCountdown)}
 								className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-									showCountdown ? "bg-blue-600" : (
-										"bg-slate-300 dark:bg-slate-700"
+									showCountdown ? "bg-violet-600" : (
+										"bg-white/10"
 									)
 								}`}>
 								<span
@@ -1566,20 +1564,20 @@ export default function SettingsPage() {
 						</div>
 
 						{/* Signature & Authority Management */}
-						<div className="border-t border-slate-200 dark:border-slate-800 pt-5 space-y-4">
-							<h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+						<div className="border-t border-white/5 pt-5 space-y-4">
+							<h3 className="text-sm font-semibold text-white flex items-center gap-2">
 								<Award className="w-4 h-4 text-purple-600" />
 								Certificate Authorized Signatures
 							</h3>
 
-							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-purple-50/40 dark:bg-purple-950/10 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30">
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/3 p-5 rounded-2xl border border-white/10">
 								{/* President */}
 								<div className="space-y-3">
-									<span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
-										<PenLine className="w-3.5 h-3.5" /> President Signature
+									<span className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-1.5">
+										<PenLine className="w-3.5 h-3.5 text-violet-400" /> President Signature
 									</span>
 									<div>
-										<label className="text-xs text-slate-500 block mb-1">
+										<label className="text-xs text-slate-400 block mb-1">
 											President Name
 										</label>
 										<Input
@@ -1590,7 +1588,7 @@ export default function SettingsPage() {
 										/>
 									</div>
 									<div>
-										<label className="text-xs text-slate-500 block mb-1">
+										<label className="text-xs text-slate-400 block mb-1">
 											President Title / Designation
 										</label>
 										<Input
@@ -1602,22 +1600,22 @@ export default function SettingsPage() {
 									</div>
 									{/* Signature Image Upload */}
 									<div>
-										<label className="text-xs text-slate-500 block mb-1.5">
+										<label className="text-xs text-slate-400 block mb-1.5">
 											Signature Image Upload
 										</label>
 										{presidentSignatureUrl ?
-											<div className="relative group rounded-xl overflow-hidden border-2 border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 p-3 flex flex-col items-center gap-2">
+											<div className="relative group rounded-xl overflow-hidden border border-white/10 bg-white p-3 flex flex-col items-center gap-2">
 												<img
 													src={presidentSignatureUrl}
 													alt="President signature"
-													className="h-16 object-contain mix-blend-multiply dark:mix-blend-normal"
+													className="h-16 object-contain"
 												/>
 												<div className="flex gap-2 w-full">
 													<Button
 														type="button"
 														size="sm"
 														variant="outline"
-														className="flex-1 text-xs h-7 border-purple-200 dark:border-purple-800"
+														className="flex-1 text-xs h-7 border-slate-300 text-slate-800 hover:bg-slate-100"
 														onClick={() =>
 															presidentSigInputRef.current?.click()
 														}
@@ -1631,7 +1629,7 @@ export default function SettingsPage() {
 														type="button"
 														size="sm"
 														variant="outline"
-														className="text-xs h-7 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+														className="text-xs h-7 border-red-200 text-red-600 hover:bg-red-50"
 														onClick={handlePresidentSignatureDelete}
 														disabled={deletingPresidentSig}>
 														{deletingPresidentSig ?
@@ -1644,12 +1642,12 @@ export default function SettingsPage() {
 												type="button"
 												onClick={() => presidentSigInputRef.current?.click()}
 												disabled={uploadingPresidentSig}
-												className="w-full border-2 border-dashed border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 rounded-xl p-4 flex flex-col items-center gap-2 bg-purple-50/40 dark:bg-purple-950/10 hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-all group cursor-pointer">
+												className="w-full border-2 border-dashed border-white/10 hover:border-violet-500 rounded-xl p-4 flex flex-col items-center gap-2 bg-white/3 hover:bg-violet-500/5 transition-all group cursor-pointer">
 												{uploadingPresidentSig ?
-													<Loader2 className="w-6 h-6 text-purple-500 animate-spin" />
-												:	<Upload className="w-6 h-6 text-purple-400 group-hover:text-purple-600 transition-colors" />
+													<Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+												:	<Upload className="w-6 h-6 text-violet-400 group-hover:text-violet-300 transition-colors" />
 												}
-												<span className="text-xs text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300">
+												<span className="text-xs text-slate-300 group-hover:text-white">
 													{uploadingPresidentSig ?
 														"Uploading…"
 													:	"Click to upload signature image"}
@@ -1671,11 +1669,11 @@ export default function SettingsPage() {
 
 								{/* Secretary */}
 								<div className="space-y-3">
-									<span className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
-										<PenLine className="w-3.5 h-3.5" /> Secretary Signature
+									<span className="text-xs font-bold text-violet-400 uppercase tracking-wider flex items-center gap-1.5">
+										<PenLine className="w-3.5 h-3.5 text-violet-400" /> Secretary Signature
 									</span>
 									<div>
-										<label className="text-xs text-slate-500 block mb-1">
+										<label className="text-xs text-slate-400 block mb-1">
 											Secretary Name
 										</label>
 										<Input
@@ -1686,7 +1684,7 @@ export default function SettingsPage() {
 										/>
 									</div>
 									<div>
-										<label className="text-xs text-slate-500 block mb-1">
+										<label className="text-xs text-slate-400 block mb-1">
 											Secretary Title / Designation
 										</label>
 										<Input
@@ -1698,22 +1696,22 @@ export default function SettingsPage() {
 									</div>
 									{/* Signature Image Upload */}
 									<div>
-										<label className="text-xs text-slate-500 block mb-1.5">
+										<label className="text-xs text-slate-400 block mb-1.5">
 											Signature Image Upload
 										</label>
 										{secretarySignatureUrl ?
-											<div className="relative group rounded-xl overflow-hidden border-2 border-purple-200 dark:border-purple-800 bg-white dark:bg-slate-900 p-3 flex flex-col items-center gap-2">
+											<div className="relative group rounded-xl overflow-hidden border border-white/10 bg-white p-3 flex flex-col items-center gap-2">
 												<img
 													src={secretarySignatureUrl}
 													alt="Secretary signature"
-													className="h-16 object-contain mix-blend-multiply dark:mix-blend-normal"
+													className="h-16 object-contain"
 												/>
 												<div className="flex gap-2 w-full">
 													<Button
 														type="button"
 														size="sm"
 														variant="outline"
-														className="flex-1 text-xs h-7 border-purple-200 dark:border-purple-800"
+														className="flex-1 text-xs h-7 border-slate-300 text-slate-800 hover:bg-slate-100"
 														onClick={() =>
 															secretarySigInputRef.current?.click()
 														}
@@ -1727,7 +1725,7 @@ export default function SettingsPage() {
 														type="button"
 														size="sm"
 														variant="outline"
-														className="text-xs h-7 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+														className="text-xs h-7 border-red-200 text-red-600 hover:bg-red-50"
 														onClick={handleSecretarySignatureDelete}
 														disabled={deletingSecretarySig}>
 														{deletingSecretarySig ?
@@ -1740,12 +1738,12 @@ export default function SettingsPage() {
 												type="button"
 												onClick={() => secretarySigInputRef.current?.click()}
 												disabled={uploadingSecretarySig}
-												className="w-full border-2 border-dashed border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 rounded-xl p-4 flex flex-col items-center gap-2 bg-purple-50/40 dark:bg-purple-950/10 hover:bg-purple-50 dark:hover:bg-purple-950/20 transition-all group cursor-pointer">
+												className="w-full border-2 border-dashed border-white/10 hover:border-violet-500 rounded-xl p-4 flex flex-col items-center gap-2 bg-white/3 hover:bg-violet-500/5 transition-all group cursor-pointer">
 												{uploadingSecretarySig ?
-													<Loader2 className="w-6 h-6 text-purple-500 animate-spin" />
-												:	<Upload className="w-6 h-6 text-purple-400 group-hover:text-purple-600 transition-colors" />
+													<Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+												:	<Upload className="w-6 h-6 text-violet-400 group-hover:text-violet-300 transition-colors" />
 												}
-												<span className="text-xs text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300">
+												<span className="text-xs text-slate-300 group-hover:text-white">
 													{uploadingSecretarySig ?
 														"Uploading…"
 													:	"Click to upload signature image"}
@@ -1771,7 +1769,7 @@ export default function SettingsPage() {
 							<Button
 								type="submit"
 								disabled={savingEvent}
-								className="bg-blue-600 hover:bg-blue-700">
+								className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90">
 								{savingEvent ?
 									<>
 										<Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...
@@ -1804,9 +1802,9 @@ export default function SettingsPage() {
 			</Card>
 
 			{/* ── Form Field Configuration ── */}
-			<Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+					<CardTitle className="flex items-center gap-2 text-white">
 						<CheckCircle2 className="w-5 h-5 text-blue-600" />
 						Registration Form Field Settings
 					</CardTitle>
@@ -1885,7 +1883,7 @@ export default function SettingsPage() {
 								<div
 									key={group.section}
 									className="space-y-3">
-									<h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 border-b border-slate-200 dark:border-slate-800 pb-1">
+									<h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 border-b border-white/5 pb-1">
 										{group.section}
 									</h3>
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1900,8 +1898,8 @@ export default function SettingsPage() {
 													key={field.name}
 													className={`rounded-xl border p-3 transition-all ${
 														cfg.enabled ?
-															"border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
-														:	"border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 opacity-70"
+															"border-white/10 bg-[#0c0c16]"
+														:	"border-white/5 dark:border-white/5 bg-white/3/40 opacity-70"
 													}`}>
 													{/* Field name + status badge */}
 													<div className="flex items-center gap-2 mb-3">
@@ -1912,13 +1910,13 @@ export default function SettingsPage() {
 														<span
 															className={`text-sm font-semibold flex-1 ${
 																cfg.enabled ?
-																	"text-slate-800 dark:text-slate-100"
-																:	"text-slate-400 dark:text-slate-500"
+																	"text-white"
+																:	"text-slate-400"
 															}`}>
 															{field.label}
 														</span>
 														{!cfg.enabled && (
-															<span className="text-xs px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">
+															<span className="text-xs px-1.5 py-0.5 rounded-full bg-white/10 dark:bg-slate-800 text-slate-500">
 																Hidden
 															</span>
 														)}
@@ -1942,8 +1940,8 @@ export default function SettingsPage() {
 																type="button"
 																onClick={() => toggleFieldEnabled(fieldKey)}
 																className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-																	cfg.enabled ? "bg-blue-600" : (
-																		"bg-slate-300 dark:bg-slate-700"
+																	cfg.enabled ? "bg-violet-600" : (
+																		"bg-white/10"
 																	)
 																}`}>
 																<span
@@ -1954,7 +1952,7 @@ export default function SettingsPage() {
 																	}`}
 																/>
 															</button>
-															<span className="text-xs text-slate-500 dark:text-slate-400">
+															<span className="text-xs text-slate-400">
 																{cfg.enabled ? "Enabled" : "Disabled"}
 															</span>
 														</div>
@@ -1972,7 +1970,7 @@ export default function SettingsPage() {
 																disabled={!cfg.enabled}
 																className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
 																	cfg.required ? "bg-amber-500" : (
-																		"bg-slate-300 dark:bg-slate-700"
+																		"bg-white/10"
 																	)
 																}`}>
 																<span
@@ -1983,7 +1981,7 @@ export default function SettingsPage() {
 																	}`}
 																/>
 															</button>
-															<span className="text-xs text-slate-500 dark:text-slate-400">
+															<span className="text-xs text-slate-400">
 																{cfg.required ? "Required" : "Optional"}
 															</span>
 														</div>
@@ -1996,7 +1994,7 @@ export default function SettingsPage() {
 							))}
 						</div>
 
-						<div className="pt-4 border-t border-slate-150 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+						<div className="pt-4 border-t border-slate-150 dark:border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
 							<span className="text-xs text-slate-500 italic">
 								সবগুলো (১৭টি) Form Field এখন Admin Settings থেকে Enable/Disable
 								ও Required/Optional করা যায়।
@@ -2004,7 +2002,7 @@ export default function SettingsPage() {
 							<Button
 								type="submit"
 								disabled={savingFieldConfig}
-								className="bg-blue-600 hover:bg-blue-700">
+								className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90">
 								{savingFieldConfig ?
 									<>
 										<Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...
@@ -2020,9 +2018,9 @@ export default function SettingsPage() {
 			</Card>
 
 			{/* ── Home Page Control & Visibility Settings ── */}
-			<Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
+			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-slate-900 dark:text-white">
+					<CardTitle className="flex items-center gap-2 text-white">
 						<Layout className="w-5 h-5 text-blue-600" />
 						Home Page Full Control & Section Visibility
 					</CardTitle>
@@ -2033,10 +2031,10 @@ export default function SettingsPage() {
 				<CardContent>
 					<form onSubmit={handleSaveHomepageSettings} className="space-y-8">
 						{/* 1. Section Visibility Switches */}
-						<div className="space-y-4 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+						<div className="space-y-4 bg-white/3 p-5 rounded-2xl border border-white/5">
 							<div className="flex items-center gap-2 mb-2">
 								<Layers className="w-4 h-4 text-blue-600" />
-								<h3 className="text-sm font-bold text-slate-900 dark:text-white">
+								<h3 className="text-sm font-bold text-white">
 									Home Page Section Visibility Toggles (Show / Hide)
 								</h3>
 							</div>
@@ -2060,17 +2058,17 @@ export default function SettingsPage() {
 										key={item.label}
 										className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
 											item.state ?
-												"border-blue-200 dark:border-blue-900/40 bg-white dark:bg-slate-900"
-											:	"border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950/40 opacity-70"
+												"border-blue-200 dark:border-blue-900/40 bg-[#0c0c16]"
+											:	"border-white/5 bg-white/2 opacity-70"
 										}`}>
-										<span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+										<span className="text-xs font-semibold text-slate-200">
 											{item.label}
 										</span>
 										<button
 											type="button"
 											onClick={() => item.setState(!item.state)}
 											className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-												item.state ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
+												item.state ? "bg-violet-600" : "bg-white/10"
 											}`}>
 											<span
 												className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -2085,12 +2083,12 @@ export default function SettingsPage() {
 
 						{/* 2. Hero Section Content */}
 						<div className="space-y-4 pt-2">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
 								<Sparkles className="w-4 h-4 text-purple-600" /> Hero Section Content
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Hero Eyebrow / Sub-badge
 									</label>
 									<Input
@@ -2101,7 +2099,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Main Heading Line 1
 									</label>
 									<Input
@@ -2112,7 +2110,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Main Heading Line 2 (Gradient Text)
 									</label>
 									<Input
@@ -2123,7 +2121,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Primary Button Text (Event Registration)
 									</label>
 									<Input
@@ -2134,7 +2132,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Hero Description / Subtitle
 									</label>
 									<Input
@@ -2149,12 +2147,12 @@ export default function SettingsPage() {
 
 						{/* 3. About Section Content */}
 						<div className="space-y-4 pt-2">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
 								<FileText className="w-4 h-4 text-blue-600" /> About Us Section Content
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Section Badge
 									</label>
 									<Input
@@ -2165,7 +2163,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Founded Year
 									</label>
 									<Input
@@ -2176,7 +2174,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										About Main Title
 									</label>
 									<Input
@@ -2187,29 +2185,29 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Paragraph 1
 									</label>
 									<textarea
 										rows={2}
 										value={aboutParagraph1}
 										onChange={(e) => setAboutParagraph1(e.target.value)}
-										className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Paragraph 2
 									</label>
 									<textarea
 										rows={2}
 										value={aboutParagraph2}
 										onChange={(e) => setAboutParagraph2(e.target.value)}
-										className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Mission Text
 									</label>
 									<Input
@@ -2219,7 +2217,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Vision Text
 									</label>
 									<Input
@@ -2229,7 +2227,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Values Text
 									</label>
 									<Input
@@ -2239,7 +2237,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Innovation Text
 									</label>
 									<Input
@@ -2252,18 +2250,18 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.1 Dedicated About Page Details & Banner */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<FileText className="w-4 h-4 text-violet-600" /> Dedicated About Page (/about) Extra Details & Banner
 							</h3>
 
 							{/* About Cover Image */}
-							<div className="border border-slate-200 dark:border-slate-800 p-4 rounded-xl space-y-3">
-								<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+							<div className="border border-white/5 p-4 rounded-xl space-y-3">
+								<label className="text-xs font-semibold text-slate-300 block">
 									About Page Cover / Banner Image
 								</label>
 								{aboutCoverUrl ? (
-									<div className="flex items-center justify-between gap-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+									<div className="flex items-center justify-between gap-4 p-3 bg-white/3 rounded-lg border border-white/10">
 										<div className="flex items-center gap-3">
 											<img
 												src={aboutCoverUrl}
@@ -2271,7 +2269,7 @@ export default function SettingsPage() {
 												className="w-16 h-10 object-cover rounded-lg border"
 											/>
 											<div>
-												<p className="text-xs font-medium text-slate-900 dark:text-white">
+												<p className="text-xs font-medium text-white">
 													About Cover Image Uploaded
 												</p>
 												<p className="text-[10px] text-slate-400">
@@ -2304,13 +2302,13 @@ export default function SettingsPage() {
 								) : (
 									<div
 										onClick={() => aboutCoverInputRef.current?.click()}
-										className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-violet-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-50/50 dark:bg-slate-900/50 hover:bg-violet-50/20 transition-all">
+										className="border-2 border-dashed border-white/10 dark:border-slate-700 hover:border-violet-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-white/3/50 dark:bg-slate-900/50 hover:bg-violet-50/20 transition-all">
 										{uploadingAboutCover ? (
 											<Loader2 className="w-6 h-6 text-violet-600 animate-spin" />
 										) : (
 											<Upload className="w-6 h-6 text-slate-400 group-hover:text-violet-600" />
 										)}
-										<p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+										<p className="text-xs font-semibold text-slate-300">
 											Click to upload About Page Cover Image
 										</p>
 										<p className="text-[10px] text-slate-400">
@@ -2329,7 +2327,7 @@ export default function SettingsPage() {
 
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										About Page Hero Badge
 									</label>
 									<Input
@@ -2339,7 +2337,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										About Page Hero Title
 									</label>
 									<Input
@@ -2349,7 +2347,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										About Page Hero Subtitle / Brief
 									</label>
 									<Input
@@ -2359,7 +2357,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Mission Card Title
 									</label>
 									<Input
@@ -2369,18 +2367,18 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Mission Card Description
 									</label>
 									<textarea
 										rows={2}
 										value={aboutMissionDetail}
 										onChange={(e) => setAboutMissionDetail(e.target.value)}
-										className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Vision Card Title
 									</label>
 									<Input
@@ -2390,18 +2388,18 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Vision Card Description
 									</label>
 									<textarea
 										rows={2}
 										value={aboutVisionDetail}
 										onChange={(e) => setAboutVisionDetail(e.target.value)}
-										className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Promise Card Title
 									</label>
 									<Input
@@ -2411,45 +2409,45 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Promise Card Description
 									</label>
 									<textarea
 										rows={2}
 										value={aboutPromiseDetail}
 										onChange={(e) => setAboutPromiseDetail(e.target.value)}
-										className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 							</div>
 						</div>
 
 						{/* 3.3 History / Journey Section Builder */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<Flag className="w-4 h-4 text-cyan-500" /> Our History — Talamij's Journey Section
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Section Badge</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Section Badge</label>
 									<Input value={aboutHistorySectionBadge} onChange={(e) => setAboutHistorySectionBadge(e.target.value)} placeholder="e.g. Our History" className="h-9 text-xs" />
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Section Title</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Section Title</label>
 									<Input value={aboutHistorySectionTitle} onChange={(e) => setAboutHistorySectionTitle(e.target.value)} placeholder="e.g. Talamij's Journey" className="h-9 text-xs" />
 								</div>
 							</div>
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Timeline Milestones ({aboutMilestones.length})</p>
+									<p className="text-xs font-semibold text-slate-300">Timeline Milestones ({aboutMilestones.length})</p>
 									<Button type="button" size="sm" variant="outline" onClick={addMilestone} className="h-7 text-xs gap-1">
 										<Plus className="w-3 h-3" /> Add Milestone
 									</Button>
 								</div>
 								{aboutMilestones.map((m, i) => (
-									<div key={i} className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 space-y-2">
+									<div key={i} className="p-3 rounded-xl border border-white/10 bg-white/3/50 dark:bg-slate-900/30 space-y-2">
 										<div className="flex items-center justify-between mb-1">
-											<span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Milestone #{i + 1}</span>
+											<span className="text-xs font-semibold text-slate-400">Milestone #{i + 1}</span>
 											<Button type="button" size="sm" variant="destructive" onClick={() => removeMilestone(i)} className="h-6 w-6 p-0">
 												<Trash2 className="w-3 h-3" />
 											</Button>
@@ -2466,14 +2464,14 @@ export default function SettingsPage() {
 											<div className="col-span-2">
 												<label className="text-[10px] text-slate-500 mb-0.5 block">Accent Color</label>
 												<div className="flex items-center gap-2">
-													<input type="color" value={m.color} onChange={(e) => updateMilestone(i, "color", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-slate-200 dark:border-slate-700 bg-transparent" />
+													<input type="color" value={m.color} onChange={(e) => updateMilestone(i, "color", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-white/10 bg-transparent" />
 													<Input value={m.color} onChange={(e) => updateMilestone(i, "color", e.target.value)} className="h-7 text-xs font-mono" />
 												</div>
 											</div>
 										</div>
 										<div>
 											<label className="text-[10px] text-slate-500 mb-0.5 block">Description</label>
-											<textarea rows={2} value={m.description} onChange={(e) => updateMilestone(i, "description", e.target.value)} placeholder="Describe this milestone..." className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
+											<textarea rows={2} value={m.description} onChange={(e) => updateMilestone(i, "description", e.target.value)} placeholder="Describe this milestone..." className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
 										</div>
 									</div>
 								))}
@@ -2481,35 +2479,35 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.4 Core Principles / Values Section Builder */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<Heart className="w-4 h-4 text-pink-500" /> Our Core Principles Section
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Section Badge</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Section Badge</label>
 									<Input value={aboutPrinciplesSectionBadge} onChange={(e) => setAboutPrinciplesSectionBadge(e.target.value)} placeholder="e.g. Values" className="h-9 text-xs" />
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Section Title</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Section Title</label>
 									<Input value={aboutPrinciplesSectionTitle} onChange={(e) => setAboutPrinciplesSectionTitle(e.target.value)} placeholder="e.g. Our Core Principles" className="h-9 text-xs" />
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Section Subtitle</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Section Subtitle</label>
 									<Input value={aboutPrinciplesSectionSubtitle} onChange={(e) => setAboutPrinciplesSectionSubtitle(e.target.value)} placeholder="e.g. These core principles..." className="h-9 text-xs" />
 								</div>
 							</div>
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Value Cards ({aboutCoreValues.length})</p>
+									<p className="text-xs font-semibold text-slate-300">Value Cards ({aboutCoreValues.length})</p>
 									<Button type="button" size="sm" variant="outline" onClick={addCoreValue} className="h-7 text-xs gap-1">
 										<Plus className="w-3 h-3" /> Add Value
 									</Button>
 								</div>
 								{aboutCoreValues.map((v, i) => (
-									<div key={i} className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 space-y-2">
+									<div key={i} className="p-3 rounded-xl border border-white/10 bg-white/3/50 dark:bg-slate-900/30 space-y-2">
 										<div className="flex items-center justify-between mb-1">
-											<span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Value #{i + 1}</span>
+											<span className="text-xs font-semibold text-slate-400">Value #{i + 1}</span>
 											<Button type="button" size="sm" variant="destructive" onClick={() => removeCoreValue(i)} className="h-6 w-6 p-0">
 												<Trash2 className="w-3 h-3" />
 											</Button>
@@ -2522,14 +2520,14 @@ export default function SettingsPage() {
 											<div>
 												<label className="text-[10px] text-slate-500 mb-0.5 block">Accent Color</label>
 												<div className="flex items-center gap-2">
-													<input type="color" value={v.color} onChange={(e) => updateCoreValue(i, "color", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-slate-200 dark:border-slate-700 bg-transparent" />
+													<input type="color" value={v.color} onChange={(e) => updateCoreValue(i, "color", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-white/10 bg-transparent" />
 													<Input value={v.color} onChange={(e) => updateCoreValue(i, "color", e.target.value)} className="h-7 text-xs font-mono" />
 												</div>
 											</div>
 										</div>
 										<div>
 											<label className="text-[10px] text-slate-500 mb-0.5 block">Description</label>
-											<textarea rows={2} value={v.description} onChange={(e) => updateCoreValue(i, "description", e.target.value)} placeholder="Describe this value..." className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
+											<textarea rows={2} value={v.description} onChange={(e) => updateCoreValue(i, "description", e.target.value)} placeholder="Describe this value..." className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
 										</div>
 									</div>
 								))}
@@ -2537,37 +2535,37 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.5 Executive Board Section Builder */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<Users className="w-4 h-4 text-violet-500" /> Our Executive Board Section
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Section Badge</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Section Badge</label>
 									<Input value={aboutBoardSectionBadge} onChange={(e) => setAboutBoardSectionBadge(e.target.value)} placeholder="e.g. Leadership" className="h-9 text-xs" />
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Section Title</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Section Title</label>
 									<Input value={aboutBoardSectionTitle} onChange={(e) => setAboutBoardSectionTitle(e.target.value)} placeholder="e.g. Our Executive Board" className="h-9 text-xs" />
 								</div>
 							</div>
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Board Members ({aboutBoardMembers.length})</p>
+									<p className="text-xs font-semibold text-slate-300">Board Members ({aboutBoardMembers.length})</p>
 									<Button type="button" size="sm" variant="outline" onClick={addBoardMember} className="h-7 text-xs gap-1">
 										<Plus className="w-3 h-3" /> Add Member
 									</Button>
 								</div>
 								{aboutBoardMembers.map((member, i) => (
-									<div key={i} className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 space-y-2">
+									<div key={i} className="p-3 rounded-xl border border-white/10 bg-white/3/50 dark:bg-slate-900/30 space-y-2">
 										<div className="flex items-center justify-between mb-1">
-											<span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Member #{i + 1}</span>
+											<span className="text-xs font-semibold text-slate-400">Member #{i + 1}</span>
 											<Button type="button" size="sm" variant="destructive" onClick={() => removeBoardMember(i)} className="h-6 w-6 p-0">
 												<Trash2 className="w-3 h-3" />
 											</Button>
 										</div>
 										<div className="flex items-center gap-3">
-											<div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700 flex-shrink-0" style={{ background: `${member.accent}20` }}>
+											<div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden border border-white/10 flex-shrink-0" style={{ background: `${member.accent}20` }}>
 												{member.photoUrl ? (
 													<img src={member.photoUrl} alt={member.name} className="w-full h-full object-cover" />
 												) : (
@@ -2603,7 +2601,7 @@ export default function SettingsPage() {
 											<div>
 												<label className="text-[10px] text-slate-500 mb-0.5 block">Accent Color</label>
 												<div className="flex items-center gap-2">
-													<input type="color" value={member.accent} onChange={(e) => updateBoardMember(i, "accent", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-slate-200 dark:border-slate-700 bg-transparent" />
+													<input type="color" value={member.accent} onChange={(e) => updateBoardMember(i, "accent", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-white/10 bg-transparent" />
 													<Input value={member.accent} onChange={(e) => updateBoardMember(i, "accent", e.target.value)} className="h-7 text-xs font-mono" />
 												</div>
 											</div>
@@ -2614,38 +2612,38 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.6 Join Our Organization CTA */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<Award className="w-4 h-4 text-amber-500" /> Join Our Organization — CTA Section
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">CTA Title</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">CTA Title</label>
 									<Input value={aboutJoinTitle} onChange={(e) => setAboutJoinTitle(e.target.value)} placeholder="e.g. Join Our Organization" className="h-9 text-xs" />
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Events Button Text</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Events Button Text</label>
 									<Input value={aboutJoinEventsButtonText} onChange={(e) => setAboutJoinEventsButtonText(e.target.value)} placeholder="e.g. View Events" className="h-9 text-xs" />
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Contact Button Text</label>
+									<label className="text-xs font-medium text-slate-300 mb-1 block">Contact Button Text</label>
 									<Input value={aboutJoinContactButtonText} onChange={(e) => setAboutJoinContactButtonText(e.target.value)} placeholder="e.g. Contact Us" className="h-9 text-xs" />
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">CTA Subtitle / Description</label>
-									<textarea rows={2} value={aboutJoinSubtitle} onChange={(e) => setAboutJoinSubtitle(e.target.value)} placeholder="e.g. Become part of the growing Talamij family..." className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
+									<label className="text-xs font-medium text-slate-300 mb-1 block">CTA Subtitle / Description</label>
+									<textarea rows={2} value={aboutJoinSubtitle} onChange={(e) => setAboutJoinSubtitle(e.target.value)} placeholder="e.g. Become part of the growing Talamij family..." className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
 								</div>
 							</div>
 						</div>
 
 						{/* 3.2 Dedicated Events Page Content & Notices */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<Calendar className="w-4 h-4 text-cyan-600" /> Dedicated Events Page (/events) Settings & Notices
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Events Page Hero Badge
 									</label>
 									<Input
@@ -2655,7 +2653,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Events Page Hero Title
 									</label>
 									<Input
@@ -2665,7 +2663,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Events Page Subtitle
 									</label>
 									<Input
@@ -2675,7 +2673,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Upcoming Event Notice / Banner Text
 									</label>
 									<Input
@@ -2685,7 +2683,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										No Event Active Message
 									</label>
 									<Input
@@ -2698,13 +2696,13 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.8 Dedicated Gallery Page Content */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<ImageIcon className="w-4 h-4 text-pink-500" /> Dedicated Gallery Page (/gallery) Settings
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Gallery Page Hero Badge
 									</label>
 									<Input
@@ -2714,7 +2712,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Gallery Page Hero Title
 									</label>
 									<Input
@@ -2724,7 +2722,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Gallery Page Subtitle
 									</label>
 									<Input
@@ -2737,13 +2735,13 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.9 Dedicated Blog Page Content */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<FileText className="w-4 h-4 text-emerald-500" /> Dedicated Blog Page (/blog) Settings
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Blog Page Hero Badge
 									</label>
 									<Input
@@ -2753,7 +2751,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Blog Page Hero Title
 									</label>
 									<Input
@@ -2763,7 +2761,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Blog Page Subtitle
 									</label>
 									<Input
@@ -2776,15 +2774,15 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.10 Registration Form Left Panel */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<FileText className="w-4 h-4 text-blue-500" /> Registration Form — Left Panel Content
 							</h3>
 
 							{/* Org Name Lines */}
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Organisation Name (Line 1)
 									</label>
 									<Input
@@ -2795,7 +2793,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Organisation Name (Line 2)
 									</label>
 									<Input
@@ -2810,7 +2808,7 @@ export default function SettingsPage() {
 							{/* Main Heading */}
 							<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Heading Line 1
 									</label>
 									<Input
@@ -2821,7 +2819,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Heading Line 2
 									</label>
 									<Input
@@ -2832,7 +2830,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Heading Highlight (blue text)
 									</label>
 									<Input
@@ -2846,7 +2844,7 @@ export default function SettingsPage() {
 
 							{/* Description */}
 							<div>
-								<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+								<label className="text-xs font-medium text-slate-300 mb-1 block">
 									Description Text
 								</label>
 								<Input
@@ -2860,7 +2858,7 @@ export default function SettingsPage() {
 							{/* Feature List Items */}
 							<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Feature 1 Label
 									</label>
 									<Input
@@ -2871,7 +2869,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Feature 2 Label
 									</label>
 									<Input
@@ -2882,7 +2880,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Feature 3 Label
 									</label>
 									<Input
@@ -2896,15 +2894,15 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.11 Ticket & Success Page Content */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<CheckCircle2 className="w-4 h-4 text-green-500" /> Ticket & Success Page Content
 							</h3>
 
 							{/* Success Page Texts */}
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Success Page Heading
 									</label>
 									<Input
@@ -2915,7 +2913,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Ticket Participant Label
 									</label>
 									<Input
@@ -2927,7 +2925,7 @@ export default function SettingsPage() {
 								</div>
 							</div>
 							<div>
-								<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+								<label className="text-xs font-medium text-slate-300 mb-1 block">
 									Success Page Subtitle
 								</label>
 								<Input
@@ -2943,16 +2941,16 @@ export default function SettingsPage() {
 						</div>
 
 						{/* 3.12 Printable Certificate Content Controls */}
-						<div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-800">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 pb-1">
+						<div className="space-y-4 pt-2 border-t border-white/5">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 pb-1">
 								<Award className="w-4 h-4 text-purple-600" /> Certificate Template &amp; Calligraphy Controls
 							</h3>
 
 							{/* Arabic Bismillah Calligraphy Toggle & Text */}
-							<div className="p-4 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
+							<div className="p-4 border border-white/5 rounded-xl bg-white/3/50 dark:bg-slate-900/50 space-y-3">
 								<div className="flex items-center justify-between">
 									<div>
-										<label className="text-xs font-semibold text-slate-900 dark:text-white block">
+										<label className="text-xs font-semibold text-white block">
 											Arabic Calligraphy Header (e.g. ﷽ Bismillah)
 										</label>
 										<p className="text-[10px] text-slate-400">
@@ -2964,7 +2962,7 @@ export default function SettingsPage() {
 											type="button"
 											onClick={() => setCertShowBismillah(!certShowBismillah)}
 											className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-												certShowBismillah ? "bg-emerald-600" : "bg-slate-300 dark:bg-slate-700"
+												certShowBismillah ? "bg-emerald-600" : "bg-white/10"
 											}`}
 										>
 											<span
@@ -2973,7 +2971,7 @@ export default function SettingsPage() {
 												}`}
 											/>
 										</button>
-										<span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+										<span className="text-xs font-semibold text-slate-300">
 											{certShowBismillah ? "ENABLED" : "DISABLED"}
 										</span>
 									</div>
@@ -2981,7 +2979,7 @@ export default function SettingsPage() {
 
 								{certShowBismillah && (
 									<div>
-										<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-xs font-medium text-slate-300 mb-1 block">
 											Calligraphy Text / Symbol
 										</label>
 										<Input
@@ -2995,13 +2993,13 @@ export default function SettingsPage() {
 							</div>
 
 							{/* Dedicated Certificate Top Logo Upload */}
-							<div className="p-4 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3">
-								<label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+							<div className="p-4 border border-white/5 rounded-xl space-y-3">
+								<label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
 									<span>Dedicated Certificate Top Logo (Optional)</span>
 									<span className="text-[10px] text-indigo-600 font-normal">Defaults to Navbar Logo if not set</span>
 								</label>
 								{certTopLogoUrl ? (
-									<div className="flex items-center justify-between gap-4 p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+									<div className="flex items-center justify-between gap-4 p-3 bg-[#0c0c16] rounded-lg border border-white/10">
 										<div className="flex items-center gap-3">
 											<img
 												src={certTopLogoUrl}
@@ -3009,7 +3007,7 @@ export default function SettingsPage() {
 												className="w-12 h-12 object-contain rounded-full border bg-white p-1"
 											/>
 											<div>
-												<p className="text-xs font-medium text-slate-900 dark:text-white">
+												<p className="text-xs font-medium text-white">
 													Custom Top Logo Uploaded
 												</p>
 												<p className="text-[10px] text-slate-400">
@@ -3042,13 +3040,13 @@ export default function SettingsPage() {
 								) : (
 									<div
 										onClick={() => certLogoInputRef.current?.click()}
-										className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-purple-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-white dark:bg-slate-900 hover:bg-purple-50/20 transition-all">
+										className="border-2 border-dashed border-white/10 dark:border-slate-700 hover:border-purple-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer bg-[#0c0c16] hover:bg-purple-50/20 transition-all">
 										{uploadingCertLogo ? (
 											<Loader2 className="w-6 h-6 text-purple-600 animate-spin" />
 										) : (
 											<Upload className="w-6 h-6 text-slate-400 group-hover:text-purple-600" />
 										)}
-										<p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+										<p className="text-xs font-semibold text-slate-300">
 											Click to upload Certificate Top Logo
 										</p>
 										<p className="text-[10px] text-slate-400">
@@ -3068,7 +3066,7 @@ export default function SettingsPage() {
 							{/* Custom Certificate Titles & Texts */}
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Certificate Title
 									</label>
 									<Input
@@ -3079,7 +3077,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Sub-title Prefix
 									</label>
 									<Input
@@ -3092,7 +3090,7 @@ export default function SettingsPage() {
 							</div>
 
 							<div>
-								<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+								<label className="text-xs font-medium text-slate-300 mb-1 block">
 									Participation Body Description
 								</label>
 								<Input
@@ -3104,7 +3102,7 @@ export default function SettingsPage() {
 							</div>
 
 							<div>
-								<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+								<label className="text-xs font-medium text-slate-300 mb-1 block">
 									Security Verification Badge Text
 								</label>
 								<Input
@@ -3121,12 +3119,12 @@ export default function SettingsPage() {
 
 						{/* 4. Stats Counter Numbers */}
 						<div className="space-y-4 pt-2">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
 								<Clock className="w-4 h-4 text-emerald-600" /> Stats Counters (Live animated numbers)
 							</h3>
 							<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Members Count
 									</label>
 									<Input
@@ -3137,7 +3135,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Events Count
 									</label>
 									<Input
@@ -3148,7 +3146,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Years Count
 									</label>
 									<Input
@@ -3159,7 +3157,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Districts Active
 									</label>
 									<Input
@@ -3174,12 +3172,12 @@ export default function SettingsPage() {
 
 						{/* 5. Section Titles & Subtitles */}
 						<div className="space-y-4 pt-2">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
 								<PenLine className="w-4 h-4 text-amber-600" /> Section Titles & Subtitles
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Events Section Title
 									</label>
 									<Input
@@ -3189,7 +3187,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Events Section Subtitle
 									</label>
 									<Input
@@ -3199,7 +3197,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Gallery Section Title
 									</label>
 									<Input
@@ -3209,7 +3207,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Gallery Section Subtitle
 									</label>
 									<Input
@@ -3219,7 +3217,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Blog Section Title
 									</label>
 									<Input
@@ -3229,7 +3227,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Blog Section Subtitle
 									</label>
 									<Input
@@ -3239,7 +3237,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Team Section Title
 									</label>
 									<Input
@@ -3249,7 +3247,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Team Section Subtitle
 									</label>
 									<Input
@@ -3259,7 +3257,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Contact Section Title
 									</label>
 									<Input
@@ -3269,7 +3267,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Contact Section Subtitle
 									</label>
 									<Input
@@ -3283,12 +3281,12 @@ export default function SettingsPage() {
 
 						{/* 6. Contact & Footer Info */}
 						<div className="space-y-4 pt-2">
-							<h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+							<h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-white/5 pb-2">
 								<Globe className="w-4 h-4 text-sky-600" /> Contact & Footer Information
 							</h3>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Contact Email
 									</label>
 									<Input
@@ -3299,7 +3297,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Footer Copyright Text
 									</label>
 									<Input
@@ -3310,18 +3308,18 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div className="sm:col-span-2">
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Footer Description Text
 									</label>
 									<textarea
 										rows={2}
 										value={footerDescription}
 										onChange={(e) => setFooterDescription(e.target.value)}
-										className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										Facebook URL
 									</label>
 									<Input
@@ -3332,7 +3330,7 @@ export default function SettingsPage() {
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">
+									<label className="text-xs font-medium text-slate-300 mb-1 block">
 										YouTube URL
 									</label>
 									<Input
@@ -3345,11 +3343,11 @@ export default function SettingsPage() {
 							</div>
 						</div>
 
-						<div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+						<div className="pt-4 border-t border-white/5 flex justify-end">
 							<Button
 								type="submit"
 								disabled={savingHomepage}
-								className="bg-blue-600 hover:bg-blue-700 font-medium">
+								className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 font-medium">
 								{savingHomepage ?
 									<>
 										<Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving Home Page Settings...
@@ -3379,10 +3377,10 @@ export default function SettingsPage() {
 				<CardContent>
 					<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-red-100 dark:border-red-900/50 rounded-lg bg-red-50/50 dark:bg-red-950/20">
 						<div>
-							<h4 className="font-semibold text-slate-900 dark:text-white">
+							<h4 className="font-semibold text-white">
 								Clear All Registrations
 							</h4>
-							<p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+							<p className="text-sm text-slate-400 mt-1">
 								Permanently delete all registered users from the database.
 							</p>
 						</div>

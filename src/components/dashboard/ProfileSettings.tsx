@@ -17,7 +17,9 @@ import {
   Check,
   Smartphone,
   Eye,
-  EyeOff
+  EyeOff,
+  Copy,
+  ExternalLink
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -41,7 +43,7 @@ interface Session {
 export default function ProfileSettings({ isAdmin = false }: { isAdmin?: boolean }) {
   const router = useRouter();
   const { data: authSession, isPending } = useSession();
-  const { updateAvatar, updateName } = useUserStore();
+  const { updateAvatar, updateName, updateUsername } = useUserStore();
   const [loading, setLoading] = useState(false);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -159,6 +161,9 @@ export default function ProfileSettings({ isAdmin = false }: { isAdmin?: boolean
         if (res.data.user?.name) {
           updateName(res.data.user.name);
         }
+        if (res.data.user?.username) {
+          updateUsername(res.data.user.username);
+        }
         setAvatarFile(null);
         router.refresh();
       }
@@ -167,6 +172,16 @@ export default function ProfileSettings({ isAdmin = false }: { isAdmin?: boolean
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopyProfileLink = () => {
+    if (!username) {
+      toast.error("Please set a username first!");
+      return;
+    }
+    const profileUrl = `${window.location.origin}/${username}`;
+    navigator.clipboard.writeText(profileUrl);
+    toast.success("Profile link copied to clipboard!");
   };
 
   const handleUpdateSettings = async () => {
@@ -371,14 +386,47 @@ export default function ProfileSettings({ isAdmin = false }: { isAdmin?: boolean
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="username" className="text-slate-300">Username</Label>
-                    <Input
-                      id="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="e.g. user123"
-                      className="bg-white/5 border-white/10"
-                    />
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="username" className="text-slate-300">Username</Label>
+                      {username && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={handleCopyProfileLink}
+                            className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
+                            title="Copy profile link"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                            Copy Link
+                          </button>
+                          <a
+                            href={`/${username}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                            title="View public profile"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            View Profile
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-3 text-xs text-slate-500 font-mono select-none">
+                        /
+                      </span>
+                      <Input
+                        id="username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
+                        placeholder="e.g. rihadjahanopu"
+                        className="bg-white/5 border-white/10 pl-7 font-mono text-sm"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      Unique handle for your public profile (e.g. {typeof window !== "undefined" ? window.location.origin : "domain"}/{username || "your-username"})
+                    </p>
                   </div>
                 </div>
 

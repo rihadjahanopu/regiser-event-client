@@ -20,6 +20,7 @@ interface UserStore {
 	setProfile: (profile: UserProfile) => void;
 	updateAvatar: (imageUrl: string) => void;
 	updateName: (name: string) => void;
+	updateUsername: (username: string) => void;
 	clearProfile: () => void;
 }
 
@@ -37,6 +38,11 @@ export const useUserStore = create<UserStore>((set) => ({
 	updateName: (name) =>
 		set((state) => ({
 			profile: state.profile ? { ...state.profile, name } : null,
+		})),
+
+	updateUsername: (username) =>
+		set((state) => ({
+			profile: state.profile ? { ...state.profile, username } : null,
 		})),
 
 	clearProfile: () => set({ profile: null, isInitialized: false }),

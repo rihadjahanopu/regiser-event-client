@@ -840,32 +840,32 @@ export default function CertificatesPage() {
 			{/* Page Header */}
 			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 				<div>
-					<h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-						<Award className="w-8 h-8 text-purple-700" />
-						Certificate Manage
+					<h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+						<Award className="w-8 h-8 text-purple-400" />
+						Certificate Management
 					</h1>
-					<p className="text-slate-500">
+					<p className="text-slate-400">
 						Generate and print event certificates for participants.
 					</p>
 				</div>
 				<div className="flex items-center gap-3">
-					<div className="flex rounded-lg border border-slate-200 dark:border-slate-800 p-1 bg-white dark:bg-slate-900">
+					<div className="flex rounded-xl border border-white/10 p-1 bg-[#0c0c16]">
 						<button
 							onClick={() => setActiveTab("participants")}
-							className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 ${
+							className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
 								activeTab === "participants" ?
-									"bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 font-semibold"
-								:	"text-slate-600 dark:text-slate-400 hover:text-slate-900"
+									"bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-md"
+								:	"text-slate-400 hover:text-white"
 							}`}>
 							<Users className="w-4 h-4" />
 							Participants
 						</button>
 						<button
 							onClick={() => setActiveTab("history")}
-							className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 ${
+							className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
 								activeTab === "history" ?
-									"bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300 font-semibold"
-								:	"text-slate-600 dark:text-slate-400 hover:text-slate-900"
+									"bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-md"
+								:	"text-slate-400 hover:text-white"
 							}`}>
 							<History className="w-4 h-4" />
 							Certificate History
@@ -875,20 +875,20 @@ export default function CertificatesPage() {
 			</div>
 
 			{/* Toolbar / Filters */}
-			<div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+			<div className="bg-[#0c0c16] p-5 rounded-2xl border border-white/5 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
 				<div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto items-center">
 					{/* Event Selector */}
 					<div className="w-full sm:w-60">
-						<label className="text-xs font-semibold text-slate-500 block mb-1.5">
+						<label className="text-xs font-semibold text-slate-400 block mb-1.5">
 							Manage Event
 						</label>
 						<Select
 							value={eventFilter}
 							onValueChange={(val) => setEventFilter(val ?? "Active")}>
-							<SelectTrigger>
+							<SelectTrigger className="bg-white/5 border-white/10 text-white">
 								<SelectValue placeholder="Select Event" />
 							</SelectTrigger>
-							<SelectContent>
+							<SelectContent className="bg-[#0c0c16] border-white/10 text-slate-200">
 								<SelectItem value="Active">
 									Active Event (from Settings)
 								</SelectItem>
@@ -909,21 +909,21 @@ export default function CertificatesPage() {
 
 					{/* Search */}
 					<div className="w-full sm:w-64">
-						<label className="text-xs font-semibold text-slate-500 block mb-1.5">
+						<label className="text-xs font-semibold text-slate-400 block mb-1.5">
 							Search Participants
 						</label>
 						<div className="relative">
-							<Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+							<Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
 							{activeTab === "participants" ?
 								<Input
 									placeholder="Search name, mobile, registration ID..."
-									className="pl-9"
+									className="pl-9 bg-white/5 border-white/10 text-white placeholder-slate-500"
 									value={searchQuery}
 									onChange={(e) => setSearchQuery(e.target.value)}
 								/>
 							:	<Input
 									placeholder="Search name, ID..."
-									className="pl-9"
+									className="pl-9 bg-white/5 border-white/10 text-white placeholder-slate-500"
 									value={historySearch}
 									onChange={(e) => setHistorySearch(e.target.value)}
 								/>
@@ -934,16 +934,16 @@ export default function CertificatesPage() {
 					{/* Status Filter */}
 					{activeTab === "participants" && (
 						<div className="w-full sm:w-44">
-							<label className="text-xs font-semibold text-slate-500 block mb-1.5">
+							<label className="text-xs font-semibold text-slate-400 block mb-1.5">
 								Registration Status
 							</label>
 							<Select
 								value={statusFilter}
 								onValueChange={(val) => setStatusFilter(val ?? "All")}>
-								<SelectTrigger>
+								<SelectTrigger className="bg-white/5 border-white/10 text-white">
 									<SelectValue placeholder="Status" />
 								</SelectTrigger>
-								<SelectContent>
+								<SelectContent className="bg-[#0c0c16] border-white/10 text-slate-200">
 									<SelectItem value="All">All Statuses</SelectItem>
 									<SelectItem value="Verified">Verified Only</SelectItem>
 									<SelectItem value="Pending">Pending Only</SelectItem>
@@ -955,17 +955,17 @@ export default function CertificatesPage() {
 				</div>
 
 				{/* Actions */}
-				<div className="flex flex-wrap gap-2 w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0">
+				<div className="flex flex-wrap gap-2 w-full md:w-auto justify-end border-t border-white/5 md:border-t-0 pt-3 md:pt-0">
 					{activeTab === "participants" && selectedRegIds.length > 0 && (
 						<>
-							<div className="text-sm font-medium text-slate-500 mr-2 flex items-center">
+							<div className="text-sm font-medium text-slate-400 mr-2 flex items-center">
 								{selectedRegIds.length} selected
 							</div>
 							<Button
 								onClick={handleGenerateCertificates}
 								disabled={generating}
 								size="sm"
-								className="bg-purple-700 hover:bg-purple-800 text-white">
+								className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 text-white font-semibold shadow-md">
 								{generating ?
 									<Loader2 className="w-4 h-4 animate-spin mr-1.5" />
 								:	null}
@@ -973,8 +973,8 @@ export default function CertificatesPage() {
 							</Button>
 							<Button
 								onClick={handlePrintBulk}
-								variant="outline"
-								size="sm">
+								size="sm"
+								className="bg-white/5 hover:bg-white/10 text-white border border-white/10 font-semibold">
 								<Printer className="w-4 h-4 mr-1.5" />
 								Print Selected
 							</Button>
@@ -982,9 +982,8 @@ export default function CertificatesPage() {
 					)}
 					<Button
 						onClick={handlePrintAll}
-						variant="outline"
 						size="sm"
-						className="border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950 font-semibold">
+						className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-semibold shadow-md">
 						<Printer className="w-4 h-4 mr-1.5" />
 						Print All
 					</Button>
@@ -993,12 +992,12 @@ export default function CertificatesPage() {
 
 			{/* Main Table */}
 			{activeTab === "participants" ?
-				<div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+				<div className="bg-[#0c0c16] rounded-2xl border border-white/5 shadow-sm overflow-hidden">
 					<div className="overflow-x-auto">
 						<Table>
 							<TableHeader>
-								<TableRow className="bg-slate-50 dark:bg-slate-800/50">
-									<TableHead className="w-12 text-center">
+								<TableRow className="bg-white/3 border-b border-white/5 text-[11px] uppercase tracking-wider text-slate-500">
+									<TableHead className="w-12 text-center text-slate-400">
 										<button
 											onClick={toggleSelectAll}
 											className="p-1 focus:outline-none">
@@ -1008,26 +1007,26 @@ export default function CertificatesPage() {
 													selectedRegIds.includes(p.registrationId)
 												)
 											) ?
-												<CheckSquare className="w-4 h-4 text-purple-700" />
-											:	<Square className="w-4 h-4 text-slate-400" />}
+												<CheckSquare className="w-4 h-4 text-violet-400" />
+											:	<Square className="w-4 h-4 text-slate-500" />}
 										</button>
 									</TableHead>
-									<TableHead className="w-12 text-center">S.N.</TableHead>
-									<TableHead>Registration ID</TableHead>
-									<TableHead>Participant Name</TableHead>
-									<TableHead>Mobile Number</TableHead>
-									<TableHead>Academic Institution</TableHead>
-									<TableHead>Certificate Status</TableHead>
-									<TableHead className="text-right">Actions</TableHead>
+									<TableHead className="w-12 text-center text-slate-400">S.N.</TableHead>
+									<TableHead className="text-slate-400">Registration ID</TableHead>
+									<TableHead className="text-slate-400">Participant Name</TableHead>
+									<TableHead className="text-slate-400">Mobile Number</TableHead>
+									<TableHead className="text-slate-400">Academic Institution</TableHead>
+									<TableHead className="text-slate-400">Certificate Status</TableHead>
+									<TableHead className="text-right text-slate-400">Actions</TableHead>
 								</TableRow>
 							</TableHeader>
-							<TableBody>
+							<TableBody className="divide-y divide-white/5">
 								{loadingParticipants ?
 									<TableRow>
 										<TableCell
 											colSpan={8}
 											className="h-40 text-center">
-											<Loader2 className="h-8 w-8 animate-spin mx-auto text-purple-700" />
+											<Loader2 className="h-8 w-8 animate-spin mx-auto text-purple-400" />
 											<p className="text-slate-400 mt-2 text-sm">
 												Loading participants data...
 											</p>
@@ -1050,11 +1049,11 @@ export default function CertificatesPage() {
 										return (
 											<TableRow
 												key={item._id}
-												className={
+												className={`hover:bg-white/3 transition-all ${
 													isSelected ?
-														"bg-purple-50/30 dark:bg-purple-950/20"
+														"bg-violet-500/10"
 													:	""
-												}>
+												}`}>
 												<TableCell className="text-center">
 													<button
 														onClick={() =>
@@ -1062,33 +1061,33 @@ export default function CertificatesPage() {
 														}
 														className="p-1 focus:outline-none">
 														{isSelected ?
-															<CheckSquare className="w-4 h-4 text-purple-700" />
-														:	<Square className="w-4 h-4 text-slate-400" />}
+															<CheckSquare className="w-4 h-4 text-violet-400" />
+														:	<Square className="w-4 h-4 text-slate-500" />}
 													</button>
 												</TableCell>
-												<TableCell className="font-medium text-slate-500 text-center">
+												<TableCell className="font-medium text-slate-400 text-center">
 													{(page - 1) * 10 + index + 1}
 												</TableCell>
-												<TableCell className="font-mono text-sm">
+												<TableCell className="font-mono text-sm text-violet-300 font-semibold">
 													{item.registrationId}
 												</TableCell>
-												<TableCell className="font-medium text-slate-900 dark:text-white">
+												<TableCell className="font-semibold text-white">
 													{item.fullName}
 												</TableCell>
-												<TableCell>{item.mobile}</TableCell>
+												<TableCell className="text-slate-300">{item.mobile}</TableCell>
 												<TableCell
-													className="max-w-50 truncate"
+													className="max-w-50 truncate text-slate-300"
 													title={item.schoolName}>
 													{item.schoolName}
 												</TableCell>
 												<TableCell>
 													{cert ?
-														<Badge className="bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-50 dark:bg-purple-950/30 dark:text-purple-300 dark:border-purple-800">
+														<Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
 															Generated: {cert.certificateId}
 														</Badge>
 													:	<Badge
 															variant="outline"
-															className="text-slate-400 border-slate-200">
+															className="text-slate-400 border-white/10">
 															Not Generated
 														</Badge>
 													}
@@ -1099,7 +1098,7 @@ export default function CertificatesPage() {
 															<Button
 																variant="ghost"
 																size="sm"
-																className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
+																className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-white/10"
 																title="Print"
 																onClick={() =>
 																	setPrintCerts([
@@ -1128,7 +1127,7 @@ export default function CertificatesPage() {
 															<Button
 																variant="ghost"
 																size="sm"
-																className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+																className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
 																title="Revoke Certificate"
 																onClick={() =>
 																	handleRevokeCertificate(cert.certificateId)
@@ -1137,9 +1136,9 @@ export default function CertificatesPage() {
 															</Button>
 														</div>
 													:	<Button
-															variant="link"
+															variant="outline"
 															size="sm"
-															className="h-8 px-2 text-purple-700 hover:text-purple-900 font-semibold"
+															className="h-8 text-xs bg-violet-600/20 hover:bg-violet-600/30 border-violet-500/30 text-violet-300"
 															onClick={() => {
 																setSelectedRegIds([item.registrationId]);
 																setGenerating(true);
@@ -1180,8 +1179,8 @@ export default function CertificatesPage() {
 					</div>
 
 					{/* Pagination */}
-					<div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-800">
-						<div className="text-xs sm:text-sm text-slate-500">
+					<div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
+						<div className="text-xs sm:text-sm text-slate-400">
 							Showing {Math.min((page - 1) * 10 + 1, totalCount)}–
 							{Math.min(page * 10, totalCount)} of {totalCount} participants
 						</div>
@@ -1189,16 +1188,18 @@ export default function CertificatesPage() {
 							<Button
 								variant="outline"
 								size="sm"
+								className="bg-white/5 border-white/10 text-slate-300 hover:text-white"
 								onClick={() => setPage((p) => Math.max(1, p - 1))}
 								disabled={page === 1 || loadingParticipants}>
 								<ChevronLeft className="h-4 w-4" />
 							</Button>
-							<div className="text-sm font-medium px-2">
+							<div className="text-sm font-medium px-2 text-slate-300">
 								Page {page} of {totalPages || 1}
 							</div>
 							<Button
 								variant="outline"
 								size="sm"
+								className="bg-white/5 border-white/10 text-slate-300 hover:text-white"
 								onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
 								disabled={page >= totalPages || loadingParticipants}>
 								<ChevronRight className="h-4 w-4" />
@@ -1207,28 +1208,28 @@ export default function CertificatesPage() {
 					</div>
 				</div>
 			:	/* History Table */
-				<div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+				<div className="bg-[#0c0c16] rounded-2xl border border-white/5 shadow-sm overflow-hidden">
 					<div className="overflow-x-auto">
 						<Table>
 							<TableHeader>
-								<TableRow className="bg-slate-50 dark:bg-slate-800/50">
-									<TableHead className="w-12 text-center">S.N.</TableHead>
-									<TableHead>Certificate ID</TableHead>
-									<TableHead>Participant Name</TableHead>
-									<TableHead>Registration ID</TableHead>
-									<TableHead>Event Name</TableHead>
-									<TableHead>Generated By</TableHead>
-									<TableHead>Issued Date</TableHead>
-									<TableHead className="text-right">Actions</TableHead>
+								<TableRow className="bg-white/3 border-b border-white/5 text-[11px] uppercase tracking-wider text-slate-500">
+									<TableHead className="w-12 text-center text-slate-400">S.N.</TableHead>
+									<TableHead className="text-slate-400">Certificate ID</TableHead>
+									<TableHead className="text-slate-400">Participant Name</TableHead>
+									<TableHead className="text-slate-400">Registration ID</TableHead>
+									<TableHead className="text-slate-400">Event Name</TableHead>
+									<TableHead className="text-slate-400">Generated By</TableHead>
+									<TableHead className="text-slate-400">Issued Date</TableHead>
+									<TableHead className="text-right text-slate-400">Actions</TableHead>
 								</TableRow>
 							</TableHeader>
-							<TableBody>
+							<TableBody className="divide-y divide-white/5">
 								{loadingHistory ?
 									<TableRow>
 										<TableCell
 											colSpan={8}
 											className="h-40 text-center">
-											<Loader2 className="h-8 w-8 animate-spin mx-auto text-purple-700" />
+											<Loader2 className="h-8 w-8 animate-spin mx-auto text-purple-400" />
 											<p className="text-slate-400 mt-2 text-sm">
 												Loading certificate history...
 											</p>
@@ -1243,28 +1244,28 @@ export default function CertificatesPage() {
 										</TableCell>
 									</TableRow>
 								:	historyCerts.map((item, index) => (
-										<TableRow key={item._id}>
-											<TableCell className="font-medium text-slate-500 text-center">
+										<TableRow key={item._id} className="hover:bg-white/3 transition-all">
+											<TableCell className="font-medium text-slate-400 text-center">
 												{(historyPage - 1) * 10 + index + 1}
 											</TableCell>
-											<TableCell className="font-mono text-sm font-semibold">
+											<TableCell className="font-mono text-sm font-semibold text-emerald-400">
 												{item.certificateId}
 											</TableCell>
-											<TableCell className="font-medium text-slate-900 dark:text-white">
+											<TableCell className="font-semibold text-white">
 												{item.fullName}
 											</TableCell>
-											<TableCell className="font-mono text-sm">
+											<TableCell className="font-mono text-sm text-violet-300">
 												{item.registrationId}
 											</TableCell>
 											<TableCell
-												className="max-w-50 truncate"
+												className="max-w-50 truncate text-slate-300"
 												title={item.eventName}>
 												{item.eventName}
 											</TableCell>
-											<TableCell className="text-slate-600 dark:text-slate-400">
+											<TableCell className="text-slate-400">
 												{item.generatedByAdmin}
 											</TableCell>
-											<TableCell className="text-slate-500">
+											<TableCell className="text-slate-400">
 												{new Date(item.generatedDate).toLocaleDateString()}
 											</TableCell>
 											<TableCell className="text-right">
@@ -1272,7 +1273,7 @@ export default function CertificatesPage() {
 													<Button
 														variant="ghost"
 														size="sm"
-														className="h-8 w-8 p-0 text-slate-500 hover:text-slate-900"
+														className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-white/10"
 														title="Print"
 														onClick={() =>
 															setPrintCerts([
@@ -1288,7 +1289,7 @@ export default function CertificatesPage() {
 													<Button
 														variant="ghost"
 														size="sm"
-														className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+														className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
 														title="Revoke Certificate"
 														onClick={() =>
 															handleRevokeCertificate(item.certificateId)
@@ -1305,8 +1306,8 @@ export default function CertificatesPage() {
 					</div>
 
 					{/* History Pagination */}
-					<div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 dark:border-slate-800">
-						<div className="text-xs sm:text-sm text-slate-500">
+					<div className="flex items-center justify-between px-6 py-4 border-t border-white/5">
+						<div className="text-xs sm:text-sm text-slate-400">
 							Showing {Math.min((historyPage - 1) * 10 + 1, historyTotalCount)}–
 							{Math.min(historyPage * 10, historyTotalCount)} of{" "}
 							{historyTotalCount} certificates
@@ -1315,16 +1316,18 @@ export default function CertificatesPage() {
 							<Button
 								variant="outline"
 								size="sm"
+								className="bg-white/5 border-white/10 text-slate-300 hover:text-white"
 								onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
 								disabled={historyPage === 1 || loadingHistory}>
 								<ChevronLeft className="h-4 w-4" />
 							</Button>
-							<div className="text-sm font-medium px-2">
+							<div className="text-sm font-medium px-2 text-slate-300">
 								Page {historyPage} of {historyTotalPages || 1}
 							</div>
 							<Button
 								variant="outline"
 								size="sm"
+								className="bg-white/5 border-white/10 text-slate-300 hover:text-white"
 								onClick={() =>
 									setHistoryPage((p) => Math.min(historyTotalPages, p + 1))
 								}
