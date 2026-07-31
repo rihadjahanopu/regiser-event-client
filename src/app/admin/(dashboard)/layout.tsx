@@ -11,6 +11,7 @@ import {
 	Award,
 	Bell,
 	BookOpen,
+	Calendar,
 	Crown,
 	ExternalLink,
 	FileCheck2,
@@ -22,6 +23,7 @@ import {
 	Mail,
 	Menu,
 	MessageSquare,
+	QrCode,
 	ShieldCheck,
 	Sliders,
 	Tag,
@@ -119,6 +121,7 @@ export default function AdminLayout({
 
 	const navItems = [
 		{ name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+		{ name: "Events Management", href: "/admin/events", icon: Calendar },
 		{
 			name: "Messages",
 			href: "/admin/messages",
@@ -126,6 +129,7 @@ export default function AdminLayout({
 			badge: unreadCount,
 		},
 		{ name: "Registrations", href: "/admin/registrations", icon: Users },
+		{ name: "QR Attendance", href: "/admin/attendance", icon: QrCode },
 		{ name: "Certificates", href: "/admin/certificates", icon: Award },
 		{ name: "User Management", href: "/admin/users", icon: Users },
 		{ name: "Gallery", href: "/admin/gallery", icon: Images },

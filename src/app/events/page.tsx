@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import CountdownTimer from "@/components/CountdownTimer";
 import Navbar from "@/components/home/Navbar";
 import Footer from "@/components/home/Footer";
 import { motion } from "framer-motion";
@@ -104,28 +105,23 @@ interface Settings {
 
 export default function EventsPage() {
   const [settings, setSettings] = useState<Settings>({});
+  const [realEvents, setRealEvents] = useState<any[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("/api/settings")
-      .then((res) => {
-        if (res.data.success && res.data.data) {
-          setSettings(res.data.data);
-        }
-      })
-      .catch(() => {});
+    Promise.all([
+      axios.get("/api/settings").catch(() => ({ data: { success: false } })),
+      axios.get("/api/events").catch(() => ({ data: { success: false } })),
+    ]).then(([setRes, eventRes]) => {
+      if (setRes.data.success && setRes.data.data) {
+        setSettings(setRes.data.data);
+      }
+      if (eventRes.data.success && eventRes.data.data) {
+        setRealEvents(eventRes.data.data);
+      }
+      setEventsLoading(false);
+    });
   }, []);
-
-  const hasUpcoming = settings.eventName || settings.eventDate;
-
-  const formattedDate = settings.eventDate
-    ? new Date(settings.eventDate).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        weekday: "long",
-      })
-    : null;
 
   const pageBadge = settings.eventsPageBadge || "Our Activities";
   const pageTitle = settings.eventsPageTitle || "Events & Programs";
@@ -194,41 +190,126 @@ export default function EventsPage() {
       </section>
 
       <div className="max-w-7xl mx-auto px-6 pb-24">
-        {/* Upcoming Event */}
-        {hasUpcoming && (
-          <section className="mb-20">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="flex items-center gap-3 mb-8"
-            >
-              <span
-                className="w-2 h-2 rounded-full animate-pulse"
-                style={{ background: "#7c3aed" }}
-              />
-              <h2 className="text-xl font-bold text-white">Upcoming Event</h2>
-            </motion.div>
+        {/* Active & Upcoming Events Section */}
+        <section className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-3 mb-8"
+          >
+            <span
+              className="w-2.5 h-2.5 rounded-full animate-pulse"
+              style={{ background: "#7c3aed" }}
+            />
+            <h2 className="text-2xl font-bold text-white">Active & Upcoming Events</h2>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.65 }}
-              className="relative rounded-3xl overflow-hidden border border-white/10 group"
-              style={{ minHeight: "420px" }}
-            >
-              {/* Background */}
-              {settings.eventCoverUrl ? (
-                <>
-                  <img
-                    src={settings.eventCoverUrl}
-                    alt="Event Cover"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#07070f]/95 via-[#07070f]/70 to-transparent" />
-                </>
-              ) : (
+            {realEvents.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {realEvents.map((ev) => (
+                  <motion.div
+                    key={ev._id}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="relative rounded-3xl overflow-hidden border border-white/10 group bg-[#0e0e1d] flex flex-col justify-between"
+                  >
+                    {/* Banner Image */}
+                    <div className="relative h-56 w-full bg-slate-900 overflow-hidden">
+                      {ev.bannerUrl ? (
+                        <img
+                          src={ev.bannerUrl}
+                          alt={ev.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-violet-900/40 to-indigo-900/30 text-violet-400">
+                          <Calendar className="w-12 h-12 opacity-50" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e1d] via-[#0e0e1d]/40 to-transparent" />
+                      <div className="absolute top-4 right-4 flex items-center gap-2">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${
+                            ev.isRegistrationOpen
+                              ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                              : "bg-slate-800 text-slate-400 border-white/10"
+                          }`}
+                        >
+                          {ev.isRegistrationOpen ? "Registration Open" : "Closed"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-6 md:p-8 space-y-4 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-2xl font-bold text-white mb-2 leading-snug">
+                          {ev.title}
+                        </h3>
+                        {ev.description && (
+                          <p className="text-sm text-slate-400 line-clamp-3 mb-4">
+                            {ev.description}
+                          </p>
+                        )}
+
+                        <div className="space-y-2 text-xs text-slate-300">
+                          {ev.eventDate && (
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4 text-violet-400 shrink-0" />
+                              <span>{ev.eventDate}</span>
+                            </div>
+                          )}
+                          {ev.eventStartTime && (
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4 text-cyan-400 shrink-0" />
+                              <span>{ev.eventStartTime}</span>
+                            </div>
+                          )}
+                          {ev.venue && (
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-pink-400 shrink-0" />
+                              <span className="truncate">{ev.venue}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {ev.eventDate && ev.showCountdown !== false && (
+                          <div className="mt-4">
+                            <CountdownTimer eventDate={ev.eventDate} eventStartTime={ev.eventStartTime || "00:00"} />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                        {ev.isRegistrationOpen ? (
+                          <Link
+                            href={`/event-form?event=${ev.slug}`}
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold text-white bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-600/30 w-full"
+                          >
+                            <span>Register Now</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        ) : (
+                          <span className="text-xs text-slate-500 italic text-center w-full py-2">
+                            Registration is currently closed for this event.
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.65 }}
+                className="relative rounded-3xl overflow-hidden border border-white/10 group"
+                style={{ minHeight: "360px" }}
+              >
                 <div
                   className="absolute inset-0"
                   style={{
@@ -236,97 +317,28 @@ export default function EventsPage() {
                       "linear-gradient(135deg, #1e0b3a 0%, #0c1a3a 50%, #071a2e 100%)",
                   }}
                 />
-              )}
-
-              {/* Decorative glows */}
-              <div
-                className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-500"
-                style={{
-                  background:
-                    "radial-gradient(circle at 20% 50%, rgba(124,58,237,0.35), transparent 55%)",
-                }}
-              />
-              <div
-                className="absolute inset-0 opacity-20"
-                style={{
-                  background:
-                    "radial-gradient(circle at 80% 30%, rgba(14,165,233,0.3), transparent 45%)",
-                }}
-              />
-
-              <div
-                className="relative z-10 p-10 md:p-14 flex flex-col justify-end h-full"
-                style={{ minHeight: "420px" }}
-              >
-                <span
-                  className="inline-flex self-start items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold text-violet-200 border border-violet-400/40 mb-6"
-                  style={{ background: "rgba(124,58,237,0.25)" }}
-                >
-                  <span className="w-2 h-2 bg-violet-400 rounded-full animate-pulse" />
-                  Upcoming Event
-                </span>
-
-                <h3 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight max-w-2xl">
-                  {settings.eventName || "Upcoming Event"}
-                </h3>
-
-                <div className="flex flex-wrap gap-6 mb-8">
-                  {formattedDate && (
-                    <div className="flex items-center gap-2.5 text-slate-200">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-violet-500/20 border border-violet-500/30">
-                        <Calendar className="w-4 h-4 text-violet-300" />
-                      </div>
-                      <span className="text-sm font-medium">{formattedDate}</span>
-                    </div>
-                  )}
-                  {settings.eventStartTime && (
-                    <div className="flex items-center gap-2.5 text-slate-200">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-cyan-500/20 border border-cyan-500/30">
-                        <Clock className="w-4 h-4 text-cyan-300" />
-                      </div>
-                      <span className="text-sm font-medium">
-                        {settings.eventStartTime}
-                      </span>
-                    </div>
-                  )}
-                  {settings.eventAddress && (
-                    <div className="flex items-center gap-2.5 text-slate-200">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-pink-500/20 border border-pink-500/30">
-                        <MapPin className="w-4 h-4 text-pink-300" />
-                      </div>
-                      <span className="text-sm font-medium">
-                        {settings.eventAddress}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap gap-4">
-                  {(settings.isRegistrationOpen ?? true) ? (
-                    <Link href="/event-form">
-                      <button
-                        id="events-page-register-btn"
-                        className="group flex items-center gap-2 px-8 py-3.5 rounded-2xl text-base font-semibold text-white transition-all cursor-pointer"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #7c3aed, #4f46e5)",
-                          boxShadow: "0 0 40px rgba(124,58,237,0.4)",
-                        }}
-                      >
-                        Register Now
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                      </button>
+                <div className="relative z-10 p-10 flex flex-col justify-center items-center text-center h-full">
+                  <Calendar className="w-12 h-12 text-violet-400 mb-3" />
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {settings.eventName || "No Active Event"}
+                  </h3>
+                  <p className="text-sm text-slate-400 max-w-md mb-6">
+                    {settings.upcomingEventNotice ||
+                      "There are currently no active event registrations open. Stay tuned!"}
+                  </p>
+                  {settings.isRegistrationOpen && (
+                    <Link
+                      href="/event-form"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold text-white bg-violet-600 hover:bg-violet-500"
+                    >
+                      <span>Register Now</span>
+                      <ArrowRight className="w-4 h-4" />
                     </Link>
-                  ) : (
-                    <span className="px-8 py-3.5 rounded-2xl text-base font-medium text-slate-400 border border-white/15">
-                      Registration Closed
-                    </span>
                   )}
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
           </section>
-        )}
 
         {/* Past Events */}
         <section>

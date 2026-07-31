@@ -60,11 +60,12 @@ export default function SuccessPage() {
 
 				if (setRes.data.success && setRes.data.data) {
 					const d = setRes.data.data;
+					const ev = regRes.data.event;
 					setEventDetails({
-						eventName: d.eventName || "",
-						eventAddress: d.eventAddress || "",
-						eventDate: d.eventDate || "",
-						eventStartTime: d.eventStartTime || "",
+						eventName: ev?.title || d.eventName || "",
+						eventAddress: ev?.venue || d.eventAddress || "",
+						eventDate: ev?.eventDate || d.eventDate || "",
+						eventStartTime: ev?.eventStartTime || d.eventStartTime || "",
 						organiserContact: d.organiserContact || "",
 					});
 					setSiteSettings({

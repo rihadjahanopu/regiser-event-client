@@ -42,6 +42,7 @@ import {
 	Heart,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -1164,13 +1165,32 @@ export default function SettingsPage() {
 				</p>
 			</div>
 
+			{/* Multi-Event Callout Banner */}
+			<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gradient-to-r from-violet-900/40 via-indigo-900/30 to-slate-900/40 border border-violet-500/30">
+				<div className="space-y-1">
+					<div className="flex items-center gap-2 text-violet-300 font-semibold text-sm">
+						<Sparkles className="w-4 h-4 text-violet-400 shrink-0" />
+						Looking for Multi-Event Management?
+					</div>
+					<p className="text-xs text-slate-300 leading-relaxed">
+						To create, edit, or configure individual events (each with its own custom dates, banners, registration toggles, and form fields), visit the <strong className="text-white">Events Management</strong> page.
+					</p>
+				</div>
+				<Link
+					href="/admin/events"
+					className="inline-flex items-center gap-2 text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg shadow-md shadow-violet-600/30 whitespace-nowrap transition-all">
+					<Calendar className="w-4 h-4" />
+					Go to Events Page
+				</Link>
+			</div>
+
 			{/* Registration Status */}
 			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
 				<CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-white/5 mb-4">
 					<div className="space-y-1">
-						<CardTitle className="text-lg text-white">Registration Status</CardTitle>
+						<CardTitle className="text-lg text-white">Global Fallback Registration Status</CardTitle>
 						<CardDescription className="text-slate-500">
-							Turn event registration on or off manually.
+							Turn global event registration on or off manually when no specific event slug is targeted.
 						</CardDescription>
 					</div>
 					<div>
@@ -1188,6 +1208,7 @@ export default function SettingsPage() {
 						</button>
 					</div>
 				</CardHeader>
+			</Card>
 
 			{/* Site Branding & Navbar Logo Settings */}
 			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
@@ -1370,14 +1391,14 @@ export default function SettingsPage() {
 			</Card>
 
 			{/* Cover Image Upload */}
+			<Card className="border border-white/5 bg-[#0c0c16] shadow-sm">
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-white">
 						<ImageIcon className="w-5 h-5 text-blue-600" />
-						Event Cover Image
+						Default Event Cover Image
 					</CardTitle>
 					<CardDescription>
-						This image will be displayed at the top of the Registration Form.
-						Recommended size: 1200×400px.
+						This image is used as the default banner for global registrations. Specific events configured in Events Management have their own banners.
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
@@ -1462,12 +1483,10 @@ export default function SettingsPage() {
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-white">
 						<FileText className="w-5 h-5 text-blue-600" />
-						Event Details & Schedule
+						Default Event Details &amp; Schedule (Fallback)
 					</CardTitle>
 					<CardDescription>
-						Configure Event Name, Location, Date, Time, Organiser Contact, and
-						Countdown Timer. These will be displayed on the Registration Form &
-						downloadable Ticket PDF. Form auto-closes 30m before Start Time!
+						Configure Default Event Name, Location, Date, Time, Organiser Contact, and Countdown Timer. Note: Individual events configured under <Link href="/admin/events" className="text-violet-400 underline">Events Management</Link> override these defaults.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -1806,12 +1825,10 @@ export default function SettingsPage() {
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-white">
 						<CheckCircle2 className="w-5 h-5 text-blue-600" />
-						Registration Form Field Settings
+						Default Registration Form Field Settings
 					</CardTitle>
 					<CardDescription>
-						প্রতিটি field-এ দুটো toggle: <strong>Enable</strong> (field
-						দেখাবে/লুকাবে) এবং <strong>Required</strong> (বাধ্যতামূলক করবে)।
-						Disabled field form-এ দেখাবে না।
+						Global default field toggles (Enable &amp; Required). Specific events created in <Link href="/admin/events" className="text-violet-400 underline">Events Management</Link> can customize their own form fields per event.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>

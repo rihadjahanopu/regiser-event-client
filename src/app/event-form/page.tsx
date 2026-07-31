@@ -132,12 +132,17 @@ export default function RegistrationPage() {
 		regFormFeature3: "Multi-Subject Programs",
 	});
 
+	const [selectedEvent, setSelectedEvent] = useState<any>(null);
+
 	useEffect(() => {
-		axios
-			.get("/api/settings")
-			.then((res) => {
-				if (res.data.success && res.data.data) {
-					const data = res.data.data;
+		const searchParams = new URLSearchParams(window.location.search);
+		const eventSlug = searchParams.get("event");
+
+		async function fetchFormDetails() {
+			try {
+				const setRes = await axios.get("/api/settings").catch(() => ({ data: { success: false } }));
+				if (setRes.data.success && setRes.data.data) {
+					const data = setRes.data.data;
 					setCoverUrl(data.eventCoverUrl || null);
 					setIsRegistrationOpen(data.isRegistrationOpen ?? true);
 					setEventDetails({
@@ -153,7 +158,6 @@ export default function RegistrationPage() {
 						setFieldConfig(normaliseFieldConfig(data.fieldConfig));
 					}
 
-					// Populate registration form left-panel settings
 					setRegFormSettings({
 						navbarLogoUrl: data.navbarLogoUrl || "",
 						siteTitle: data.siteTitle || "",
@@ -175,11 +179,34 @@ export default function RegistrationPage() {
 						}
 					}
 				}
-			})
-			.catch(() => {
-				/* silent */
-			})
-			.finally(() => setIsLoadingSettings(false));
+
+				if (eventSlug) {
+					const evRes = await axios.get(`/api/events/${eventSlug}`).catch(() => ({ data: { success: false } }));
+					if (evRes.data.success && evRes.data.data) {
+						const ev = evRes.data.data;
+						setSelectedEvent(ev);
+						if (ev.bannerUrl) setCoverUrl(ev.bannerUrl);
+						setIsRegistrationOpen(ev.isRegistrationOpen ?? true);
+						setEventDetails((prev) => ({
+							...prev,
+							eventName: ev.title || prev.eventName,
+							eventAddress: ev.venue || prev.eventAddress,
+							eventDate: ev.eventDate || prev.eventDate,
+							eventStartTime: ev.eventStartTime || prev.eventStartTime,
+							showCountdown: ev.showCountdown ?? prev.showCountdown,
+						}));
+						if (ev.fieldConfig) {
+							setFieldConfig(normaliseFieldConfig(ev.fieldConfig));
+						}
+					}
+				}
+			} catch {
+				/* silent catch */
+			} finally {
+				setIsLoadingSettings(false);
+			}
+		}
+		fetchFormDetails();
 	}, []);
 
 	// Dynamically generated schema based on admin config
@@ -235,8 +262,12 @@ export default function RegistrationPage() {
 	async function onSubmit(data: RegistrationFormValues) {
 		setIsSubmitting(true);
 		try {
-			// eslint-disable-next-line @typescript-eslint/typedef
-			const response = await axios.post("/api/registration/register", data);
+			const payload = {
+				...data,
+				eventId: selectedEvent?._id,
+				eventSlug: selectedEvent?.slug,
+			};
+			const response = await axios.post("/api/registration/register", payload);
 			// eslint-disable-next-line @typescript-eslint/typedef
 			const result = response.data;
 			if (result.success && result.registrationId) {
