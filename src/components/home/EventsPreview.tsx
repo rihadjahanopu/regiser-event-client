@@ -2,8 +2,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Calendar, Clock, MapPin, Tag } from "lucide-react";
+import { ArrowRight, Calendar, Clock, MapPin, Users } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface EventsPreviewProps {
 	title?: string;
@@ -18,56 +20,75 @@ interface EventsPreviewProps {
 	};
 }
 
-const pastEvents = [
-	{
-		title: "Medha Jahai Competition 2024",
-		date: "25 March 2024",
-		type: "Educational",
-		participants: "450+",
-		color: "#7c3aed",
-	},
-	{
-		title: "Annual Cultural Program 2024",
-		date: "15 February 2024",
-		type: "Cultural",
-		participants: "800+",
-		color: "#f59e0b",
-	},
-	{
-		title: "Youth Leadership Workshop 2023",
-		date: "10 December 2023",
-		type: "Development",
-		participants: "200+",
-		color: "#10b981",
-	},
+interface EventItem {
+	_id: string;
+	title: string;
+	date?: string;
+	address?: string;
+	startTime?: string;
+	coverUrl?: string | null;
+	isRegistrationOpen?: boolean;
+	slug?: string;
+	description?: string;
+	registrationCount?: number;
+}
+
+const EVENT_ACCENT_COLORS = [
+	{ glow: "#7c3aed", bg: "rgba(124,58,237,0.15)", border: "rgba(124,58,237,0.3)" },
+	{ glow: "#0ea5e9", bg: "rgba(14,165,233,0.15)", border: "rgba(14,165,233,0.3)" },
+	{ glow: "#10b981", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)" },
+	{ glow: "#f59e0b", bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.3)" },
+	{ glow: "#ec4899", bg: "rgba(236,72,153,0.15)", border: "rgba(236,72,153,0.3)" },
 ];
+
+function formatDate(dateStr?: string) {
+	if (!dateStr) return null;
+	try {
+		return new Date(dateStr).toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
+	} catch {
+		return dateStr;
+	}
+}
 
 export default function EventsPreview({
 	title = "Our Activities",
 	subtitle = "Join our upcoming educational, cultural, and Islamic events.",
-	upcomingEvent,
 }: EventsPreviewProps) {
-	const hasUpcoming = upcomingEvent?.name || upcomingEvent?.date;
+	const [events, setEvents] = useState<EventItem[]>([]);
+	const [loading, setLoading] = useState(true);
 
-	const formattedDate =
-		upcomingEvent?.date ?
-			new Date(upcomingEvent.date).toLocaleDateString("en-US", {
-				year: "numeric",
-				month: "long",
-				day: "numeric",
+	useEffect(() => {
+		axios
+			.get("/api/events")
+			.then((res) => {
+				if (res.data.success && res.data.data) {
+					// Sort by date descending (latest first), already sorted by server but ensure
+					const sorted = [...res.data.data].sort((a: EventItem, b: EventItem) => {
+						if (!a.date) return 1;
+						if (!b.date) return -1;
+						return new Date(b.date).getTime() - new Date(a.date).getTime();
+					});
+					setEvents(sorted);
+				}
 			})
-		:	null;
+			.catch(() => {})
+			.finally(() => setLoading(false));
+	}, []);
 
 	return (
 		<section
 			id="events"
 			className="py-28 px-6 relative overflow-hidden"
 			style={{ background: "#0d0d1a" }}>
+			{/* Top line */}
 			<div
 				className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-px opacity-20"
 				style={{
-					background:
-						"linear-gradient(90deg, transparent, #0ea5e9, transparent)",
+					background: "linear-gradient(90deg, transparent, #0ea5e9, transparent)",
 				}}
 			/>
 
@@ -91,155 +112,166 @@ export default function EventsPreview({
 							<p className="text-slate-400 text-sm mt-2">{subtitle}</p>
 						)}
 					</div>
-					<Link href="/events">
+					<a
+						href="https://talamij.rihadjahanopu.com/events"
+						target="_blank"
+						rel="noopener noreferrer">
 						<button className="group flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors shrink-0">
 							View All Events
 							<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
 						</button>
-					</Link>
+					</a>
 				</motion.div>
 
-				<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-					{/* Upcoming event — big card */}
-					{hasUpcoming && (
-						<motion.div
-							initial={{ opacity: 0, y: 24 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ duration: 0.55 }}
-							className="lg:col-span-3 relative rounded-3xl overflow-hidden border border-white/10 group"
-							style={{ minHeight: "340px" }}>
-							{/* BG */}
-							{upcomingEvent.coverUrl ?
-								<>
-									<img
-										src={upcomingEvent.coverUrl}
-										alt="Event"
-										className="absolute inset-0 w-full h-full object-cover"
-									/>
-									<div className="absolute inset-0 bg-gradient-to-t from-[#07070f] via-[#07070f]/60 to-transparent" />
-								</>
-							:	<div
-									className="absolute inset-0"
-									style={{
-										background:
-											"linear-gradient(135deg, #1e0b3a 0%, #0c1a3a 50%, #071a2e 100%)",
-									}}
-								/>
-							}
-
-							{/* Glow */}
+				{/* Events Grid */}
+				{loading ? (
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+						{[1, 2, 3].map((i) => (
 							<div
-								className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500"
-								style={{
-									background:
-										"radial-gradient(circle at 30% 30%, rgba(124,58,237,0.3), transparent 60%)",
-								}}
+								key={i}
+								className="rounded-2xl border border-white/8 animate-pulse"
+								style={{ background: "rgba(255,255,255,0.03)", height: "260px" }}
 							/>
-
-							<div
-								className="relative z-10 p-8 flex flex-col justify-end h-full"
-								style={{ minHeight: "340px" }}>
-								<span
-									className="inline-flex self-start items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-violet-300 border border-violet-500/40 mb-4"
-									style={{ background: "rgba(124,58,237,0.2)" }}>
-									<span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-pulse" />
-									Upcoming Event
-								</span>
-								<h3 className="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight">
-									{upcomingEvent.name || "Upcoming Event"}
-								</h3>
-								<div className="flex flex-wrap gap-3 mb-6">
-									{formattedDate && (
-										<span className="flex items-center gap-1.5 text-sm text-slate-300">
-											<Calendar className="w-4 h-4 text-violet-400" />
-											{formattedDate}
-										</span>
-									)}
-									{upcomingEvent.startTime && (
-										<span className="flex items-center gap-1.5 text-sm text-slate-300">
-											<Clock className="w-4 h-4 text-cyan-400" />
-											{upcomingEvent.startTime}
-										</span>
-									)}
-									{upcomingEvent.address && (
-										<span className="flex items-center gap-1.5 text-sm text-slate-300">
-											<MapPin className="w-4 h-4 text-pink-400" />
-											{upcomingEvent.address}
-										</span>
-									)}
-								</div>
-								{upcomingEvent.isOpen ?
-									<Link href="/event-form">
-										<button
-											id="events-preview-register-btn"
-											className="group/btn self-start flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-all"
-											style={{
-												background: "linear-gradient(135deg, #7c3aed, #4f46e5)",
-												boxShadow: "0 0 30px rgba(124,58,237,0.4)",
-											}}>
-											Register Now
-											<ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
-										</button>
-									</Link>
-								:	<span className="self-start px-6 py-2.5 rounded-full text-sm text-slate-500 border border-white/10">
-										Registration Closed
-									</span>
-								}
-							</div>
-						</motion.div>
-					)}
-
-					{/* Past events list */}
-					<div
-						className={`${hasUpcoming ? "lg:col-span-2" : "lg:col-span-5"} flex flex-col gap-4`}>
-						<p className="text-xs text-slate-500 font-medium tracking-widest uppercase px-1">
-							Recent Events
-						</p>
-						{pastEvents.map((e, i) => (
-							<motion.div
-								key={e.title}
-								initial={{ opacity: 0, x: 20 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true }}
-								transition={{ duration: 0.4, delay: i * 0.1 }}
-								whileHover={{ x: 4 }}
-								className="group flex items-start gap-4 p-4 rounded-2xl border border-white/8 cursor-pointer transition-all"
-								style={{ background: "rgba(255,255,255,0.025)" }}>
-								<div
-									className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm"
-									style={{
-										background: `${e.color}25`,
-										border: `1px solid ${e.color}35`,
-									}}>
-									{i + 1}
-								</div>
-								<div className="flex-1 min-w-0">
-									<h4 className="text-white text-sm font-semibold mb-1 leading-snug group-hover:text-violet-300 transition-colors">
-										{e.title}
-									</h4>
-									<div className="flex items-center gap-3 flex-wrap">
-										<span className="text-xs text-slate-500">{e.date}</span>
-										<span
-											className="text-xs px-2 py-0.5 rounded-full font-medium"
-											style={{ color: e.color, background: `${e.color}18` }}>
-											<Tag className="w-2.5 h-2.5 inline mr-1" />
-											{e.type}
-										</span>
-										<span className="text-xs text-slate-500">
-											{e.participants} participants
-										</span>
-									</div>
-								</div>
-							</motion.div>
 						))}
-						<Link href="/events">
-							<button className="w-full mt-2 py-3 rounded-2xl text-sm text-slate-400 border border-white/8 hover:border-white/20 hover:text-white transition-all">
-								View More Events →
-							</button>
-						</Link>
 					</div>
-				</div>
+				) : events.length === 0 ? (
+					<div className="text-center py-16 text-slate-500 text-sm">
+						No events available at the moment.
+					</div>
+				) : (
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+						{events.map((event, i) => {
+							const accent = EVENT_ACCENT_COLORS[i % EVENT_ACCENT_COLORS.length];
+							const isLatest = i === 0;
+							const formattedDate = formatDate(event.date);
+
+							return (
+								<motion.div
+									key={event._id}
+									initial={{ opacity: 0, y: 24 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ duration: 0.45, delay: i * 0.08 }}
+									whileHover={{ y: -4 }}
+									className="group relative rounded-2xl overflow-hidden border transition-all duration-300"
+									style={{
+										background: "rgba(255,255,255,0.03)",
+										borderColor: isLatest ? accent.border : "rgba(255,255,255,0.08)",
+										boxShadow: isLatest ? `0 0 30px ${accent.glow}18` : "none",
+									}}>
+									{/* Cover image or gradient */}
+									{event.coverUrl ? (
+										<>
+											<img
+												src={event.coverUrl}
+												alt={event.title}
+												className="w-full h-44 object-cover"
+											/>
+											<div className="absolute top-0 left-0 right-0 h-44 bg-gradient-to-b from-transparent to-[#0d0d1a]/80" />
+										</>
+									) : (
+										<div
+											className="w-full h-44 flex items-center justify-center"
+											style={{
+												background: `linear-gradient(135deg, ${accent.bg}, rgba(13,13,26,0.8))`,
+											}}>
+											<Calendar
+												className="w-10 h-10 opacity-30"
+												style={{ color: accent.glow }}
+											/>
+										</div>
+									)}
+
+									{/* Badges */}
+									<div className="absolute top-3 left-3 flex gap-2">
+										{isLatest && (
+											<span
+												className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white"
+												style={{ background: accent.glow }}>
+												<span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+												Latest
+											</span>
+										)}
+										{event.isRegistrationOpen && (
+											<span
+												className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold"
+												style={{ background: "rgba(16,185,129,0.2)", color: "#34d399", border: "1px solid rgba(16,185,129,0.3)" }}>
+												Open
+											</span>
+										)}
+									</div>
+
+									{/* Content */}
+									<div className="p-5">
+										<h3 className="text-white font-bold text-base leading-snug mb-3 group-hover:text-violet-300 transition-colors line-clamp-2">
+											{event.title}
+										</h3>
+
+										<div className="space-y-1.5 mb-4">
+											{formattedDate && (
+												<div className="flex items-center gap-2 text-xs text-slate-400">
+													<Calendar className="w-3.5 h-3.5 shrink-0" style={{ color: accent.glow }} />
+													{formattedDate}
+												</div>
+											)}
+											{event.startTime && (
+												<div className="flex items-center gap-2 text-xs text-slate-400">
+													<Clock className="w-3.5 h-3.5 shrink-0 text-cyan-400" />
+													{event.startTime}
+												</div>
+											)}
+											{event.address && (
+												<div className="flex items-center gap-2 text-xs text-slate-400">
+													<MapPin className="w-3.5 h-3.5 shrink-0 text-pink-400" />
+													<span className="truncate">{event.address}</span>
+												</div>
+											)}
+											{event.registrationCount !== undefined && (
+												<div className="flex items-center gap-2 text-xs text-slate-400">
+													<Users className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+													{event.registrationCount} registered
+												</div>
+											)}
+										</div>
+
+										{event.isRegistrationOpen ? (
+											<Link href={`/event-form${event.slug ? `?event=${event.slug}` : ""}`}>
+												<button
+													className="w-full py-2 rounded-xl text-xs font-semibold text-white transition-all"
+													style={{ background: `linear-gradient(135deg, ${accent.glow}, ${accent.glow}cc)` }}>
+													Register Now →
+												</button>
+											</Link>
+										) : (
+											<div className="w-full py-2 rounded-xl text-xs text-slate-500 text-center border border-white/8">
+												Registration Closed
+											</div>
+										)}
+									</div>
+								</motion.div>
+							);
+						})}
+					</div>
+				)}
+
+				{/* Bottom View All button */}
+				{events.length > 0 && (
+					<motion.div
+						initial={{ opacity: 0, y: 12 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						className="mt-10 text-center">
+						<a
+							href="https://talamij.rihadjahanopu.com/events"
+							target="_blank"
+							rel="noopener noreferrer">
+							<button className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl text-sm font-semibold text-slate-300 border border-white/10 hover:border-white/25 hover:text-white hover:bg-white/5 transition-all">
+								View All Events
+								<ArrowRight className="w-4 h-4" />
+							</button>
+						</a>
+					</motion.div>
+				)}
 			</div>
 		</section>
 	);

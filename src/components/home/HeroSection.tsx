@@ -161,13 +161,13 @@ export default function HeroSection({
 					)}
 
 					{ctaEventsText && (
-						<Link href="/events">
+						<a href="https://talamij.rihadjahanopu.com/events" target="_blank" rel="noopener noreferrer">
 							<button
 								id="hero-events-btn"
 								className="px-7 py-4 rounded-2xl text-base font-semibold text-slate-300 hover:text-white border border-white/10 hover:bg-white/5 transition-all cursor-pointer">
 								{ctaEventsText}
 							</button>
-						</Link>
+						</a>
 					)}
 				</motion.div>
 
