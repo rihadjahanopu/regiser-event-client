@@ -241,7 +241,7 @@ export default function AdminGalleryPage() {
               <button
                 type="submit"
                 disabled={uploading || !selectedFile}
-                className="w-full h-10 bg-gradient-to-r from-violet-600 to-indigo-600 hover:opacity-90 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+                className="w-full h-10 bg-linear-to-r from-violet-600 to-indigo-600 hover:opacity-90 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
               >
                 {uploading ? (
                   <>
