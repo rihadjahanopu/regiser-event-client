@@ -25,7 +25,7 @@ export default function GalleryPage() {
 
   useEffect(() => {
     // Fetch Settings
-    fetch(`${API_URL}/api/settings`)
+    fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) setSettings(data.data);
@@ -34,9 +34,7 @@ export default function GalleryPage() {
 
     const fetchGallery = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/admin/gallery`, {
-          credentials: "include",
-        });
+        const res = await fetch("/api/settings/gallery?all=true");
         const data = await res.json();
         if (data.success) {
           const photos: GalleryImage[] = data.data;

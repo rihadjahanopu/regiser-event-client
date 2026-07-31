@@ -57,7 +57,7 @@ export default function AdminTeamPage() {
 
   const fetchMembers = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/admin/team`, { withCredentials: true });
+      const res = await axios.get("/api/admin/team", { withCredentials: true });
       setMembers(res.data.data || []);
     } catch {
       toast.error("Team members লোড করতে পারেনি");
@@ -106,14 +106,14 @@ export default function AdminTeamPage() {
       if (sigFile) fd.append("signature", sigFile);
 
       if (editingMember) {
-        const res = await axios.put(`${API_URL}/api/admin/team/${editingMember._id}`, fd, {
+        const res = await axios.put(`/api/admin/team/${editingMember._id}`, fd, {
           withCredentials: true,
           headers: { "Content-Type": "multipart/form-data" },
         });
         setMembers((prev) => prev.map((m) => (m._id === editingMember._id ? res.data.data : m)));
         toast.success("সদস্য আপডেট হয়েছে!");
       } else {
-        const res = await axios.post(`${API_URL}/api/admin/team`, fd, {
+        const res = await axios.post("/api/admin/team", fd, {
           withCredentials: true,
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -132,7 +132,7 @@ export default function AdminTeamPage() {
     try {
       const fd = new FormData();
       fd.append("isActive", String(!member.isActive));
-      const res = await axios.put(`${API_URL}/api/admin/team/${member._id}`, fd, {
+      const res = await axios.put(`/api/admin/team/${member._id}`, fd, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -147,7 +147,7 @@ export default function AdminTeamPage() {
     if (!confirm("এই সদস্যকে permanently delete করতে চান?")) return;
     setDeletingId(id);
     try {
-      await axios.delete(`${API_URL}/api/admin/team/${id}`, { withCredentials: true });
+      await axios.delete(`/api/admin/team/${id}`, { withCredentials: true });
       setMembers((prev) => prev.filter((m) => m._id !== id));
       toast.success("সদস্য মুছে ফেলা হয়েছে");
     } catch {

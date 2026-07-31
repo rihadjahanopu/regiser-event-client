@@ -14,6 +14,8 @@ import {
   Layers,
   Tag,
   MessageSquare,
+  Mail,
+  Bell,
   Flag,
   User,
   Sliders,
@@ -24,16 +26,19 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { signOut, useSession } from "@/lib/auth-client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserStore } from "@/store/useUserStore";
+import axios from "axios";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const prevUnreadCount = useRef<number | null>(null);
 
   // Zustand store profile for real-time live avatar/name updates
   const profile = useUserStore((s) => s.profile);
@@ -44,6 +49,44 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace("/dashboard");
     }
   }, [session, isPending, router]);
+
+  // Real-time unread messages notification polling
+  useEffect(() => {
+    if (!session?.user) return;
+
+    const checkUnread = async () => {
+      try {
+        const res = await axios.get("/api/admin/messages/unread-count", { withCredentials: true });
+        if (res.data.success) {
+          const currentCount = res.data.unreadCount || 0;
+          setUnreadCount(currentCount);
+
+          // If unread count increased, trigger real-time toast
+          if (
+            prevUnreadCount.current !== null &&
+            currentCount > prevUnreadCount.current &&
+            res.data.latestUnread
+          ) {
+            const latest = res.data.latestUnread;
+            toast.info(`📩 New Message from ${latest.name}`, {
+              description: latest.message.length > 50 ? `${latest.message.slice(0, 50)}...` : latest.message,
+              action: {
+                label: "View",
+                onClick: () => router.push("/admin/messages"),
+              },
+            });
+          }
+          prevUnreadCount.current = currentCount;
+        }
+      } catch {
+        /* silent catch */
+      }
+    };
+
+    checkUnread();
+    const interval = setInterval(checkUnread, 8000);
+    return () => clearInterval(interval);
+  }, [session, router]);
 
   const handleLogout = async () => {
     try {
@@ -65,6 +108,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Messages", href: "/admin/messages", icon: Mail, badge: unreadCount },
     { name: "Registrations", href: "/admin/registrations", icon: Users },
     { name: "Certificates", href: "/admin/certificates", icon: Award },
     { name: "User Management", href: "/admin/users", icon: Users },
@@ -130,14 +174,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 key={item.name} 
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all ${
+                className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
                   isActive 
                     ? 'bg-gradient-to-r from-violet-600/25 to-indigo-600/10 border border-violet-500/25 text-violet-300 font-medium shadow-lg shadow-violet-500/5' 
                     : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span className="text-sm">{item.name}</span>
+                <div className="flex items-center space-x-3">
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="text-sm">{item.name}</span>
+                </div>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-600 text-white shadow-md shadow-violet-600/40">
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -190,6 +241,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex-1"></div>
 
           <div className="flex items-center gap-3">
+            {/* Notification Bell */}
+            <Link
+              href="/admin/messages"
+              className="relative p-2 rounded-xl border border-white/10 hover:bg-white/5 text-slate-300 hover:text-white transition-all"
+              title="Messages & Notifications"
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-violet-600 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
+
             <Link 
               href="/" 
               target="_blank"

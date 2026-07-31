@@ -70,7 +70,7 @@ export default function BlogPreview({
 
 	useEffect(() => {
 		axios
-			.get(`${API_URL}/api/blog/published?limit=3&page=1`)
+			.get("/api/blog/published?limit=3&page=1")
 			.then((res) => {
 				if (res.data.success && res.data.data) {
 					setPosts(res.data.data.slice(0, 3));

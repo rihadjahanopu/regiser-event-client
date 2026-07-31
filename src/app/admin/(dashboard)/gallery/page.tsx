@@ -48,7 +48,7 @@ export default function AdminGalleryPage() {
 
   const fetchImages = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/admin/gallery`, {
+      const res = await axios.get("/api/admin/gallery", {
         withCredentials: true,
       });
       setImages(res.data.data || []);
@@ -96,7 +96,7 @@ export default function AdminGalleryPage() {
       formData.append("category", category);
 
       const res = await axios.post(
-        `${API_URL}/api/admin/gallery/upload`,
+        "/api/admin/gallery/upload",
         formData,
         {
           withCredentials: true,
@@ -122,7 +122,7 @@ export default function AdminGalleryPage() {
     if (!confirm("এই ছবিটি permanently delete করতে চান?")) return;
     setDeletingId(id);
     try {
-      await axios.delete(`${API_URL}/api/admin/gallery/${id}`, {
+      await axios.delete(`/api/admin/gallery/${id}`, {
         withCredentials: true,
       });
       toast.success("ছবি delete হয়েছে");

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Mail, MapPin, Phone, Send, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 
 interface ContactSectionProps {
   title?: string;
@@ -23,18 +24,26 @@ export default function ContactSection({
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.message) {
+    if (!formData.name.trim() || !formData.message.trim()) {
       toast.error("Please enter your name and message.");
       return;
     }
     setSending(true);
-    setTimeout(() => {
-      toast.success("Your message has been sent successfully! Thank you.");
-      setFormData({ name: "", email: "", message: "" });
+    try {
+      const res = await axios.post("/api/settings/contact", formData);
+      if (res.data.success) {
+        toast.success("Your message has been sent successfully! Thank you.");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        toast.error(res.data.error || "Failed to send message.");
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || "Failed to send message. Please try again.");
+    } finally {
       setSending(false);
-    }, 1000);
+    }
   };
 
   return (
