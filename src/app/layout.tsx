@@ -45,7 +45,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="en"
-			className={`${outfit.variable} ${geistMono.variable} ${playfair.variable} ${greatVibes.variable} antialiased`}>
+			className={`dark ${outfit.variable} ${geistMono.variable} ${playfair.variable} ${greatVibes.variable} antialiased`}>
 			<head>
 				<link
 					rel="preconnect"

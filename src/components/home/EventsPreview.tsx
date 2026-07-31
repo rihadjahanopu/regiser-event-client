@@ -57,6 +57,7 @@ function formatDate(dateStr?: string) {
 export default function EventsPreview({
 	title = "Our Activities",
 	subtitle = "Join our upcoming educational, cultural, and Islamic events.",
+	upcomingEvent,
 }: EventsPreviewProps) {
 	const [events, setEvents] = useState<EventItem[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -78,6 +79,24 @@ export default function EventsPreview({
 			.catch(() => {})
 			.finally(() => setLoading(false));
 	}, []);
+
+	// Combine global event (from site settings) with DB events if global event exists
+	const displayEvents: EventItem[] = [...events];
+	if (
+		upcomingEvent?.name &&
+		!events.some((e) => e.title.toLowerCase() === upcomingEvent.name?.toLowerCase())
+	) {
+		displayEvents.unshift({
+			_id: "global-site-event",
+			title: upcomingEvent.name,
+			date: upcomingEvent.date,
+			address: upcomingEvent.address,
+			startTime: upcomingEvent.startTime,
+			coverUrl: upcomingEvent.coverUrl,
+			isRegistrationOpen: upcomingEvent.isOpen ?? true,
+			slug: "", // empty slug links directly to /event-form
+		});
+	}
 
 	return (
 		<section
@@ -134,15 +153,16 @@ export default function EventsPreview({
 							/>
 						))}
 					</div>
-				) : events.length === 0 ? (
+				) : displayEvents.length === 0 ? (
 					<div className="text-center py-16 text-slate-500 text-sm">
 						No events available at the moment.
 					</div>
 				) : (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-						{events.map((event, i) => {
+						{displayEvents.map((event, i) => {
 							const accent = EVENT_ACCENT_COLORS[i % EVENT_ACCENT_COLORS.length];
-							const isLatest = i === 0;
+							const isGlobal = event._id === "global-site-event";
+							const isLatest = i === 0 && !isGlobal;
 							const formattedDate = formatDate(event.date);
 
 							return (
@@ -155,9 +175,19 @@ export default function EventsPreview({
 									whileHover={{ y: -4 }}
 									className="group relative rounded-2xl overflow-hidden border transition-all duration-300"
 									style={{
-										background: "rgba(255,255,255,0.03)",
-										borderColor: isLatest ? accent.border : "rgba(255,255,255,0.08)",
-										boxShadow: isLatest ? `0 0 30px ${accent.glow}18` : "none",
+										background: isGlobal
+											? "linear-gradient(135deg, rgba(124,58,237,0.12), rgba(13,13,26,0.9))"
+											: "rgba(255,255,255,0.03)",
+										borderColor: isGlobal
+											? "#7c3aed"
+											: isLatest
+											? accent.border
+											: "rgba(255,255,255,0.08)",
+										boxShadow: isGlobal
+											? "0 0 35px rgba(124,58,237,0.25)"
+											: isLatest
+											? `0 0 30px ${accent.glow}18`
+											: "none",
 									}}>
 									{/* Cover image or gradient */}
 									{event.coverUrl ? (
@@ -183,7 +213,13 @@ export default function EventsPreview({
 									)}
 
 									{/* Badges */}
-									<div className="absolute top-3 left-3 flex gap-2">
+									<div className="absolute top-3 left-3 flex gap-2 flex-wrap">
+										{isGlobal && (
+											<span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 shadow-md">
+												<span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+												Main Event
+											</span>
+										)}
 										{isLatest && (
 											<span
 												className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white"
@@ -192,11 +228,16 @@ export default function EventsPreview({
 												Latest
 											</span>
 										)}
-										{event.isRegistrationOpen && (
+										{event.isRegistrationOpen ? (
 											<span
 												className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold"
 												style={{ background: "rgba(16,185,129,0.2)", color: "#34d399", border: "1px solid rgba(16,185,129,0.3)" }}>
 												Open
+											</span>
+										) : (
+											<span
+												className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-800/80 text-slate-400 border border-slate-700">
+												Closed
 											</span>
 										)}
 									</div>
@@ -237,7 +278,7 @@ export default function EventsPreview({
 										{event.isRegistrationOpen ? (
 											<Link href={`/event-form${event.slug ? `?event=${event.slug}` : ""}`}>
 												<button
-													className="w-full py-2 rounded-xl text-xs font-semibold text-white transition-all"
+													className="w-full py-2 rounded-xl text-xs font-semibold text-white transition-all cursor-pointer"
 													style={{ background: `linear-gradient(135deg, ${accent.glow}, ${accent.glow}cc)` }}>
 													Register Now →
 												</button>
@@ -255,7 +296,7 @@ export default function EventsPreview({
 				)}
 
 				{/* Bottom View All button */}
-				{events.length > 0 && (
+				{displayEvents.length > 0 && (
 					<motion.div
 						initial={{ opacity: 0, y: 12 }}
 						whileInView={{ opacity: 1, y: 0 }}

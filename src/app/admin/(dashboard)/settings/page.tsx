@@ -2209,7 +2209,7 @@ export default function SettingsPage() {
 										rows={2}
 										value={aboutParagraph1}
 										onChange={(e) => setAboutParagraph1(e.target.value)}
-										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div className="sm:col-span-2">
@@ -2220,7 +2220,7 @@ export default function SettingsPage() {
 										rows={2}
 										value={aboutParagraph2}
 										onChange={(e) => setAboutParagraph2(e.target.value)}
-										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>
@@ -2391,7 +2391,7 @@ export default function SettingsPage() {
 										rows={2}
 										value={aboutMissionDetail}
 										onChange={(e) => setAboutMissionDetail(e.target.value)}
-										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>
@@ -2412,7 +2412,7 @@ export default function SettingsPage() {
 										rows={2}
 										value={aboutVisionDetail}
 										onChange={(e) => setAboutVisionDetail(e.target.value)}
-										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>
@@ -2433,7 +2433,7 @@ export default function SettingsPage() {
 										rows={2}
 										value={aboutPromiseDetail}
 										onChange={(e) => setAboutPromiseDetail(e.target.value)}
-										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 							</div>
@@ -2471,15 +2471,15 @@ export default function SettingsPage() {
 										</div>
 										<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
 											<div>
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Year</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Year</label>
 												<Input value={m.year} onChange={(e) => updateMilestone(i, "year", e.target.value)} placeholder="2018" className="h-7 text-xs" />
 											</div>
 											<div>
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Title</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Title</label>
 												<Input value={m.title} onChange={(e) => updateMilestone(i, "title", e.target.value)} placeholder="Foundation" className="h-7 text-xs" />
 											</div>
 											<div className="col-span-2">
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Accent Color</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Accent Color</label>
 												<div className="flex items-center gap-2">
 													<input type="color" value={m.color} onChange={(e) => updateMilestone(i, "color", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-white/10 bg-transparent" />
 													<Input value={m.color} onChange={(e) => updateMilestone(i, "color", e.target.value)} className="h-7 text-xs font-mono" />
@@ -2487,8 +2487,8 @@ export default function SettingsPage() {
 											</div>
 										</div>
 										<div>
-											<label className="text-[10px] text-slate-500 mb-0.5 block">Description</label>
-											<textarea rows={2} value={m.description} onChange={(e) => updateMilestone(i, "description", e.target.value)} placeholder="Describe this milestone..." className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
+											<label className="text-[10px] text-slate-300 mb-0.5 block">Description</label>
+											<textarea rows={2} value={m.description} onChange={(e) => updateMilestone(i, "description", e.target.value)} placeholder="Describe this milestone..." className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
 										</div>
 									</div>
 								))}
@@ -2531,11 +2531,11 @@ export default function SettingsPage() {
 										</div>
 										<div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
 											<div className="sm:col-span-2">
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Title</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Title</label>
 												<Input value={v.title} onChange={(e) => updateCoreValue(i, "title", e.target.value)} placeholder="e.g. Integrity & Transparency" className="h-7 text-xs" />
 											</div>
 											<div>
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Accent Color</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Accent Color</label>
 												<div className="flex items-center gap-2">
 													<input type="color" value={v.color} onChange={(e) => updateCoreValue(i, "color", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-white/10 bg-transparent" />
 													<Input value={v.color} onChange={(e) => updateCoreValue(i, "color", e.target.value)} className="h-7 text-xs font-mono" />
@@ -2543,8 +2543,8 @@ export default function SettingsPage() {
 											</div>
 										</div>
 										<div>
-											<label className="text-[10px] text-slate-500 mb-0.5 block">Description</label>
-											<textarea rows={2} value={v.description} onChange={(e) => updateCoreValue(i, "description", e.target.value)} placeholder="Describe this value..." className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
+											<label className="text-[10px] text-slate-300 mb-0.5 block">Description</label>
+											<textarea rows={2} value={v.description} onChange={(e) => updateCoreValue(i, "description", e.target.value)} placeholder="Describe this value..." className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
 										</div>
 									</div>
 								))}
@@ -2604,19 +2604,19 @@ export default function SettingsPage() {
 										</div>
 										<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
 											<div>
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Full Name</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Full Name</label>
 												<Input value={member.name} onChange={(e) => updateBoardMember(i, "name", e.target.value)} placeholder="e.g. Md. Abdur Rahman" className="h-7 text-xs" />
 											</div>
 											<div>
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Role / Position</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Role / Position</label>
 												<Input value={member.role} onChange={(e) => updateBoardMember(i, "role", e.target.value)} placeholder="e.g. President" className="h-7 text-xs" />
 											</div>
 											<div className="sm:col-span-2">
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Title (subtitle under name)</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Title (subtitle under name)</label>
 												<Input value={member.title} onChange={(e) => updateBoardMember(i, "title", e.target.value)} placeholder="e.g. President, Talamij Chhatak Uttar" className="h-7 text-xs" />
 											</div>
 											<div>
-												<label className="text-[10px] text-slate-500 mb-0.5 block">Accent Color</label>
+												<label className="text-[10px] text-slate-300 mb-0.5 block">Accent Color</label>
 												<div className="flex items-center gap-2">
 													<input type="color" value={member.accent} onChange={(e) => updateBoardMember(i, "accent", e.target.value)} className="h-7 w-10 rounded cursor-pointer border border-white/10 bg-transparent" />
 													<Input value={member.accent} onChange={(e) => updateBoardMember(i, "accent", e.target.value)} className="h-7 text-xs font-mono" />
@@ -2648,7 +2648,7 @@ export default function SettingsPage() {
 								</div>
 								<div className="sm:col-span-2">
 									<label className="text-xs font-medium text-slate-300 mb-1 block">CTA Subtitle / Description</label>
-									<textarea rows={2} value={aboutJoinSubtitle} onChange={(e) => setAboutJoinSubtitle(e.target.value)} placeholder="e.g. Become part of the growing Talamij family..." className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500" />
+									<textarea rows={2} value={aboutJoinSubtitle} onChange={(e) => setAboutJoinSubtitle(e.target.value)} placeholder="e.g. Become part of the growing Talamij family..." className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
 								</div>
 							</div>
 						</div>
@@ -3332,7 +3332,7 @@ export default function SettingsPage() {
 										rows={2}
 										value={footerDescription}
 										onChange={(e) => setFooterDescription(e.target.value)}
-										className="w-full rounded-md border border-white/5 bg-transparent p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+										className="w-full rounded-md border border-white/5 bg-white/5 p-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 									/>
 								</div>
 								<div>

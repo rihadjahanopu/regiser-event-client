@@ -133,6 +133,8 @@ export default function RegistrationPage() {
 	});
 
 	const [selectedEvent, setSelectedEvent] = useState<any>(null);
+	const [availableEvents, setAvailableEvents] = useState<any[]>([]);
+	const [showEventPicker, setShowEventPicker] = useState(false);
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(window.location.search);
@@ -181,33 +183,63 @@ export default function RegistrationPage() {
 				}
 
 				if (eventSlug) {
-					const evRes = await axios.get(`/api/events/${eventSlug}`).catch(() => ({ data: { success: false } }));
-					if (evRes.data.success && evRes.data.data) {
-						const ev = evRes.data.data;
-						setSelectedEvent(ev);
-						if (ev.bannerUrl) setCoverUrl(ev.bannerUrl);
-						setIsRegistrationOpen(ev.isRegistrationOpen ?? true);
-						setEventDetails((prev) => ({
-							...prev,
-							eventName: ev.title || prev.eventName,
-							eventAddress: ev.venue || prev.eventAddress,
-							eventDate: ev.eventDate || prev.eventDate,
-							eventStartTime: ev.eventStartTime || prev.eventStartTime,
-							showCountdown: ev.showCountdown ?? prev.showCountdown,
-						}));
-						if (ev.fieldConfig) {
-							setFieldConfig(normaliseFieldConfig(ev.fieldConfig));
-						}
+				const evRes = await axios.get(`/api/events/${eventSlug}`).catch(() => ({ data: { success: false } }));
+				if (evRes.data.success && evRes.data.data) {
+					const ev = evRes.data.data;
+					setSelectedEvent(ev);
+					if (ev.bannerUrl) setCoverUrl(ev.bannerUrl);
+					setIsRegistrationOpen(ev.isRegistrationOpen ?? true);
+					setEventDetails((prev) => ({
+						...prev,
+						eventName: ev.title || prev.eventName,
+						eventAddress: ev.venue || prev.eventAddress,
+						eventDate: ev.eventDate || prev.eventDate,
+						eventStartTime: ev.eventStartTime || prev.eventStartTime,
+						showCountdown: ev.showCountdown ?? prev.showCountdown,
+					}));
+					if (ev.fieldConfig) {
+						setFieldConfig(normaliseFieldConfig(ev.fieldConfig));
 					}
 				}
-			} catch {
-				/* silent catch */
-			} finally {
-				setIsLoadingSettings(false);
+			} else {
+				// No event slug — fetch available events for picker
+				const evListRes = await axios.get("/api/events").catch(() => ({ data: { success: false } }));
+				if (evListRes.data.success && evListRes.data.data?.length > 0) {
+					const openEvents = evListRes.data.data.filter((e: any) => e.isRegistrationOpen !== false);
+					setAvailableEvents(evListRes.data.data);
+					if (openEvents.length > 0) {
+						setShowEventPicker(true);
+					}
+				}
 			}
+		} catch {
+			/* silent catch */
+		} finally {
+			setIsLoadingSettings(false);
 		}
-		fetchFormDetails();
+	}
+	fetchFormDetails();
 	}, []);
+
+	// Load a specific event when user picks from the picker
+	const loadEventByData = (ev: any) => {
+		setSelectedEvent(ev);
+		if (ev.bannerUrl) setCoverUrl(ev.bannerUrl);
+		else if (ev.coverUrl) setCoverUrl(ev.coverUrl);
+		setIsRegistrationOpen(ev.isRegistrationOpen ?? true);
+		setEventDetails((prev) => ({
+			...prev,
+			eventName: ev.title || prev.eventName,
+			eventAddress: ev.venue || ev.address || prev.eventAddress,
+			eventDate: ev.eventDate || ev.date || prev.eventDate,
+			eventStartTime: ev.eventStartTime || ev.startTime || prev.eventStartTime,
+			showCountdown: ev.showCountdown ?? prev.showCountdown,
+		}));
+		if (ev.fieldConfig) {
+			setFieldConfig(normaliseFieldConfig(ev.fieldConfig));
+		}
+		setShowEventPicker(false);
+	};
 
 	// Dynamically generated schema based on admin config
 	const dynamicSchema = useMemo(() => {
@@ -451,6 +483,84 @@ export default function RegistrationPage() {
 
 				{/* Form area — scrollable */}
 				<div className="flex-1 overflow-y-auto">
+
+					{/* ── Event Picker (shown when no event slug in URL) ── */}
+					{showEventPicker && (
+						<div className="min-h-full flex flex-col p-5 sm:p-8 md:p-10 max-w-xl mx-auto w-full py-8 space-y-6">
+							<div className="space-y-1">
+								<h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+									Select an Event
+								</h2>
+								<p className="text-slate-500 text-sm">
+									Choose the event you want to register for.
+								</p>
+							</div>
+
+							<div className="flex flex-col gap-3">
+								{availableEvents.map((ev, i) => {
+									const isOpen = ev.isRegistrationOpen !== false;
+									const accentColors = [
+										{ bg: "bg-blue-50 dark:bg-blue-900/20", border: "border-blue-200 dark:border-blue-700", badge: "bg-blue-600", dot: "bg-blue-500" },
+										{ bg: "bg-violet-50 dark:bg-violet-900/20", border: "border-violet-200 dark:border-violet-700", badge: "bg-violet-600", dot: "bg-violet-500" },
+										{ bg: "bg-emerald-50 dark:bg-emerald-900/20", border: "border-emerald-200 dark:border-emerald-700", badge: "bg-emerald-600", dot: "bg-emerald-500" },
+										{ bg: "bg-amber-50 dark:bg-amber-900/20", border: "border-amber-200 dark:border-amber-700", badge: "bg-amber-600", dot: "bg-amber-500" },
+									];
+									const accent = accentColors[i % accentColors.length];
+
+									return (
+										<button
+											key={ev._id}
+											type="button"
+											disabled={!isOpen}
+											onClick={() => isOpen && loadEventByData(ev)}
+											className={`group relative w-full text-left rounded-2xl border-2 p-4 transition-all duration-200 ${
+												isOpen
+													? `${accent.border} ${accent.bg} hover:shadow-md hover:scale-[1.01] cursor-pointer`
+													: "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 opacity-60 cursor-not-allowed"
+											}`}>
+											<div className="flex items-start gap-4">
+												{/* Color dot / index */}
+												<div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm ${isOpen ? accent.badge : "bg-slate-400"}`}>
+													{i + 1}
+												</div>
+												<div className="flex-1 min-w-0">
+													<div className="flex items-start justify-between gap-2">
+														<h3 className="font-bold text-slate-900 dark:text-white text-base leading-snug">
+															{ev.title}
+														</h3>
+														<span className={`shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+															isOpen
+																? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400"
+																: "bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400"
+														}`}>
+															{isOpen ? "Open" : "Closed"}
+														</span>
+													</div>
+													<div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+														{(ev.eventDate || ev.date) && (
+															<span className="flex items-center gap-1">
+																<Calendar className="w-3 h-3" />
+																{new Date(ev.eventDate || ev.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+															</span>
+														)}
+														{(ev.venue || ev.address || ev.eventAddress) && (
+															<span className="flex items-center gap-1">
+																<MapPin className="w-3 h-3" />
+																{ev.venue || ev.address || ev.eventAddress}
+															</span>
+														)}
+													</div>
+												</div>
+											</div>
+										</button>
+									);
+								})}
+							</div>
+						</div>
+					)}
+
+					{/* ── Main form area ── */}
+					{!showEventPicker && (
 					<div className="min-h-full flex flex-col justify-center p-5 sm:p-8 md:p-10 max-w-xl mx-auto w-full py-6 space-y-6">
 						{/* Event Cover Image */}
 						{coverUrl && (
@@ -1112,6 +1222,7 @@ export default function RegistrationPage() {
 							</Form>
 						)}
 					</div>
+					)}
 				</div>
 
 				{/* Developer Credit */}
