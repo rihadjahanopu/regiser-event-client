@@ -107,6 +107,7 @@ export default function QrAttendancePage() {
 	// Camera scanner states
 	const [cameraActive, setCameraActive] = useState(false);
 	const [cameraStarting, setCameraStarting] = useState(false);
+	const [cameraReady, setCameraReady] = useState(false); // NEW: div visible before start()
 	const html5QrcodeRef = useRef<Html5Qrcode | null>(null);
 
 	// Fetch event list for filtering
@@ -191,16 +192,29 @@ export default function QrAttendancePage() {
 	// Start Camera Scanner
 	const startCamera = async () => {
 		setCameraStarting(true);
+		setCameraReady(true); // NEW: div ke agei visible koro
+
+		// Small delay so React renders the visible div before Html5Qrcode initializes
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
 		try {
 			const devices = await Html5Qrcode.getCameras();
 			if (!devices || devices.length === 0) {
 				toast.error("No camera found on this device.");
 				setCameraStarting(false);
+				setCameraReady(false);
 				return;
 			}
 
+			// Prefer back camera on mobile, fallback to first available
+			const backCamera = devices.find((d) =>
+				d.label.toLowerCase().includes("back")
+			);
 			const cameraId =
-				devices.length > 1 ? devices[devices.length - 1].id : devices[0].id;
+				backCamera ? backCamera.id
+				: devices.length > 1 ? devices[devices.length - 1].id
+				: devices[0].id;
+
 			const html5Qr = new Html5Qrcode("reader");
 			html5QrcodeRef.current = html5Qr;
 
@@ -222,7 +236,17 @@ export default function QrAttendancePage() {
 			setCameraActive(true);
 		} catch (err: any) {
 			console.error("Camera start error:", err);
-			toast.error("Failed to start camera. Please allow camera permissions.");
+			if (
+				err?.name === "NotAllowedError" ||
+				err?.name === "PermissionDeniedError"
+			) {
+				toast.error("Camera permission denied. Please allow camera access.");
+			} else if (err?.name === "NotFoundError") {
+				toast.error("No camera device found.");
+			} else {
+				toast.error("Failed to start camera. Please allow camera permissions.");
+			}
+			setCameraReady(false);
 		} finally {
 			setCameraStarting(false);
 		}
@@ -230,21 +254,25 @@ export default function QrAttendancePage() {
 
 	// Stop Camera Scanner
 	const stopCamera = async () => {
-		if (html5QrcodeRef.current && cameraActive) {
+		if (html5QrcodeRef.current) {
 			try {
 				await html5QrcodeRef.current.stop();
-				html5QrcodeRef.current.clear();
+				html5QrcodeRef.current.clear(); // await নেই, void return
 			} catch (e) {
 				console.error("Camera stop error:", e);
 			}
+			html5QrcodeRef.current = null;
 		}
 		setCameraActive(false);
+		setCameraReady(false);
 	};
 
 	useEffect(() => {
 		return () => {
 			if (html5QrcodeRef.current) {
 				html5QrcodeRef.current.stop().catch(() => {});
+				html5QrcodeRef.current.clear(); // .catch() বাদ দাও
+				html5QrcodeRef.current = null;
 			}
 		};
 	}, []);
@@ -381,17 +409,17 @@ export default function QrAttendancePage() {
 					</CardHeader>
 
 					<CardContent className="p-6 flex-1 flex flex-col items-center justify-center min-h-[300px]">
-						{/* Camera Scanner Viewport */}
+						{/* Camera Scanner Viewport — FIXED: cameraReady diye control */}
 						<div
 							id="reader"
 							className={`w-full max-w-sm rounded-2xl overflow-hidden border-2 border-dashed ${
-								cameraActive ?
-									"border-violet-500 bg-black"
+								cameraReady ?
+									"border-violet-500 bg-black block"
 								:	"border-white/10 hidden"
 							}`}
 						/>
 
-						{!cameraActive && (
+						{!cameraReady && (
 							<div className="text-center p-8 border border-dashed border-white/10 rounded-2xl w-full bg-white/[0.02]">
 								<div className="w-16 h-16 rounded-full bg-violet-600/10 text-violet-400 flex items-center justify-center mx-auto mb-4 border border-violet-500/20">
 									<QrCode className="w-8 h-8" />
@@ -498,20 +526,24 @@ export default function QrAttendancePage() {
 										<AlertCircle className="w-6 h-6 text-red-400 shrink-0 mt-0.5" />
 									)}
 									<div className="flex-1 min-w-0">
-										<p className={`font-bold text-sm leading-tight ${
-											lastScanResult.type === "success" ? "text-emerald-300"
-											: lastScanResult.type === "warning" ? "text-amber-300"
-											: "text-red-300"
-										}`}>
+										<p
+											className={`font-bold text-sm leading-tight ${
+												lastScanResult.type === "success" ? "text-emerald-300"
+												: lastScanResult.type === "warning" ? "text-amber-300"
+												: "text-red-300"
+											}`}>
 											{lastScanResult.message}
 										</p>
 
 										{lastScanResult.registration && (
-											<div className={`mt-3 text-xs space-y-1.5 pt-2 border-t font-medium ${
-												lastScanResult.type === "success" ? "text-emerald-300 border-emerald-500/20"
-												: lastScanResult.type === "warning" ? "text-amber-300 border-amber-500/20"
-												: "text-red-300 border-red-500/20"
-											}`}>
+											<div
+												className={`mt-3 text-xs space-y-1.5 pt-2 border-t font-medium ${
+													lastScanResult.type === "success" ?
+														"text-emerald-300 border-emerald-500/20"
+													: lastScanResult.type === "warning" ?
+														"text-amber-300 border-amber-500/20"
+													:	"text-red-300 border-red-500/20"
+												}`}>
 												<div className="flex justify-between">
 													<span className="opacity-75">Name:</span>
 													<span className="font-bold">
