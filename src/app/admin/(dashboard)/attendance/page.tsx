@@ -39,7 +39,6 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-// Simple Web Audio API beeper for instant audio feedback
 const playSound = (type: "success" | "warning" | "error") => {
 	try {
 		const ctx = new (
@@ -52,8 +51,8 @@ const playSound = (type: "success" | "warning" | "error") => {
 
 		if (type === "success") {
 			osc.type = "sine";
-			osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-			osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1); // A5
+			osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+			osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
 			gain.gain.setValueAtTime(0.3, ctx.currentTime);
 			gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
 			osc.start(ctx.currentTime);
@@ -61,7 +60,6 @@ const playSound = (type: "success" | "warning" | "error") => {
 		} else if (type === "warning") {
 			osc.type = "triangle";
 			osc.frequency.setValueAtTime(440, ctx.currentTime);
-			osc.frequency.setValueAtTime(440, ctx.currentTime + 0.15);
 			gain.gain.setValueAtTime(0.3, ctx.currentTime);
 			gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
 			osc.start(ctx.currentTime);
@@ -76,7 +74,7 @@ const playSound = (type: "success" | "warning" | "error") => {
 			osc.stop(ctx.currentTime + 0.4);
 		}
 	} catch {
-		/* ignore audio block restrictions */
+		/* ignore */
 	}
 };
 
@@ -93,36 +91,29 @@ export default function QrAttendancePage() {
 	const [events, setEvents] = useState<any[]>([]);
 	const [selectedEventId, setSelectedEventId] = useState("all");
 
-	// Manual scan state
 	const [manualCode, setManualCode] = useState("");
 	const [scanningLoading, setScanningLoading] = useState(false);
 
-	// Scan Result Banner
 	const [lastScanResult, setLastScanResult] = useState<{
 		type: "success" | "warning" | "error";
 		message: string;
 		registration?: any;
 	} | null>(null);
 
-	// Camera scanner states
 	const [cameraActive, setCameraActive] = useState(false);
 	const [cameraStarting, setCameraStarting] = useState(false);
-	const [cameraReady, setCameraReady] = useState(false); // NEW: div visible before start()
+	const [cameraReady, setCameraReady] = useState(false);
 	const html5QrcodeRef = useRef<Html5Qrcode | null>(null);
 
-	// Fetch event list for filtering
 	useEffect(() => {
 		axios
 			.get("/api/admin/events")
 			.then((res) => {
-				if (res.data.success) {
-					setEvents(res.data.data);
-				}
+				if (res.data.success) setEvents(res.data.data);
 			})
 			.catch(() => {});
 	}, []);
 
-	// Fetch attendance data
 	const fetchAttendance = useCallback(async () => {
 		try {
 			const params: any = { search, filter };
@@ -145,16 +136,13 @@ export default function QrAttendancePage() {
 		fetchAttendance();
 	}, [fetchAttendance]);
 
-	// Process Check-In API call
 	const processCheckIn = async (code: string) => {
 		if (!code || scanningLoading) return;
 		setScanningLoading(true);
-
 		try {
 			const res = await axios.post("/api/admin/attendance/scan", {
 				qrCode: code.trim(),
 			});
-
 			if (res.data.success) {
 				playSound("success");
 				setLastScanResult({
@@ -171,7 +159,7 @@ export default function QrAttendancePage() {
 				playSound("warning");
 				setLastScanResult({
 					type: "warning",
-					message: resData.error || "Participant is already checked in",
+					message: resData.error || "Already checked in",
 					registration: resData.registration,
 				});
 				toast.warning(`Already present: ${resData.registration?.fullName}`);
@@ -179,8 +167,7 @@ export default function QrAttendancePage() {
 				playSound("error");
 				setLastScanResult({
 					type: "error",
-					message:
-						resData?.error || "Invalid QR code or registration not found",
+					message: resData?.error || "Invalid QR code",
 				});
 				toast.error(resData?.error || "Invalid QR Code");
 			}
@@ -189,78 +176,88 @@ export default function QrAttendancePage() {
 		}
 	};
 
-	// Start Camera Scanner
+	// ========== MOBILE FIX: facingMode approach ==========
 	const startCamera = async () => {
 		setCameraStarting(true);
-		setCameraReady(true); // NEW: div ke agei visible koro
-
-		// Small delay so React renders the visible div before Html5Qrcode initializes
-		await new Promise((resolve) => setTimeout(resolve, 100));
+		setCameraReady(true);
+		await new Promise((r) => setTimeout(r, 200)); // div render time
 
 		try {
-			const devices = await Html5Qrcode.getCameras();
-			if (!devices || devices.length === 0) {
-				toast.error("No camera found on this device.");
-				setCameraStarting(false);
-				setCameraReady(false);
-				return;
-			}
-
-			// Prefer back camera on mobile, fallback to first available
-			const backCamera = devices.find((d) =>
-				d.label.toLowerCase().includes("back")
-			);
-			const cameraId =
-				backCamera ? backCamera.id
-				: devices.length > 1 ? devices[devices.length - 1].id
-				: devices[0].id;
-
 			const html5Qr = new Html5Qrcode("reader");
 			html5QrcodeRef.current = html5Qr;
 
+			// PRIMARY: facingMode object (works on mobile)
 			await html5Qr.start(
-				cameraId,
+				{ facingMode: "environment" },
 				{
 					fps: 10,
 					qrbox: { width: 250, height: 250 },
 				},
-				(decodedText) => {
-					// Scanned successfully!
-					processCheckIn(decodedText);
-				},
-				() => {
-					/* scanning error ignore */
-				}
+				(decodedText) => processCheckIn(decodedText),
+				() => {}
 			);
 
 			setCameraActive(true);
 		} catch (err: any) {
-			console.error("Camera start error:", err);
-			if (
-				err?.name === "NotAllowedError" ||
-				err?.name === "PermissionDeniedError"
-			) {
-				toast.error("Camera permission denied. Please allow camera access.");
-			} else if (err?.name === "NotFoundError") {
-				toast.error("No camera device found.");
-			} else {
-				toast.error("Failed to start camera. Please allow camera permissions.");
+			console.error("Primary camera error:", err.name, err.message);
+
+			// FALLBACK: try with getCameras if facingMode fails
+			if (html5QrcodeRef.current) {
+				try {
+					await html5QrcodeRef.current.stop();
+				} catch {}
+				html5QrcodeRef.current.clear();
+				html5QrcodeRef.current = null;
 			}
-			setCameraReady(false);
+
+			try {
+				const devices = await Html5Qrcode.getCameras();
+				if (!devices || devices.length === 0) {
+					toast.error("No camera found");
+					setCameraReady(false);
+					setCameraStarting(false);
+					return;
+				}
+
+				const backCamera = devices.find((d) =>
+					d.label.toLowerCase().includes("back")
+				);
+				const cameraId =
+					backCamera ? backCamera.id : devices[devices.length - 1].id;
+
+				const html5Qr = new Html5Qrcode("reader");
+				html5QrcodeRef.current = html5Qr;
+
+				await html5Qr.start(
+					cameraId,
+					{ fps: 10, qrbox: { width: 250, height: 250 } },
+					(decodedText) => processCheckIn(decodedText),
+					() => {}
+				);
+
+				setCameraActive(true);
+			} catch (fallbackErr: any) {
+				console.error("Fallback error:", fallbackErr);
+				if (fallbackErr.name === "NotAllowedError") {
+					toast.error(
+						"Camera permission denied. Chrome Settings → Site Settings → Camera → Allow"
+					);
+				} else {
+					toast.error(fallbackErr.message || "Camera failed to start");
+				}
+				setCameraReady(false);
+			}
 		} finally {
 			setCameraStarting(false);
 		}
 	};
 
-	// Stop Camera Scanner
 	const stopCamera = async () => {
 		if (html5QrcodeRef.current) {
 			try {
 				await html5QrcodeRef.current.stop();
-				html5QrcodeRef.current.clear(); // await নেই, void return
-			} catch (e) {
-				console.error("Camera stop error:", e);
-			}
+			} catch {}
+			html5QrcodeRef.current.clear();
 			html5QrcodeRef.current = null;
 		}
 		setCameraActive(false);
@@ -271,15 +268,14 @@ export default function QrAttendancePage() {
 		return () => {
 			if (html5QrcodeRef.current) {
 				html5QrcodeRef.current.stop().catch(() => {});
-				html5QrcodeRef.current.clear(); // .catch() বাদ দাও
+				html5QrcodeRef.current.clear();
 				html5QrcodeRef.current = null;
 			}
 		};
 	}, []);
 
-	// Reset attendance
 	const handleResetAttendance = async (regId: string, name: string) => {
-		if (!confirm(`Are you sure you want to mark ${name} as Absent?`)) return;
+		if (!confirm(`Mark ${name} as Absent?`)) return;
 		try {
 			const res = await axios.patch(`/api/admin/attendance/${regId}/reset`);
 			if (res.data.success) {
@@ -287,7 +283,7 @@ export default function QrAttendancePage() {
 				fetchAttendance();
 			}
 		} catch {
-			toast.error("Failed to reset attendance");
+			toast.error("Failed to reset");
 		}
 	};
 
@@ -298,7 +294,7 @@ export default function QrAttendancePage() {
 
 	return (
 		<div className="space-y-6 max-w-7xl mx-auto pb-12">
-			{/* Page Title Header */}
+			{/* Header */}
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-linear-to-r from-violet-900/20 via-indigo-900/10 to-transparent p-6 rounded-2xl border border-violet-500/20">
 				<div>
 					<div className="flex items-center gap-2.5">
@@ -310,59 +306,50 @@ export default function QrAttendancePage() {
 						</h1>
 					</div>
 					<p className="text-sm text-slate-400 mt-1">
-						Scan participant ticket QR codes or search manually to mark
-						event-day attendance.
+						Scan participant ticket QR codes or search manually.
 					</p>
 				</div>
-
-				<div className="flex items-center gap-2">
-					<Button
-						variant="outline"
-						onClick={() => {
-							setLoading(true);
-							fetchAttendance();
-						}}
-						className="border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-indigo-200 transition-colors shadow-xs">
-						<RefreshCw
-							className={`w-4 h-4 mr-2 text-indigo-400 ${loading ? "animate-spin" : ""}`}
-						/>
-						<span className="text-xs font-semibold text-indigo-300">
-							Refresh Stats
-						</span>
-					</Button>
-				</div>
+				<Button
+					variant="outline"
+					onClick={() => {
+						setLoading(true);
+						fetchAttendance();
+					}}
+					className="border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300">
+					<RefreshCw
+						className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+					/>
+					<span className="text-xs font-semibold">Refresh</span>
+				</Button>
 			</div>
 
-			{/* Attendance Statistics Cards */}
+			{/* Stats */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 				<Card className="bg-[#0f0f1c] border-white/10 text-white">
 					<CardContent className="p-5 flex items-center justify-between">
 						<div>
-							<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+							<p className="text-xs font-semibold text-slate-400 uppercase">
 								Total Registered
 							</p>
-							<p className="text-3xl font-extrabold text-white mt-1">
-								{stats.totalCount}
-							</p>
+							<p className="text-3xl font-extrabold">{stats.totalCount}</p>
 						</div>
 						<div className="p-3.5 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
 							<Users className="w-6 h-6" />
 						</div>
 					</CardContent>
 				</Card>
-
 				<Card className="bg-[#0f0f1c] border-emerald-500/20 text-white relative overflow-hidden">
-					<div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-2xl rounded-full pointer-events-none" />
+					<div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 blur-2xl rounded-full" />
 					<CardContent className="p-5 flex items-center justify-between">
 						<div>
-							<p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
-								Present / Attended
+							<p className="text-xs font-semibold text-emerald-400 uppercase">
+								Present
 							</p>
-							<div className="flex items-baseline gap-2 mt-1">
+							<div className="flex items-baseline gap-2">
 								<p className="text-3xl font-extrabold text-emerald-400">
 									{stats.totalPresent}
 								</p>
-								<span className="text-xs text-emerald-400/80 font-medium">
+								<span className="text-xs text-emerald-400/80">
 									({presentPercentage}%)
 								</span>
 							</div>
@@ -372,14 +359,13 @@ export default function QrAttendancePage() {
 						</div>
 					</CardContent>
 				</Card>
-
 				<Card className="bg-[#0f0f1c] border-white/10 text-white">
 					<CardContent className="p-5 flex items-center justify-between">
 						<div>
-							<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-								Absent / Remaining
+							<p className="text-xs font-semibold text-slate-400 uppercase">
+								Absent
 							</p>
-							<p className="text-3xl font-extrabold text-amber-400 mt-1">
+							<p className="text-3xl font-extrabold text-amber-400">
 								{stats.totalAbsent}
 							</p>
 						</div>
@@ -390,9 +376,9 @@ export default function QrAttendancePage() {
 				</Card>
 			</div>
 
-			{/* Scanner & Manual Search Controls Grid */}
+			{/* Scanner Grid */}
 			<div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-				{/* Camera Scanner Card */}
+				{/* Camera Scanner */}
 				<Card className="lg:col-span-6 bg-[#0f0f1c] border-white/10 text-white flex flex-col">
 					<CardHeader className="border-b border-white/5 pb-4">
 						<CardTitle className="text-lg font-bold flex items-center justify-between">
@@ -408,15 +394,16 @@ export default function QrAttendancePage() {
 						</CardTitle>
 					</CardHeader>
 
-					<CardContent className="p-6 flex-1 flex flex-col items-center justify-center min-h-[300px]">
-						{/* Camera Scanner Viewport — FIXED: cameraReady diye control */}
+					<CardContent className="p-6 flex-1 flex flex-col items-center justify-center min-h-[320px]">
+						{/* FIXED: explicit width/height for mobile */}
 						<div
 							id="reader"
-							className={`w-full max-w-sm rounded-2xl overflow-hidden border-2 border-dashed ${
+							className={`w-full rounded-2xl overflow-hidden border-2 border-dashed ${
 								cameraReady ?
 									"border-violet-500 bg-black block"
 								:	"border-white/10 hidden"
 							}`}
+							style={{ minHeight: cameraReady ? "250px" : "0" }}
 						/>
 
 						{!cameraReady && (
@@ -425,11 +412,10 @@ export default function QrAttendancePage() {
 									<QrCode className="w-8 h-8" />
 								</div>
 								<h3 className="text-base font-semibold text-white">
-									Ready to Scan QR Codes
+									Ready to Scan
 								</h3>
 								<p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-									Turn on camera permissions to quickly scan participant tickets
-									using your smartphone or laptop camera.
+									Allow camera access to scan participant tickets.
 								</p>
 							</div>
 						)}
@@ -443,11 +429,11 @@ export default function QrAttendancePage() {
 									{cameraStarting ?
 										<>
 											<Loader2 className="w-4 h-4 mr-2 animate-spin" />
-											Starting Camera...
+											Starting...
 										</>
 									:	<>
 											<Camera className="w-4 h-4 mr-2" />
-											Start Camera Scanner
+											Start Camera
 										</>
 									}
 								</Button>
@@ -463,12 +449,12 @@ export default function QrAttendancePage() {
 					</CardContent>
 				</Card>
 
-				{/* Manual Entry & Quick Scan Card */}
+				{/* Manual Entry */}
 				<Card className="lg:col-span-6 bg-[#0f0f1c] border-white/10 text-white flex flex-col">
 					<CardHeader className="border-b border-white/5 pb-4">
 						<CardTitle className="text-lg font-bold flex items-center gap-2">
 							<Search className="w-5 h-5 text-indigo-400" />
-							Manual ID / Code Entry
+							Manual Entry
 						</CardTitle>
 					</CardHeader>
 
@@ -484,14 +470,14 @@ export default function QrAttendancePage() {
 							className="space-y-4">
 							<div>
 								<label className="text-xs font-semibold text-slate-300 mb-2 block">
-									Type or Paste Registration ID (e.g. REG-123456)
+									Registration ID (e.g. REG-123456)
 								</label>
 								<div className="flex gap-2">
 									<Input
 										value={manualCode}
 										onChange={(e) => setManualCode(e.target.value)}
-										placeholder="REG-XXXXXX or Ticket Code"
-										className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 font-mono focus:border-violet-500"
+										placeholder="REG-XXXXXX"
+										className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 font-mono"
 									/>
 									<Button
 										type="submit"
@@ -505,10 +491,9 @@ export default function QrAttendancePage() {
 							</div>
 						</form>
 
-						{/* Last Scan Result Display Card */}
 						{lastScanResult ?
 							<div
-								className={`p-4 rounded-2xl border transition-all ${
+								className={`p-4 rounded-2xl border ${
 									lastScanResult.type === "success" ?
 										"bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
 									: lastScanResult.type === "warning" ?
@@ -517,106 +502,76 @@ export default function QrAttendancePage() {
 								}`}>
 								<div className="flex items-start gap-3">
 									{lastScanResult.type === "success" && (
-										<CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
+										<CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
 									)}
 									{lastScanResult.type === "warning" && (
-										<AlertCircle className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
+										<AlertCircle className="w-6 h-6 text-amber-400 shrink-0" />
 									)}
 									{lastScanResult.type === "error" && (
-										<AlertCircle className="w-6 h-6 text-red-400 shrink-0 mt-0.5" />
+										<AlertCircle className="w-6 h-6 text-red-400 shrink-0" />
 									)}
 									<div className="flex-1 min-w-0">
-										<p
-											className={`font-bold text-sm leading-tight ${
-												lastScanResult.type === "success" ? "text-emerald-300"
-												: lastScanResult.type === "warning" ? "text-amber-300"
-												: "text-red-300"
-											}`}>
+										<p className="font-bold text-sm">
 											{lastScanResult.message}
 										</p>
-
 										{lastScanResult.registration && (
-											<div
-												className={`mt-3 text-xs space-y-1.5 pt-2 border-t font-medium ${
-													lastScanResult.type === "success" ?
-														"text-emerald-300 border-emerald-500/20"
-													: lastScanResult.type === "warning" ?
-														"text-amber-300 border-amber-500/20"
-													:	"text-red-300 border-red-500/20"
-												}`}>
+											<div className="mt-3 text-xs space-y-1.5 pt-2 border-t font-medium opacity-90">
 												<div className="flex justify-between">
-													<span className="opacity-75">Name:</span>
+													<span>Name:</span>
 													<span className="font-bold">
 														{lastScanResult.registration.fullName}
 													</span>
 												</div>
 												<div className="flex justify-between">
-													<span className="opacity-75">Ticket No:</span>
+													<span>Ticket:</span>
 													<span className="font-mono">
 														{lastScanResult.registration.ticketNumber}
 													</span>
 												</div>
 												<div className="flex justify-between">
-													<span className="opacity-75">School:</span>
+													<span>School:</span>
 													<span>
 														{lastScanResult.registration.schoolName || "N/A"}
 													</span>
 												</div>
 												<div className="flex justify-between">
-													<span className="opacity-75">Mobile:</span>
+													<span>Mobile:</span>
 													<span>{lastScanResult.registration.mobile}</span>
 												</div>
-												{lastScanResult.registration.attendedAt && (
-													<div className="flex justify-between text-[11px] pt-1">
-														<span className="opacity-75">Attended At:</span>
-														<span>
-															{new Date(
-																lastScanResult.registration.attendedAt
-															).toLocaleTimeString("en-BD", {
-																hour: "2-digit",
-																minute: "2-digit",
-																second: "2-digit",
-															})}
-														</span>
-													</div>
-												)}
 											</div>
 										)}
 									</div>
 								</div>
 							</div>
 						:	<div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] text-xs text-slate-400 text-center">
-								Scan a ticket to view instant participant details here.
+								Scan a ticket to view details here.
 							</div>
 						}
 					</CardContent>
 				</Card>
 			</div>
 
-			{/* Attendance Directory Table Section */}
+			{/* Table */}
 			<Card className="bg-[#0f0f1c] border-white/10 text-white">
 				<CardHeader className="border-b border-white/5 pb-4">
 					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 						<CardTitle className="text-lg font-bold">
 							Attendance Directory
 						</CardTitle>
-
-						{/* Table Filter Controls */}
 						<div className="flex flex-wrap items-center gap-3">
 							<div className="relative w-full sm:w-64">
 								<Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
 								<Input
 									value={search}
 									onChange={(e) => setSearch(e.target.value)}
-									placeholder="Search name, phone, reg ID..."
+									placeholder="Search..."
 									className="pl-9 bg-white/5 border-white/10 text-white text-xs h-9"
 								/>
 							</div>
-
 							{events.length > 0 && (
 								<Select
 									value={selectedEventId}
-									onValueChange={(val) => setSelectedEventId(val || "all")}>
+									onValueChange={(v) => setSelectedEventId(v || "all")}>
 									<SelectTrigger className="w-48 bg-white/5 border-white/10 text-white text-xs h-9">
 										<SelectValue placeholder="All Events" />
 									</SelectTrigger>
@@ -632,17 +587,16 @@ export default function QrAttendancePage() {
 									</SelectContent>
 								</Select>
 							)}
-
 							<Select
 								value={filter}
-								onValueChange={(val) => setFilter(val || "All")}>
+								onValueChange={(v) => setFilter(v || "All")}>
 								<SelectTrigger className="w-36 bg-white/5 border-white/10 text-white text-xs h-9">
-									<SelectValue placeholder="Status Filter" />
+									<SelectValue placeholder="Filter" />
 								</SelectTrigger>
 								<SelectContent className="bg-[#141424] border-white/10 text-white">
-									<SelectItem value="All">All Participants</SelectItem>
-									<SelectItem value="Present">Present Only</SelectItem>
-									<SelectItem value="Absent">Absent Only</SelectItem>
+									<SelectItem value="All">All</SelectItem>
+									<SelectItem value="Present">Present</SelectItem>
+									<SelectItem value="Absent">Absent</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>
@@ -653,18 +607,18 @@ export default function QrAttendancePage() {
 					{loading ?
 						<div className="p-12 text-center text-slate-400 flex items-center justify-center gap-2">
 							<Loader2 className="w-5 h-5 animate-spin text-violet-400" />
-							Loading attendance records...
+							Loading...
 						</div>
 					: data.length === 0 ?
 						<div className="p-12 text-center text-slate-400">
-							No participants found matching your criteria.
+							No participants found.
 						</div>
 					:	<div className="overflow-x-auto">
 							<Table>
 								<TableHeader className="bg-white/5">
 									<TableRow className="border-white/5 hover:bg-transparent">
 										<TableHead className="text-slate-400 text-xs">
-											Reg ID / Ticket
+											Reg ID
 										</TableHead>
 										<TableHead className="text-slate-400 text-xs">
 											Participant
@@ -673,17 +627,16 @@ export default function QrAttendancePage() {
 											Institution
 										</TableHead>
 										<TableHead className="text-slate-400 text-xs">
-											Attendance Status
+											Status
 										</TableHead>
 										<TableHead className="text-slate-400 text-xs">
-											Check-in Time
+											Time
 										</TableHead>
 										<TableHead className="text-right text-slate-400 text-xs">
 											Action
 										</TableHead>
 									</TableRow>
 								</TableHeader>
-
 								<TableBody>
 									{data.map((item) => (
 										<TableRow
@@ -695,7 +648,6 @@ export default function QrAttendancePage() {
 													{item.ticketNumber}
 												</div>
 											</TableCell>
-
 											<TableCell>
 												<div className="font-semibold text-sm text-white">
 													{item.fullName}
@@ -704,14 +656,12 @@ export default function QrAttendancePage() {
 													{item.mobile}
 												</div>
 											</TableCell>
-
 											<TableCell className="text-xs text-slate-300">
 												<div>{item.schoolName || "N/A"}</div>
 												<div className="text-[11px] text-slate-500">
 													Class: {item.class || "N/A"}
 												</div>
 											</TableCell>
-
 											<TableCell>
 												{item.attendance === "Present" ?
 													<Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 gap-1 text-xs">
@@ -724,22 +674,17 @@ export default function QrAttendancePage() {
 													</Badge>
 												}
 											</TableCell>
-
 											<TableCell className="text-xs text-slate-400">
 												{item.attendedAt ?
 													<span className="flex items-center gap-1 text-emerald-400/90 font-mono">
 														<Clock className="w-3 h-3" />
 														{new Date(item.attendedAt).toLocaleTimeString(
 															"en-BD",
-															{
-																hour: "2-digit",
-																minute: "2-digit",
-															}
+															{ hour: "2-digit", minute: "2-digit" }
 														)}
 													</span>
 												:	<span className="text-slate-600">—</span>}
 											</TableCell>
-
 											<TableCell className="text-right">
 												{item.attendance === "Present" ?
 													<Button
