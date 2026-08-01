@@ -42,7 +42,9 @@ import { toast } from "sonner";
 // Simple Web Audio API beeper for instant audio feedback
 const playSound = (type: "success" | "warning" | "error") => {
 	try {
-		const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+		const ctx = new (
+			window.AudioContext || (window as any).webkitAudioContext
+		)();
 		const osc = ctx.createOscillator();
 		const gain = ctx.createGain();
 		osc.connect(gain);
@@ -109,11 +111,14 @@ export default function QrAttendancePage() {
 
 	// Fetch event list for filtering
 	useEffect(() => {
-		axios.get("/api/admin/events").then((res) => {
-			if (res.data.success) {
-				setEvents(res.data.data);
-			}
-		}).catch(() => {});
+		axios
+			.get("/api/admin/events")
+			.then((res) => {
+				if (res.data.success) {
+					setEvents(res.data.data);
+				}
+			})
+			.catch(() => {});
 	}, []);
 
 	// Fetch attendance data
@@ -173,7 +178,8 @@ export default function QrAttendancePage() {
 				playSound("error");
 				setLastScanResult({
 					type: "error",
-					message: resData?.error || "Invalid QR code or registration not found",
+					message:
+						resData?.error || "Invalid QR code or registration not found",
 				});
 				toast.error(resData?.error || "Invalid QR Code");
 			}
@@ -193,7 +199,8 @@ export default function QrAttendancePage() {
 				return;
 			}
 
-			const cameraId = devices.length > 1 ? devices[devices.length - 1].id : devices[0].id;
+			const cameraId =
+				devices.length > 1 ? devices[devices.length - 1].id : devices[0].id;
 			const html5Qr = new Html5Qrcode("reader");
 			html5QrcodeRef.current = html5Qr;
 
@@ -257,7 +264,9 @@ export default function QrAttendancePage() {
 	};
 
 	const presentPercentage =
-		stats.totalCount > 0 ? Math.round((stats.totalPresent / stats.totalCount) * 100) : 0;
+		stats.totalCount > 0 ?
+			Math.round((stats.totalPresent / stats.totalCount) * 100)
+		:	0;
 
 	return (
 		<div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -273,7 +282,8 @@ export default function QrAttendancePage() {
 						</h1>
 					</div>
 					<p className="text-sm text-slate-400 mt-1">
-						Scan participant ticket QR codes or search manually to mark event-day attendance.
+						Scan participant ticket QR codes or search manually to mark
+						event-day attendance.
 					</p>
 				</div>
 
@@ -285,8 +295,12 @@ export default function QrAttendancePage() {
 							fetchAttendance();
 						}}
 						className="border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-indigo-200 transition-colors shadow-xs">
-						<RefreshCw className={`w-4 h-4 mr-2 text-indigo-400 ${loading ? "animate-spin" : ""}`} />
-						<span className="text-xs font-semibold text-indigo-300">Refresh Stats</span>
+						<RefreshCw
+							className={`w-4 h-4 mr-2 text-indigo-400 ${loading ? "animate-spin" : ""}`}
+						/>
+						<span className="text-xs font-semibold text-indigo-300">
+							Refresh Stats
+						</span>
 					</Button>
 				</div>
 			</div>
@@ -299,7 +313,9 @@ export default function QrAttendancePage() {
 							<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
 								Total Registered
 							</p>
-							<p className="text-3xl font-extrabold text-white mt-1">{stats.totalCount}</p>
+							<p className="text-3xl font-extrabold text-white mt-1">
+								{stats.totalCount}
+							</p>
 						</div>
 						<div className="p-3.5 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
 							<Users className="w-6 h-6" />
@@ -315,7 +331,9 @@ export default function QrAttendancePage() {
 								Present / Attended
 							</p>
 							<div className="flex items-baseline gap-2 mt-1">
-								<p className="text-3xl font-extrabold text-emerald-400">{stats.totalPresent}</p>
+								<p className="text-3xl font-extrabold text-emerald-400">
+									{stats.totalPresent}
+								</p>
 								<span className="text-xs text-emerald-400/80 font-medium">
 									({presentPercentage}%)
 								</span>
@@ -333,7 +351,9 @@ export default function QrAttendancePage() {
 							<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
 								Absent / Remaining
 							</p>
-							<p className="text-3xl font-extrabold text-amber-400 mt-1">{stats.totalAbsent}</p>
+							<p className="text-3xl font-extrabold text-amber-400 mt-1">
+								{stats.totalAbsent}
+							</p>
 						</div>
 						<div className="p-3.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
 							<UserX className="w-6 h-6" />
@@ -365,7 +385,9 @@ export default function QrAttendancePage() {
 						<div
 							id="reader"
 							className={`w-full max-w-sm rounded-2xl overflow-hidden border-2 border-dashed ${
-								cameraActive ? "border-violet-500 bg-black" : "border-white/10 hidden"
+								cameraActive ?
+									"border-violet-500 bg-black"
+								:	"border-white/10 hidden"
 							}`}
 						/>
 
@@ -374,40 +396,41 @@ export default function QrAttendancePage() {
 								<div className="w-16 h-16 rounded-full bg-violet-600/10 text-violet-400 flex items-center justify-center mx-auto mb-4 border border-violet-500/20">
 									<QrCode className="w-8 h-8" />
 								</div>
-								<h3 className="text-base font-semibold text-white">Ready to Scan QR Codes</h3>
+								<h3 className="text-base font-semibold text-white">
+									Ready to Scan QR Codes
+								</h3>
 								<p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-									Turn on camera permissions to quickly scan participant tickets using your smartphone or laptop camera.
+									Turn on camera permissions to quickly scan participant tickets
+									using your smartphone or laptop camera.
 								</p>
 							</div>
 						)}
 
 						<div className="mt-6 flex gap-3 w-full max-w-sm">
-							{!cameraActive ? (
+							{!cameraActive ?
 								<Button
 									onClick={startCamera}
 									disabled={cameraStarting}
 									className="w-full bg-violet-600 hover:bg-violet-700 text-white font-medium py-2.5 rounded-xl shadow-lg shadow-violet-600/30">
-									{cameraStarting ? (
+									{cameraStarting ?
 										<>
 											<Loader2 className="w-4 h-4 mr-2 animate-spin" />
 											Starting Camera...
 										</>
-									) : (
-										<>
+									:	<>
 											<Camera className="w-4 h-4 mr-2" />
 											Start Camera Scanner
 										</>
-									)}
+									}
 								</Button>
-							) : (
-								<Button
+							:	<Button
 									onClick={stopCamera}
 									variant="destructive"
 									className="w-full font-medium py-2.5 rounded-xl">
 									<CameraOff className="w-4 h-4 mr-2" />
 									Stop Camera
 								</Button>
-							)}
+							}
 						</div>
 					</CardContent>
 				</Card>
@@ -446,25 +469,23 @@ export default function QrAttendancePage() {
 										type="submit"
 										disabled={!manualCode.trim() || scanningLoading}
 										className="bg-violet-600 hover:bg-violet-700 text-white shrink-0 px-5">
-										{scanningLoading ? (
+										{scanningLoading ?
 											<Loader2 className="w-4 h-4 animate-spin" />
-										) : (
-											"Check In"
-										)}
+										:	"Check In"}
 									</Button>
 								</div>
 							</div>
 						</form>
 
 						{/* Last Scan Result Display Card */}
-						{lastScanResult ? (
+						{lastScanResult ?
 							<div
 								className={`p-4 rounded-2xl border transition-all ${
-									lastScanResult.type === "success"
-										? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-										: lastScanResult.type === "warning"
-										? "bg-amber-500/10 border-amber-500/30 text-amber-300"
-										: "bg-red-500/10 border-red-500/30 text-red-300"
+									lastScanResult.type === "success" ?
+										"bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+									: lastScanResult.type === "warning" ?
+										"bg-amber-500/10 border-amber-500/30 text-amber-300"
+									:	"bg-red-500/10 border-red-500/30 text-red-300"
 								}`}>
 								<div className="flex items-start gap-3">
 									{lastScanResult.type === "success" && (
@@ -477,21 +498,37 @@ export default function QrAttendancePage() {
 										<AlertCircle className="w-6 h-6 text-red-400 shrink-0 mt-0.5" />
 									)}
 									<div className="flex-1 min-w-0">
-										<p className="font-bold text-sm leading-tight">{lastScanResult.message}</p>
+										<p className={`font-bold text-sm leading-tight ${
+											lastScanResult.type === "success" ? "text-emerald-300"
+											: lastScanResult.type === "warning" ? "text-amber-300"
+											: "text-red-300"
+										}`}>
+											{lastScanResult.message}
+										</p>
 
 										{lastScanResult.registration && (
-											<div className="mt-3 text-xs space-y-1.5 pt-2 border-t border-current/20 font-medium">
+											<div className={`mt-3 text-xs space-y-1.5 pt-2 border-t font-medium ${
+												lastScanResult.type === "success" ? "text-emerald-300 border-emerald-500/20"
+												: lastScanResult.type === "warning" ? "text-amber-300 border-amber-500/20"
+												: "text-red-300 border-red-500/20"
+											}`}>
 												<div className="flex justify-between">
 													<span className="opacity-75">Name:</span>
-													<span className="font-bold">{lastScanResult.registration.fullName}</span>
+													<span className="font-bold">
+														{lastScanResult.registration.fullName}
+													</span>
 												</div>
 												<div className="flex justify-between">
 													<span className="opacity-75">Ticket No:</span>
-													<span className="font-mono">{lastScanResult.registration.ticketNumber}</span>
+													<span className="font-mono">
+														{lastScanResult.registration.ticketNumber}
+													</span>
 												</div>
 												<div className="flex justify-between">
 													<span className="opacity-75">School:</span>
-													<span>{lastScanResult.registration.schoolName || "N/A"}</span>
+													<span>
+														{lastScanResult.registration.schoolName || "N/A"}
+													</span>
 												</div>
 												<div className="flex justify-between">
 													<span className="opacity-75">Mobile:</span>
@@ -501,10 +538,13 @@ export default function QrAttendancePage() {
 													<div className="flex justify-between text-[11px] pt-1">
 														<span className="opacity-75">Attended At:</span>
 														<span>
-															{new Date(lastScanResult.registration.attendedAt).toLocaleTimeString(
-																"en-BD",
-																{ hour: "2-digit", minute: "2-digit", second: "2-digit" }
-															)}
+															{new Date(
+																lastScanResult.registration.attendedAt
+															).toLocaleTimeString("en-BD", {
+																hour: "2-digit",
+																minute: "2-digit",
+																second: "2-digit",
+															})}
 														</span>
 													</div>
 												)}
@@ -513,11 +553,10 @@ export default function QrAttendancePage() {
 									</div>
 								</div>
 							</div>
-						) : (
-							<div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] text-xs text-slate-400 text-center">
+						:	<div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] text-xs text-slate-400 text-center">
 								Scan a ticket to view instant participant details here.
 							</div>
-						)}
+						}
 					</CardContent>
 				</Card>
 			</div>
@@ -526,7 +565,9 @@ export default function QrAttendancePage() {
 			<Card className="bg-[#0f0f1c] border-white/10 text-white">
 				<CardHeader className="border-b border-white/5 pb-4">
 					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-						<CardTitle className="text-lg font-bold">Attendance Directory</CardTitle>
+						<CardTitle className="text-lg font-bold">
+							Attendance Directory
+						</CardTitle>
 
 						{/* Table Filter Controls */}
 						<div className="flex flex-wrap items-center gap-3">
@@ -541,14 +582,18 @@ export default function QrAttendancePage() {
 							</div>
 
 							{events.length > 0 && (
-								<Select value={selectedEventId} onValueChange={(val) => setSelectedEventId(val || "all")}>
+								<Select
+									value={selectedEventId}
+									onValueChange={(val) => setSelectedEventId(val || "all")}>
 									<SelectTrigger className="w-48 bg-white/5 border-white/10 text-white text-xs h-9">
 										<SelectValue placeholder="All Events" />
 									</SelectTrigger>
 									<SelectContent className="bg-[#141424] border-white/10 text-white">
 										<SelectItem value="all">All Events</SelectItem>
 										{events.map((ev) => (
-											<SelectItem key={ev._id} value={ev._id}>
+											<SelectItem
+												key={ev._id}
+												value={ev._id}>
 												{ev.title}
 											</SelectItem>
 										))}
@@ -556,7 +601,9 @@ export default function QrAttendancePage() {
 								</Select>
 							)}
 
-							<Select value={filter} onValueChange={(val) => setFilter(val || "All")}>
+							<Select
+								value={filter}
+								onValueChange={(val) => setFilter(val || "All")}>
 								<SelectTrigger className="w-36 bg-white/5 border-white/10 text-white text-xs h-9">
 									<SelectValue placeholder="Status Filter" />
 								</SelectTrigger>
@@ -571,40 +618,59 @@ export default function QrAttendancePage() {
 				</CardHeader>
 
 				<CardContent className="p-0">
-					{loading ? (
+					{loading ?
 						<div className="p-12 text-center text-slate-400 flex items-center justify-center gap-2">
 							<Loader2 className="w-5 h-5 animate-spin text-violet-400" />
 							Loading attendance records...
 						</div>
-					) : data.length === 0 ? (
+					: data.length === 0 ?
 						<div className="p-12 text-center text-slate-400">
 							No participants found matching your criteria.
 						</div>
-					) : (
-						<div className="overflow-x-auto">
+					:	<div className="overflow-x-auto">
 							<Table>
 								<TableHeader className="bg-white/5">
 									<TableRow className="border-white/5 hover:bg-transparent">
-										<TableHead className="text-slate-400 text-xs">Reg ID / Ticket</TableHead>
-										<TableHead className="text-slate-400 text-xs">Participant</TableHead>
-										<TableHead className="text-slate-400 text-xs">Institution</TableHead>
-										<TableHead className="text-slate-400 text-xs">Attendance Status</TableHead>
-										<TableHead className="text-slate-400 text-xs">Check-in Time</TableHead>
-										<TableHead className="text-right text-slate-400 text-xs">Action</TableHead>
+										<TableHead className="text-slate-400 text-xs">
+											Reg ID / Ticket
+										</TableHead>
+										<TableHead className="text-slate-400 text-xs">
+											Participant
+										</TableHead>
+										<TableHead className="text-slate-400 text-xs">
+											Institution
+										</TableHead>
+										<TableHead className="text-slate-400 text-xs">
+											Attendance Status
+										</TableHead>
+										<TableHead className="text-slate-400 text-xs">
+											Check-in Time
+										</TableHead>
+										<TableHead className="text-right text-slate-400 text-xs">
+											Action
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 
 								<TableBody>
 									{data.map((item) => (
-										<TableRow key={item._id} className="border-white/5 hover:bg-white/5">
+										<TableRow
+											key={item._id}
+											className="border-white/5 hover:bg-white/5">
 											<TableCell className="font-mono text-xs font-semibold text-violet-300">
 												<div>{item.registrationId}</div>
-												<div className="text-[10px] text-slate-400">{item.ticketNumber}</div>
+												<div className="text-[10px] text-slate-400">
+													{item.ticketNumber}
+												</div>
 											</TableCell>
 
 											<TableCell>
-												<div className="font-semibold text-sm text-white">{item.fullName}</div>
-												<div className="text-xs text-slate-400">{item.mobile}</div>
+												<div className="font-semibold text-sm text-white">
+													{item.fullName}
+												</div>
+												<div className="text-xs text-slate-400">
+													{item.mobile}
+												</div>
 											</TableCell>
 
 											<TableCell className="text-xs text-slate-300">
@@ -615,59 +681,61 @@ export default function QrAttendancePage() {
 											</TableCell>
 
 											<TableCell>
-												{item.attendance === "Present" ? (
+												{item.attendance === "Present" ?
 													<Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 gap-1 text-xs">
 														<UserCheck className="w-3 h-3" />
 														Present
 													</Badge>
-												) : (
-													<Badge className="bg-slate-800 text-slate-400 border-white/10 gap-1 text-xs">
+												:	<Badge className="bg-slate-800 text-slate-400 border-white/10 gap-1 text-xs">
 														<UserX className="w-3 h-3" />
 														Absent
 													</Badge>
-												)}
+												}
 											</TableCell>
 
 											<TableCell className="text-xs text-slate-400">
-												{item.attendedAt ? (
+												{item.attendedAt ?
 													<span className="flex items-center gap-1 text-emerald-400/90 font-mono">
 														<Clock className="w-3 h-3" />
-														{new Date(item.attendedAt).toLocaleTimeString("en-BD", {
-															hour: "2-digit",
-															minute: "2-digit",
-														})}
+														{new Date(item.attendedAt).toLocaleTimeString(
+															"en-BD",
+															{
+																hour: "2-digit",
+																minute: "2-digit",
+															}
+														)}
 													</span>
-												) : (
-													<span className="text-slate-600">—</span>
-												)}
+												:	<span className="text-slate-600">—</span>}
 											</TableCell>
 
 											<TableCell className="text-right">
-												{item.attendance === "Present" ? (
+												{item.attendance === "Present" ?
 													<Button
 														size="sm"
 														variant="ghost"
 														onClick={() =>
-															handleResetAttendance(item.registrationId, item.fullName)
+															handleResetAttendance(
+																item.registrationId,
+																item.fullName
+															)
 														}
 														className="text-xs text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 h-8">
 														Mark Absent
 													</Button>
-												) : (
-													<Button
+												:	<Button
 														size="sm"
 														onClick={() => processCheckIn(item.registrationId)}
 														className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8">
 														Mark Present
 													</Button>
-												)}
+												}
 											</TableCell>
 										</TableRow>
 									))}
 								</TableBody>
 							</Table>
 						</div>
-					)}
+					}
 				</CardContent>
 			</Card>
 		</div>

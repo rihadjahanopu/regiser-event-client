@@ -369,7 +369,7 @@ export default function SuccessPage() {
 									<p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">
 										Participant Name
 									</p>
-									<p className="text-2xl font-bold text-slate-900 dark:text-white">
+									<p className="text-2xl font-bold text-slate-900">
 										{data.fullName}
 									</p>
 								</div>
@@ -381,7 +381,7 @@ export default function SuccessPage() {
 											<p className="text-sm text-slate-500 font-medium">
 												Institution
 											</p>
-											<p className="font-medium">{data.schoolName}</p>
+											<p className="font-medium text-slate-900">{data.schoolName}</p>
 											<p className="text-sm text-slate-600">
 												{data.class} • {data.subjectGroup}
 												{data.regNumber ? ` • Reg: ${data.regNumber}` : ""}
@@ -395,7 +395,7 @@ export default function SuccessPage() {
 											<p className="text-sm text-slate-500 font-medium">
 												Contact
 											</p>
-											<p className="font-medium">{data.mobile}</p>
+											<p className="font-medium text-slate-900">{data.mobile}</p>
 										</div>
 									</div>
 
@@ -405,7 +405,7 @@ export default function SuccessPage() {
 											<p className="text-sm text-slate-500 font-medium">
 												Location / Venue
 											</p>
-											<p className="font-medium">{eventDetails.eventAddress || data.district}</p>
+											<p className="font-medium text-slate-900">{eventDetails.eventAddress || data.district}</p>
 										</div>
 									</div>
 
@@ -415,7 +415,7 @@ export default function SuccessPage() {
 											<p className="text-sm text-slate-500 font-medium">
 												Event Schedule
 											</p>
-											<p className="font-medium">
+											<p className="font-medium text-slate-900">
 												{eventDetails.eventDate
 													? `${eventDetails.eventDate} ${eventDetails.eventStartTime ? `@ ${eventDetails.eventStartTime}` : ""}`
 													: new Date(data.registrationDate).toLocaleDateString()}
@@ -425,9 +425,9 @@ export default function SuccessPage() {
 								</div>
 
 								{eventDetails.organiserContact && (
-									<div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/50 flex items-center justify-between text-xs sm:text-sm">
-										<span className="text-slate-600 dark:text-slate-400">Organiser Helpline:</span>
-										<span className="font-bold text-blue-700 dark:text-blue-300">{eventDetails.organiserContact}</span>
+									<div className="p-3 bg-blue-50 rounded-lg border border-blue-100 flex items-center justify-between text-xs sm:text-sm">
+										<span className="text-slate-600">Organiser Helpline:</span>
+										<span className="font-bold text-blue-700">{eventDetails.organiserContact}</span>
 									</div>
 								)}
 
